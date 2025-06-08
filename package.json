@@ -5,8 +5,13 @@
   "scripts": {
     "dev": "next dev --turbopack",
     "build": "next build",
+    "build:analyze": "ANALYZE=true next build",
+    "build:static": "next build && next export",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "next lint",
+    "lint:fix": "next lint --fix",
+    "seo:check": "npm run build && npm run seo:lighthouse",
+    "seo:lighthouse": "lighthouse http://localhost:3000 --output html --output-path ./lighthouse-report.html --chrome-flags='--headless'"
   },
   "dependencies": {
     "react": "^19.0.0",

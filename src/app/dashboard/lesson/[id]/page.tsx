@@ -6,7 +6,6 @@ import LessonHeader from '../components/LessonHeader';
 import MainArticle from '../components/MainArticle';
 import MiniStory from '../components/MiniStory';
 import MiniStoryQuestions from '../components/MiniStoryQuestions';
-import Vocabulary from '../components/Vocabulary';
 import LessonNavigation from '../components/LessonNavigation';
 
 interface LessonData {
@@ -17,7 +16,6 @@ interface LessonData {
     mainArticle: any;
     miniStory: any;
     miniStoryQuestions: any;
-    vocabulary: any;
   };
 }
 
@@ -116,52 +114,6 @@ export default function LessonPage() {
               explanation: "Sarah 'finds her favorite corner table by the window' to work at her 'office away from office.'"
             }
           ]
-        },
-        vocabulary: {
-          words: [
-            {
-              word: "Chiming",
-              pronunciation: "/ˈtʃaɪmɪŋ/",
-              definition: "Making a musical ringing sound",
-              example: "The bell was chiming above her head as she entered.",
-              translation: "Sonando (como una campana)"
-            },
-            {
-              word: "Rush",
-              pronunciation: "/rʌʃ/",
-              definition: "A period of intense activity or demand",
-              example: "The morning rush is in full swing at the coffee shop.",
-              translation: "Hora pico, prisa"
-            },
-            {
-              word: "Barista",
-              pronunciation: "/bəˈrɪstə/",
-              definition: "A person who prepares and serves coffee drinks",
-              example: "Emma, the barista, has memorized Sarah's order.",
-              translation: "Barista (persona que prepara café)"
-            },
-            {
-              word: "Cappuccino",
-              pronunciation: "/ˌkæpəˈtʃiːnoʊ/",
-              definition: "An Italian coffee drink with espresso and steamed milk foam",
-              example: "She ordered a large cappuccino with an extra shot.",
-              translation: "Capuchino"
-            },
-            {
-              word: "Espresso machine",
-              pronunciation: "/ɪˈspreso məˈʃiːn/",
-              definition: "A machine that brews coffee by forcing pressurized water through ground coffee",
-              example: "Emma works the espresso machine expertly.",
-              translation: "Máquina de espresso"
-            },
-            {
-              word: "Settles in",
-              pronunciation: "/ˈsetəlz ɪn/",
-              definition: "To make oneself comfortable in a place",
-              example: "She settles in for another productive morning.",
-              translation: "Se acomoda, se instala"
-            }
-          ]
         }
       }
     };
@@ -169,7 +121,7 @@ export default function LessonPage() {
     setLessonData(mockLessonData);
   }, [lessonId]);
 
-  const sectionNames = ['Main Article', 'Mini Story', 'Mini Story Questions', 'Vocabulary'];
+  const sectionNames = ['Main Article', 'Mini Story', 'Mini Story Questions'];
   const totalSections = sectionNames.length;
 
   const handleNext = () => {
@@ -180,8 +132,8 @@ export default function LessonPage() {
         setIsTransitioning(false);
       }, 300);
     } else {
-      // Lección completada
-      handleLessonComplete();
+      // Ir a vocabulario dedicado
+      router.push(`/dashboard/lesson/${lessonId}/vocabulary`);
     }
   };
 
@@ -217,8 +169,6 @@ export default function LessonPage() {
         return <MiniStory data={lessonData.sections.miniStory} {...sectionProps} />;
       case 2:
         return <MiniStoryQuestions data={lessonData.sections.miniStoryQuestions} {...sectionProps} />;
-      case 3:
-        return <Vocabulary data={lessonData.sections.vocabulary} {...sectionProps} />;
       default:
         return null;
     }

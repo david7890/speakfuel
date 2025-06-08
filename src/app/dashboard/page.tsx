@@ -4,6 +4,9 @@ import { useState } from 'react';
 import DashboardHeader from './components/DashboardHeader';
 import LessonCard from './components/LessonCard';
 
+// Forzar CSR - Dashboard es privado y dinámico
+export const dynamic = 'force-dynamic';
+
 export default function Dashboard() {
   // Datos mock para las lecciones
   const [user] = useState({
@@ -16,83 +19,125 @@ export default function Dashboard() {
   const lessons = [
     {
       id: 1,
-      number: 1,
-      title: "Saludos y Presentaciones",
-      status: "completed",
+      title: "The Coffee Shop Morning",
+      description: "Aprende vocabulario esencial sobre cafeterías y rutinas matutinas en un contexto real.",
+      duration: "15 min",
+      difficulty: 'Principiante' as const,
+      status: 'completed' as const,
       progress: 100,
-      sections: ["Main Article", "Mini Story", "Mini Story con preguntas", "Vocabulario"]
+      points: 50,
+      streak: 3,
+      badges: ['Completista', 'Vocabulario Maestro'],
+      lastCompleted: 'ayer'
     },
     {
       id: 2,
-      number: 2,
-      title: "En el Café",
-      status: "completed",
+      title: "Ordering Food at a Restaurant",
+      description: "Domina las conversaciones típicas en restaurantes y amplía tu vocabulario gastronómico.",
+      duration: "18 min",
+      difficulty: 'Principiante' as const,
+      status: 'completed' as const,
       progress: 100,
-      sections: ["Main Article", "Mini Story", "Mini Story con preguntas", "Vocabulario"]
+      points: 55,
+      streak: 2,
+      badges: ['Gourmet'],
+      lastCompleted: 'hace 2 días'
     },
     {
       id: 3,
-      number: 3,
-      title: "Pidiendo Direcciones",
-      status: "completed",
-      progress: 100,
-      sections: ["Main Article", "Mini Story", "Mini Story con preguntas", "Vocabulario"]
+      title: "Job Interview Preparation",
+      description: "Prepárate para entrevistas de trabajo con vocabulario profesional y expresiones clave.",
+      duration: "22 min",
+      difficulty: 'Intermedio' as const,
+      status: 'in-progress' as const,
+      progress: 65,
+      points: 35,
+      streak: 0,
+      badges: []
     },
     {
       id: 4,
-      number: 4,
-      title: "En el Supermercado",
-      status: "in-progress",
-      progress: 60,
-      sections: ["Main Article", "Mini Story", "Mini Story con preguntas", "Vocabulario"]
+      title: "Travel and Airport Conversations",
+      description: "Aprende a comunicarte efectivamente en aeropuertos y situaciones de viaje.",
+      duration: "20 min",
+      difficulty: 'Intermedio' as const,
+      status: 'locked' as const,
+      progress: 0,
+      points: 0,
+      streak: 0,
+      badges: []
     },
     {
       id: 5,
-      number: 5,
-      title: "Haciendo Planes",
-      status: "locked",
+      title: "Medical Appointments",
+      description: "Vocabulario médico esencial y cómo describir síntomas en inglés.",
+      duration: "25 min",
+      difficulty: 'Intermedio' as const,
+      status: 'locked' as const,
       progress: 0,
-      sections: ["Main Article", "Mini Story", "Mini Story con preguntas", "Vocabulario"]
+      points: 0,
+      streak: 0,
+      badges: []
     },
     {
       id: 6,
-      number: 6,
-      title: "En el Restaurante",
-      status: "locked",
+      title: "Business Presentations",
+      description: "Técnicas avanzadas para presentaciones profesionales en inglés.",
+      duration: "30 min",
+      difficulty: 'Avanzado' as const,
+      status: 'locked' as const,
       progress: 0,
-      sections: ["Main Article", "Mini Story", "Mini Story con preguntas", "Vocabulario"]
+      points: 0,
+      streak: 0,
+      badges: []
     },
     {
       id: 7,
-      number: 7,
-      title: "Hablando del Clima",
-      status: "locked",
+      title: "Social Events and Networking",
+      description: "Conversaciones sociales, networking y construcción de relaciones profesionales.",
+      duration: "28 min",
+      difficulty: 'Avanzado' as const,
+      status: 'locked' as const,
       progress: 0,
-      sections: ["Main Article", "Mini Story", "Mini Story con preguntas", "Vocabulario"]
+      points: 0,
+      streak: 0,
+      badges: []
     },
     {
       id: 8,
-      number: 8,
-      title: "En el Trabajo",
-      status: "locked",
+      title: "Academic Discussions",
+      description: "Debates académicos, expresión de opiniones y argumentación estructurada.",
+      duration: "35 min",
+      difficulty: 'Avanzado' as const,
+      status: 'locked' as const,
       progress: 0,
-      sections: ["Main Article", "Mini Story", "Mini Story con preguntas", "Vocabulario"]
+      points: 0,
+      streak: 0,
+      badges: []
     },
     {
       id: 9,
-      number: 9,
-      title: "Vacaciones y Viajes",
-      status: "locked",
+      title: "Cultural Understanding",
+      description: "Comprensión cultural profunda y comunicación intercultural efectiva.",
+      duration: "32 min",
+      difficulty: 'Avanzado' as const,
+      status: 'locked' as const,
       progress: 0,
-      sections: ["Main Article", "Mini Story", "Mini Story con preguntas", "Vocabulario"]
+      points: 0,
+      streak: 0,
+      badges: []
     },
     {
       id: 10,
-      number: 10,
-      title: "Entrevista de Trabajo",
-      status: "locked",
+      title: "Mastery Challenge",
+      description: "Desafío final que integra todos los conceptos aprendidos en situaciones complejas.",
+      duration: "45 min",
+      difficulty: 'Avanzado' as const,
+      status: 'locked' as const,
       progress: 0,
-      sections: ["Main Article", "Mini Story", "Mini Story con preguntas", "Vocabulario"]
+      points: 0,
+      streak: 0,
+      badges: []
     }
   ];
 
@@ -131,8 +176,17 @@ export default function Dashboard() {
             {lessons.map((lesson) => (
               <LessonCard
                 key={lesson.id}
-                lesson={lesson}
-                onClick={() => handleLessonClick(lesson.id)}
+                id={lesson.id}
+                title={lesson.title}
+                description={lesson.description}
+                duration={lesson.duration}
+                difficulty={lesson.difficulty}
+                status={lesson.status}
+                progress={lesson.progress}
+                points={lesson.points}
+                streak={lesson.streak}
+                badges={lesson.badges}
+                lastCompleted={lesson.lastCompleted}
               />
             ))}
           </div>

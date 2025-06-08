@@ -1,22 +1,28 @@
 'use client';
 
-import { useRouter } from 'next/navigation';
+import { useRouter, usePathname } from 'next/navigation';
 
 interface LessonHeaderProps {
   title: string;
   currentSection: number;
   totalSections: number;
   sectionName: string;
+  isVocabularyPage?: boolean;
 }
 
 export default function LessonHeader({ 
   title, 
   currentSection, 
   totalSections, 
-  sectionName 
+  sectionName,
+  isVocabularyPage: propIsVocabularyPage = false
 }: LessonHeaderProps) {
   const router = useRouter();
+  const pathname = usePathname();
   const progressPercentage = ((currentSection + 1) / totalSections) * 100;
+  
+  // Detectar si estamos en la página de vocabulario (usar prop o detectar de URL)
+  const isVocabularyPage = propIsVocabularyPage || pathname.includes('/vocabulary');
 
   return (
     <header className="fixed top-0 w-full bg-white/95 backdrop-blur-sm z-50 border-b border-gray-100 shadow-sm">
@@ -38,13 +44,13 @@ export default function LessonHeader({
             <h1 className="text-lg font-bold text-gray-900 truncate">
               {title}
             </h1>
-            <p className="text-sm text-gray-600">
-              {sectionName} • {currentSection + 1} de {totalSections}
+            <p className="text-sm text-gray-600 mt-1">
+              {isVocabularyPage ? sectionName : `${sectionName} • ${currentSection + 1} de ${totalSections}`}
             </p>
           </div>
-
-          {/* Spacer */}
-          <div className="w-20"></div>
+          
+          {/* Spacer for vocabulary page */}
+          {isVocabularyPage && <div className="w-20"></div>}
         </div>
       </div>
     </header>
