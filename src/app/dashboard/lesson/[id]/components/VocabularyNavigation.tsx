@@ -142,9 +142,9 @@ export default function VocabularyNavigation({
           >
             <span className="hidden sm:inline">{isLastWord ? 'Continuar' : 'Siguiente'}</span>
             <span className="sm:hidden">{isLastWord ? '→' : '→'}</span>
-            <svg className="w-5 h-5 ml-2 hidden sm:block" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-            </svg>
+              <svg className="w-5 h-5 ml-2 hidden sm:block" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+              </svg>
           </button>
         </div>
 
