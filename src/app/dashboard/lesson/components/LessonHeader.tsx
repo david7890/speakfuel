@@ -19,7 +19,6 @@ export default function LessonHeader({
 }: LessonHeaderProps) {
   const router = useRouter();
   const pathname = usePathname();
-  const progressPercentage = ((currentSection + 1) / totalSections) * 100;
   
   // Detectar si estamos en la página de vocabulario (usar prop o detectar de URL)
   const isVocabularyPage = propIsVocabularyPage || pathname.includes('/vocabulary');

@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import LessonHeader from '../../components/LessonHeader';
 import VocabularyCard from '../components/VocabularyCard';
@@ -84,7 +84,7 @@ export default function VocabularyPage() {
 
   const totalWords = vocabularyData?.words.length || 0;
 
-  const handleNextWord = () => {
+  const handleNextWord = useCallback(() => {
     if (currentWordIndex < totalWords - 1) {
       setIsTransitioning(true);
       setTimeout(() => {
@@ -92,19 +92,22 @@ export default function VocabularyPage() {
         setIsTransitioning(false);
       }, 300);
     } else {
-      // Vocabulario completado - mostrar modal de celebración
-      setShowCompletionModal(true);
+      // Vocabulario completado - ir a la siguiente sección (ministory)
+      setIsTransitioning(true);
+      setTimeout(() => {
+        router.push(`/dashboard/lesson/${lessonId}/ministory`);
+      }, 300);
     }
-  };
+  }, [currentWordIndex, totalWords, router, lessonId]);
 
-  const handleCompleteLession = () => {
+  const handleCompleteLession = useCallback(() => {
     setShowCompletionModal(false);
     // Aquí podrías guardar el progreso en localStorage/API
     // localStorage.setItem(`lesson-${lessonId}-completed`, 'true');
     router.push('/dashboard');
-  };
+  }, [router]);
 
-  const handlePreviousWord = () => {
+  const handlePreviousWord = useCallback(() => {
     if (currentWordIndex > 0) {
       setIsTransitioning(true);
       setTimeout(() => {
@@ -112,9 +115,16 @@ export default function VocabularyPage() {
         setIsTransitioning(false);
       }, 300);
     }
-  };
+  }, [currentWordIndex]);
 
-  const handleWordSelect = (index: number) => {
+  const handleGoToPreviousSection = useCallback(() => {
+    setIsTransitioning(true);
+    setTimeout(() => {
+      router.push(`/dashboard/lesson/${lessonId}/main`);
+    }, 300);
+  }, [router, lessonId]);
+
+  const handleWordSelect = useCallback((index: number) => {
     if (index !== currentWordIndex) {
       setIsTransitioning(true);
       setTimeout(() => {
@@ -122,7 +132,7 @@ export default function VocabularyPage() {
         setIsTransitioning(false);
       }, 300);
     }
-  };
+  }, [currentWordIndex]);
 
   // Navegación con teclado
   useEffect(() => {
@@ -131,7 +141,8 @@ export default function VocabularyPage() {
       if (showCompletionModal) {
         if (event.key === 'Enter' || event.key === ' ') {
           event.preventDefault();
-          handleCompleteLession();
+          setShowCompletionModal(false);
+          router.push('/dashboard');
         } else if (event.key === 'Escape') {
           event.preventDefault();
           setShowCompletionModal(false);
@@ -143,11 +154,33 @@ export default function VocabularyPage() {
         case 'ArrowRight':
         case ' ': // Spacebar
           event.preventDefault();
-          handleNextWord();
+          if (currentWordIndex < totalWords - 1) {
+            setIsTransitioning(true);
+            setTimeout(() => {
+              setCurrentWordIndex(currentWordIndex + 1);
+              setIsTransitioning(false);
+            }, 300);
+          } else {
+            setIsTransitioning(true);
+            setTimeout(() => {
+              router.push(`/dashboard/lesson/${lessonId}/ministory`);
+            }, 300);
+          }
           break;
         case 'ArrowLeft':
           event.preventDefault();
-          handlePreviousWord();
+          if (currentWordIndex > 0) {
+            setIsTransitioning(true);
+            setTimeout(() => {
+              setCurrentWordIndex(currentWordIndex - 1);
+              setIsTransitioning(false);
+            }, 300);
+          } else {
+            setIsTransitioning(true);
+            setTimeout(() => {
+              router.push(`/dashboard/lesson/${lessonId}/main`);
+            }, 300);
+          }
           break;
         case 'Escape':
           event.preventDefault();
@@ -161,8 +194,12 @@ export default function VocabularyPage() {
         case '6':
           event.preventDefault();
           const wordIndex = parseInt(event.key) - 1;
-          if (wordIndex < totalWords) {
-            handleWordSelect(wordIndex);
+          if (wordIndex < totalWords && wordIndex !== currentWordIndex) {
+            setIsTransitioning(true);
+            setTimeout(() => {
+              setCurrentWordIndex(wordIndex);
+              setIsTransitioning(false);
+            }, 300);
           }
           break;
       }
@@ -170,7 +207,7 @@ export default function VocabularyPage() {
 
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [currentWordIndex, totalWords, router, showCompletionModal, handleNextWord, handlePreviousWord, handleWordSelect]);
+  }, [currentWordIndex, totalWords, showCompletionModal, router, lessonId]);
 
   if (!vocabularyData) {
     return (
@@ -190,8 +227,8 @@ export default function VocabularyPage() {
       {/* Header */}
       <LessonHeader 
         title={vocabularyData.lessonTitle}
-        currentSection={0}
-        totalSections={1}
+        currentSection={1}
+        totalSections={4}
         sectionName={`Vocabulario - Palabra ${currentWordIndex + 1} de ${totalWords}`}
         isVocabularyPage={true}
       />
@@ -216,6 +253,7 @@ export default function VocabularyPage() {
         onPrevious={handlePreviousWord}
         onWordSelect={handleWordSelect}
         isLastWord={currentWordIndex === totalWords - 1}
+        onGoToPreviousSection={handleGoToPreviousSection}
       />
 
       {/* Completion Modal */}

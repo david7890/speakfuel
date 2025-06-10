@@ -82,7 +82,7 @@ export default function Testimonials() {
               
               {/* Testimonial Text */}
               <p className="text-gray-700 mb-6 leading-relaxed">
-                "{testimonial.text}"
+                &ldquo;{testimonial.text}&rdquo;
               </p>
               
               {/* Author */}
@@ -110,8 +110,8 @@ export default function Testimonials() {
         <div className="bg-gradient-to-r from-blue-600 to-purple-600 rounded-2xl p-8 md:p-12 text-center text-white">
           <div className="max-w-3xl mx-auto">
             <h3 className="text-2xl md:text-3xl font-bold mb-4">
-              "El mejor momento para plantar un árbol fue hace 20 años. 
-              El segundo mejor momento es ahora."
+              &ldquo;El mejor momento para plantar un árbol fue hace 20 años. 
+              El segundo mejor momento es ahora.&rdquo;
             </h3>
             <p className="text-lg opacity-90 mb-8">
               No esperes más para dominar el inglés. Tu futuro profesional y personal 

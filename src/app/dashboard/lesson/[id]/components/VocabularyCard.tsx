@@ -143,7 +143,7 @@ export default function VocabularyCard({ word, wordIndex, totalWords }: Vocabula
                   </h3>
                   <div className="bg-white rounded-xl p-4 border-l-4 border-green-500 shadow-sm hover:shadow-md transition-all duration-300">
                     <p className="text-gray-800 italic text-lg">
-                      "{word.example}"
+                      &ldquo;{word.example}&rdquo;
                     </p>
                   </div>
                 </div>

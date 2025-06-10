@@ -9,9 +9,10 @@ interface MainArticleProps {
   onPrevious: () => void;
 }
 
-export default function MainArticle({ data, isTransitioning }: MainArticleProps) {
+export default function MainArticle({ data, onNext, onPrevious }: MainArticleProps) {
   return (
-    <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
+    <>
+      <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8" style={{paddingBottom: '120px'}}>
       <div className="bg-white rounded-2xl shadow-lg border border-gray-100 overflow-hidden">
         {/* Header */}
         <div className="bg-gradient-to-r from-blue-600 to-purple-600 px-8 py-6">
@@ -73,14 +74,15 @@ export default function MainArticle({ data, isTransitioning }: MainArticleProps)
               <div>
                 <h5 className="font-semibold text-amber-800 mb-2">Reading Tip</h5>
                 <p className="text-amber-700 text-sm">
-                  Take your time to understand the main ideas. Don't worry about every single word - 
-                  focus on the overall meaning and context. You'll practice the vocabulary in the next sections!
+                  Take your time to understand the main ideas. Don&apos;t worry about every single word - 
+                  focus on the overall meaning and context. You&apos;ll practice the vocabulary in the next sections!
                 </p>
               </div>
             </div>
           </div>
         </div>
       </div>
-    </div>
+      </div>
+    </>
   );
 } 

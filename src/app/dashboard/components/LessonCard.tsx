@@ -80,7 +80,7 @@ export default function LessonCard({
 
   const handleClick = () => {
     if (status !== 'locked') {
-      router.push(`/dashboard/lesson/${id}`);
+      router.push(`/dashboard/lesson/${id}/main`);
     }
   };
 

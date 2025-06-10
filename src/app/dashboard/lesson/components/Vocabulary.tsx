@@ -153,7 +153,7 @@ export default function Vocabulary({ data }: VocabularyProps) {
                       <h4 className="font-semibold text-gray-900 mb-2">Example:</h4>
                       <div className="bg-gray-50 rounded-lg p-3">
                         <p className="text-gray-800 text-sm italic">
-                          "{word.example}"
+                          &ldquo;{word.example}&rdquo;
                         </p>
                       </div>
                     </div>

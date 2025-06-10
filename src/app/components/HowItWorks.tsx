@@ -83,7 +83,7 @@ export default function HowItWorks() {
                       </div>
                       <div className="bg-blue-50 p-4 rounded-lg">
                         <p className="text-sm text-gray-700 italic">
-                          "Sarah walked into the coffee shop and ordered her usual latte..."
+                          &ldquo;Sarah walked into the coffee shop and ordered her usual latte...&rdquo;
                         </p>
                       </div>
                     </div>
@@ -109,8 +109,8 @@ export default function HowItWorks() {
                       <div className="bg-green-50 p-4 rounded-lg">
                         <p className="text-sm font-medium text-gray-700 mb-2">Conversación simulada:</p>
                         <div className="space-y-2">
-                          <div className="text-sm text-gray-600">🤖: "Hi! What would you like to order?"</div>
-                          <div className="text-sm text-blue-600">👤: "I'd like a latte, please."</div>
+                          <div className="text-sm text-gray-600">🤖: &ldquo;Hi! What would you like to order?&rdquo;</div>
+                          <div className="text-sm text-blue-600">👤: &ldquo;I&apos;d like a latte, please.&rdquo;</div>
                         </div>
                       </div>
                       <div className="text-center">

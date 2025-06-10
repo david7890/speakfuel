@@ -16,6 +16,7 @@ interface VocabularyNavigationProps {
   onPrevious: () => void;
   onWordSelect: (index: number) => void;
   isLastWord: boolean;
+  onGoToPreviousSection?: () => void;
 }
 
 export default function VocabularyNavigation({
@@ -25,7 +26,8 @@ export default function VocabularyNavigation({
   onNext,
   onPrevious,
   onWordSelect,
-  isLastWord
+  isLastWord,
+  onGoToPreviousSection
 }: VocabularyNavigationProps) {
   const [touchStart, setTouchStart] = useState<number | null>(null);
   const [touchEnd, setTouchEnd] = useState<number | null>(null);
@@ -52,12 +54,22 @@ export default function VocabularyNavigation({
     if (isLeftSwipe && currentWordIndex < totalWords - 1) {
       onNext();
     }
-    if (isRightSwipe && currentWordIndex > 0) {
-      onPrevious();
+    if (isRightSwipe) {
+      if (currentWordIndex > 0) {
+        onPrevious();
+      } else if (onGoToPreviousSection) {
+        onGoToPreviousSection();
+      }
     }
   };
 
-  const progressPercentage = ((currentWordIndex + 1) / totalWords) * 100;
+  const handlePreviousClick = () => {
+    if (currentWordIndex > 0) {
+      onPrevious();
+    } else if (onGoToPreviousSection) {
+      onGoToPreviousSection();
+    }
+  };
 
   return (
     <div 
@@ -83,18 +95,22 @@ export default function VocabularyNavigation({
         <div className="flex items-center justify-between">
           {/* Previous Button */}
           <button
-            onClick={onPrevious}
-            disabled={currentWordIndex === 0}
+            onClick={handlePreviousClick}
+            disabled={currentWordIndex === 0 && !onGoToPreviousSection}
             className={`flex items-center px-4 py-2 rounded-xl font-medium transition-all duration-300 touch-manipulation ${
-              currentWordIndex === 0
+              currentWordIndex === 0 && !onGoToPreviousSection
                 ? 'bg-gray-100 text-gray-400 cursor-not-allowed'
+                : currentWordIndex === 0 && onGoToPreviousSection
+                ? 'bg-blue-100 text-blue-700 hover:bg-blue-200 shadow-md hover:shadow-lg border border-blue-200 active:scale-95'
                 : 'bg-white text-gray-700 hover:bg-gray-50 shadow-md hover:shadow-lg border border-gray-200 active:scale-95'
             }`}
           >
             <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
             </svg>
-            <span className="hidden sm:inline">Anterior</span>
+            <span className="hidden sm:inline">
+              {currentWordIndex === 0 && onGoToPreviousSection ? 'Main Article' : 'Anterior'}
+            </span>
           </button>
 
           {/* Word Navigation Dots - Responsive */}
@@ -115,22 +131,20 @@ export default function VocabularyNavigation({
             ))}
           </div>
 
-          {/* Next/Finish Button */}
+          {/* Next/Continue Button */}
           <button
             onClick={onNext}
             className={`flex items-center px-4 py-2 rounded-xl font-medium transition-all duration-300 touch-manipulation ${
               isLastWord
-                ? 'bg-green-500 text-white hover:bg-green-600 shadow-lg hover:shadow-xl active:scale-95'
+                ? 'bg-blue-500 text-white hover:bg-blue-600 shadow-lg hover:shadow-xl active:scale-95'
                 : 'bg-orange-500 text-white hover:bg-orange-600 shadow-lg hover:shadow-xl active:scale-95'
             }`}
           >
-            <span className="hidden sm:inline">{isLastWord ? 'Terminar' : 'Siguiente'}</span>
-            <span className="sm:hidden">{isLastWord ? '✓' : '→'}</span>
-            {!isLastWord && (
-              <svg className="w-5 h-5 ml-2 hidden sm:block" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-              </svg>
-            )}
+            <span className="hidden sm:inline">{isLastWord ? 'Continuar' : 'Siguiente'}</span>
+            <span className="sm:hidden">{isLastWord ? '→' : '→'}</span>
+            <svg className="w-5 h-5 ml-2 hidden sm:block" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+            </svg>
           </button>
         </div>
 

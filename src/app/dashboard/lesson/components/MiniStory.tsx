@@ -14,7 +14,7 @@ interface MiniStoryProps {
   onPrevious: () => void;
 }
 
-export default function MiniStory({ data, isTransitioning }: MiniStoryProps) {
+export default function MiniStory({ data, onNext, onPrevious }: MiniStoryProps) {
   const [isPlaying, setIsPlaying] = useState(false);
 
   const handlePlayAudio = () => {
@@ -24,7 +24,8 @@ export default function MiniStory({ data, isTransitioning }: MiniStoryProps) {
   };
 
   return (
-    <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
+    <>
+      <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8" style={{paddingBottom: '120px'}}>
       <div className="bg-white rounded-2xl shadow-lg border border-gray-100 overflow-hidden">
         {/* Header */}
         <div className="bg-gradient-to-r from-green-600 to-teal-600 px-8 py-6">
@@ -145,6 +146,7 @@ export default function MiniStory({ data, isTransitioning }: MiniStoryProps) {
           </div>
         </div>
       </div>
-    </div>
+      </div>
+    </>
   );
 } 

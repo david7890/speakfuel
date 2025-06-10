@@ -6,7 +6,7 @@ const nextConfig = {
   
   // Configuración experimental
   experimental: {
-    optimizeCss: true, // Optimizar CSS
+    // optimizeCss: true, // Temporalmente deshabilitado debido a error con critters
     optimizePackageImports: ['lucide-react'], // Optimizar imports
   },
 

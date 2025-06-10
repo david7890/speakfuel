@@ -1,0 +1,11 @@
+User-agent: *
+Allow: /
+Allow: /_next/static/
+
+# Block private areas
+Disallow: /dashboard/
+Disallow: /api/
+Disallow: /lesson/
+
+# Sitemap
+Sitemap: https://speakfuel.com/sitemap.xml 
