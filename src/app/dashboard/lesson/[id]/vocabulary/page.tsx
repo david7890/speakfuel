@@ -25,7 +25,7 @@ export default function VocabularyPage() {
   const lessonId = parseInt(params.id as string);
   
   const [currentWordIndex, setCurrentWordIndex] = useState(0);
-  const [isTransitioning, setIsTransitioning] = useState(false);
+  const [isTransitioning, setIsTransitioning] = useState(true);
   const [vocabularyData, setVocabularyData] = useState<VocabularyData | null>(null);
   const [showCompletionModal, setShowCompletionModal] = useState(false);
   const [isNavigating, setIsNavigating] = useState(false);
@@ -81,6 +81,11 @@ export default function VocabularyPage() {
     };
     
     setVocabularyData(mockVocabularyData);
+    
+    // Activate entrance transition after data is set
+    setTimeout(() => {
+      setIsTransitioning(false);
+    }, 100);
   }, [lessonId]);
 
   const totalWords = vocabularyData?.words.length || 0;
@@ -106,10 +111,8 @@ export default function VocabularyPage() {
       setIsNavigating(true);
       setIsTransitioning(true);
       
-      // Navegación limpia con timeout para transición
-      setTimeout(() => {
-        router.push(`/dashboard/lesson/${lessonId}/ministory`);
-      }, 300);
+      // Navegación inmediata sin timeout
+      router.push(`/dashboard/lesson/${lessonId}/ministory`);
     }
   }, [currentWordIndex, totalWords, router, lessonId, isNavigating]);
 
@@ -224,9 +227,9 @@ export default function VocabularyPage() {
 
   if (!vocabularyData) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-orange-50 to-red-50">
+      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-50 to-purple-50">
         <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-orange-600 mx-auto mb-4"></div>
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
           <p className="text-gray-600">Cargando vocabulario...</p>
         </div>
       </div>
@@ -236,7 +239,7 @@ export default function VocabularyPage() {
   const currentWord = vocabularyData.words[currentWordIndex];
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-orange-50 via-white to-red-50 overflow-x-hidden">
+    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50 overflow-x-hidden">
       {/* Header */}
       <LessonHeader 
         title={vocabularyData.lessonTitle}
@@ -248,7 +251,7 @@ export default function VocabularyPage() {
 
       {/* Main Content */}
       <main className="pt-20 pb-24 overflow-x-hidden">
-        <div className={`transition-all duration-300 ${isTransitioning ? 'opacity-0 transform scale-95' : 'opacity-100 transform scale-100'}`}>
+        <div className={`transition-all duration-300 ${isTransitioning ? 'opacity-0 transform translate-x-4' : 'opacity-100 transform translate-x-0'}`}>
           <VocabularyCard 
             word={currentWord}
             wordIndex={currentWordIndex}

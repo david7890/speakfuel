@@ -32,25 +32,6 @@ export default function VocabularyCard({ word, wordIndex, totalWords }: Vocabula
 
   return (
     <div className="max-w-2xl mx-auto px-4 sm:px-6 lg:px-8">
-      {/* Progress Indicator */}
-      <div className="mb-6 text-center">
-        <div className="flex items-center justify-center space-x-2 mb-2">
-          {Array.from({ length: totalWords }, (_, index) => (
-            <div
-              key={index}
-              className={`w-2 h-2 rounded-full transition-all duration-500 ease-out ${
-                index <= wordIndex 
-                  ? 'bg-orange-500 scale-125 shadow-md' 
-                  : 'bg-gray-300 hover:bg-gray-400'
-              }`}
-            />
-          ))}
-        </div>
-        <p className="text-sm text-gray-600 transition-all duration-300">
-          Palabra {wordIndex + 1} de {totalWords}
-        </p>
-      </div>
-
       {/* Card Container */}
       <div className="relative h-96 perspective-1000 group">
         <div 

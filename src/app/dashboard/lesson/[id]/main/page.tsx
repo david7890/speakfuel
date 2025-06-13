@@ -24,7 +24,7 @@ export default function MainArticlePage() {
   const router = useRouter();
   const lessonId = parseInt(params.id as string);
   
-  const [isTransitioning, setIsTransitioning] = useState(false);
+  const [isTransitioning, setIsTransitioning] = useState(true);
   const [lessonData, setLessonData] = useState<LessonData | null>(null);
 
   // Mock data para la lección
@@ -57,6 +57,11 @@ export default function MainArticlePage() {
     };
     
     setLessonData(mockLessonData);
+    
+    // Add entrance transition
+    setTimeout(() => {
+      setIsTransitioning(false);
+    }, 100);
   }, [lessonId]);
 
   const handleNext = () => {

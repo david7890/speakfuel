@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useMemo, useEffect } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import LessonHeader from '../../components/LessonHeader';
 import MiniStory from '../../components/MiniStory';
@@ -25,12 +25,11 @@ export default function MiniStoryPage() {
   const router = useRouter();
   const lessonId = parseInt(params.id as string);
   
-  const [isTransitioning, setIsTransitioning] = useState(false);
-  const [lessonData, setLessonData] = useState<LessonData | null>(null);
+  const [isTransitioning, setIsTransitioning] = useState(true); // Start with transition active
 
-  // Mock data para la lección
-  useEffect(() => {
-    const mockLessonData: LessonData = {
+  // Mock data para la lección - Usar useMemo para evitar re-renders
+  const lessonData = useMemo<LessonData>(() => {
+    return {
       id: lessonId,
       title: getLessonTitle(lessonId),
       description: getLessonDescription(lessonId),
@@ -53,9 +52,16 @@ export default function MiniStoryPage() {
         setting: "A busy coffee shop during morning rush"
       }
     };
-    
-    setLessonData(mockLessonData);
   }, [lessonId]);
+
+  // Add entrance transition
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setIsTransitioning(false);
+    }, 100);
+    
+    return () => clearTimeout(timer);
+  }, []);
 
   const handleNext = () => {
     setIsTransitioning(true);
@@ -70,17 +76,6 @@ export default function MiniStoryPage() {
       router.push(`/dashboard/lesson/${lessonId}/vocabulary`);
     }, 300);
   };
-
-  if (!lessonData) {
-    return (
-      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-50 to-purple-50">
-        <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
-          <p className="text-gray-600">Cargando mini historia...</p>
-        </div>
-      </div>
-    );
-  }
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50 overflow-x-hidden">

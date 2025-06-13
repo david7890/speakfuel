@@ -30,7 +30,7 @@ export default function QuestionsPage() {
   const router = useRouter();
   const lessonId = parseInt(params.id as string);
   
-  const [isTransitioning, setIsTransitioning] = useState(false);
+  const [isTransitioning, setIsTransitioning] = useState(true);
   const [lessonData, setLessonData] = useState<LessonData | null>(null);
   const [showCompletionModal, setShowCompletionModal] = useState(false);
 
@@ -83,6 +83,11 @@ export default function QuestionsPage() {
     };
     
     setLessonData(mockLessonData);
+    
+    // Add entrance transition
+    setTimeout(() => {
+      setIsTransitioning(false);
+    }, 100);
   }, [lessonId]);
 
   const handleNext = () => {
