@@ -4,7 +4,7 @@ import { useState, useEffect, useCallback } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import LessonHeader from '../../components/LessonHeader';
 import VocabularyCard from '../components/VocabularyCard';
-import VocabularyNavigation from '../components/VocabularyNavigation';
+import LessonSectionNavigation from '../components/LessonSectionNavigation';
 
 interface VocabWord {
   word: string;
@@ -28,6 +28,7 @@ export default function VocabularyPage() {
   const [isTransitioning, setIsTransitioning] = useState(false);
   const [vocabularyData, setVocabularyData] = useState<VocabularyData | null>(null);
   const [showCompletionModal, setShowCompletionModal] = useState(false);
+  const [isNavigating, setIsNavigating] = useState(false);
 
   // Mock data para vocabulario
   useEffect(() => {
@@ -85,6 +86,11 @@ export default function VocabularyPage() {
   const totalWords = vocabularyData?.words.length || 0;
 
   const handleNextWord = useCallback(() => {
+    // Prevenir múltiples clics
+    if (isNavigating) {
+      return;
+    }
+    
     if (currentWordIndex < totalWords - 1) {
       setIsTransitioning(true);
       setTimeout(() => {
@@ -92,13 +98,20 @@ export default function VocabularyPage() {
         setIsTransitioning(false);
       }, 300);
     } else {
-      // Vocabulario completado - ir a la siguiente sección (ministory)
+              // Vocabulario completado - ir a la siguiente sección (ministory)
+        if (isNavigating) {
+          return;
+        }
+      
+      setIsNavigating(true);
       setIsTransitioning(true);
+      
+      // Navegación limpia con timeout para transición
       setTimeout(() => {
         router.push(`/dashboard/lesson/${lessonId}/ministory`);
       }, 300);
     }
-  }, [currentWordIndex, totalWords, router, lessonId]);
+  }, [currentWordIndex, totalWords, router, lessonId, isNavigating]);
 
   const handleCompleteLession = useCallback(() => {
     setShowCompletionModal(false);
@@ -245,12 +258,14 @@ export default function VocabularyPage() {
       </main>
 
       {/* Navigation */}
-      <VocabularyNavigation
+      <LessonSectionNavigation
+        currentSection="vocabulary"
+        isTransitioning={isTransitioning}
+        onNext={handleNextWord}
+        onPrevious={handlePreviousWord}
         currentWordIndex={currentWordIndex}
         totalWords={totalWords}
         words={vocabularyData.words}
-        onNext={handleNextWord}
-        onPrevious={handlePreviousWord}
         onWordSelect={handleWordSelect}
         isLastWord={currentWordIndex === totalWords - 1}
         onGoToPreviousSection={handleGoToPreviousSection}
@@ -258,62 +273,25 @@ export default function VocabularyPage() {
 
       {/* Completion Modal */}
       {showCompletionModal && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 animate-fadeIn">
-          <div className="bg-white rounded-2xl p-8 max-w-md w-full mx-4 text-center animate-slideUp">
-            {/* Celebration Animation */}
-            <div className="relative mb-6">
-              <div className="text-6xl mb-4 animate-bounce">🎉</div>
-              <div className="absolute inset-0 flex items-center justify-center">
-                <div className="text-4xl animate-pulse">✨</div>
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
+          <div className="bg-white rounded-2xl shadow-2xl p-8 mx-4 max-w-md w-full">
+            <div className="text-center">
+              <div className="w-16 h-16 bg-green-500 rounded-full flex items-center justify-center mx-auto mb-4">
+                <svg className="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                </svg>
               </div>
-            </div>
-            
-            <h3 className="text-2xl font-bold text-gray-900 mb-4">
-              ¡Lección Completada!
-            </h3>
-            
-            <p className="text-gray-600 mb-6 leading-relaxed">
-              🏆 Has dominado <span className="font-semibold text-orange-600">{totalWords} palabras nuevas</span> en esta lección.
-              <br />
-              <br />
-              ¡Tu vocabulario en inglés sigue creciendo!
-            </p>
-
-            {/* Stats */}
-            <div className="bg-gradient-to-r from-orange-50 to-red-50 rounded-xl p-4 mb-6">
-              <div className="grid grid-cols-2 gap-4">
-                <div className="text-center">
-                  <div className="text-2xl font-bold text-orange-600">{totalWords}</div>
-                  <div className="text-xs text-gray-600">Palabras aprendidas</div>
-                </div>
-                <div className="text-center">
-                  <div className="text-2xl font-bold text-green-600">+50</div>
-                  <div className="text-xs text-gray-600">Puntos obtenidos</div>
-                </div>
-              </div>
-            </div>
-
-            {/* Action Buttons */}
-            <div className="space-y-3">
+              <h2 className="text-2xl font-bold text-gray-900 mb-2">¡Vocabulario Completado!</h2>
+              <p className="text-gray-600 mb-6">
+                Has aprendido todas las palabras del vocabulario. ¡Excelente trabajo!
+              </p>
               <button
                 onClick={handleCompleteLession}
-                className="w-full bg-gradient-to-r from-orange-500 to-red-500 text-white py-3 px-6 rounded-xl font-medium hover:from-orange-600 hover:to-red-600 transition-all duration-300 transform hover:scale-105 shadow-lg hover:shadow-xl"
+                className="w-full bg-gradient-to-r from-green-600 to-emerald-600 text-white py-3 rounded-lg font-medium hover:from-green-700 hover:to-emerald-700 transition-all duration-300"
               >
-                Volver al Dashboard
-              </button>
-              
-              <button
-                onClick={() => setShowCompletionModal(false)}
-                className="w-full bg-gray-100 text-gray-700 py-3 px-6 rounded-xl font-medium hover:bg-gray-200 transition-all duration-300"
-              >
-                Revisar Vocabulario
+                Continuar
               </button>
             </div>
-
-            {/* Keyboard Hint */}
-            <p className="text-xs text-gray-400 mt-4">
-              Presiona <kbd className="px-2 py-1 bg-gray-100 rounded text-gray-600">Enter</kbd> para continuar
-            </p>
           </div>
         </div>
       )}

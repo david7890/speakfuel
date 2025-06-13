@@ -1,5 +1,6 @@
 'use client';
 
+import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { StarIcon, ClockIcon, LockClosedIcon } from '@heroicons/react/24/solid';
 
@@ -27,6 +28,7 @@ export default function LessonCard({
   progress = 0
 }: LessonCardProps) {
   const router = useRouter();
+  const [isPressed, setIsPressed] = useState(false);
 
 
 
@@ -126,14 +128,33 @@ export default function LessonCard({
     }
   };
 
+  const handleTouchStart = () => {
+    if (status !== 'locked') {
+      setIsPressed(true);
+    }
+  };
+
+  const handleTouchEnd = () => {
+    setIsPressed(false);
+  };
+
   return (
     <div 
       className={`group relative bg-white rounded-3xl shadow-md border transition-all duration-300 hover:shadow-xl transform hover:-translate-y-1 ${
         status === 'locked' 
           ? 'border-gray-200 opacity-60 cursor-not-allowed' 
           : 'border-gray-100 cursor-pointer'
+      } ${
+        isPressed && status !== 'locked' 
+          ? 'scale-95 shadow-sm' 
+          : ''
       }`}
       onClick={handleClick}
+      onMouseDown={handleTouchStart}
+      onMouseUp={handleTouchEnd}
+      onMouseLeave={handleTouchEnd}
+      onTouchStart={handleTouchStart}
+      onTouchEnd={handleTouchEnd}
     >
       {/* Subtle completion glow */}
       {status === 'completed' && (
@@ -181,11 +202,11 @@ export default function LessonCard({
         {/* Action button */}
         {status !== 'locked' && (
           <div className="mt-6">
-            <div className={`flex items-center justify-center w-full py-3 rounded-2xl text-sm font-medium transition-all duration-300 ${
+            <div className={`flex items-center justify-center w-full py-3 rounded-2xl text-sm font-medium transition-all duration-200 ${
               status === 'completed' 
                 ? 'bg-green-50 text-green-700 hover:bg-green-100' 
                 : 'bg-orange-50 text-orange-700 hover:bg-orange-100'
-            } group-hover:scale-105`}>
+            } group-hover:scale-105 active:scale-95`}>
               <span className="mr-2">
                 {status === 'completed' ? 'Revisar lección' : status === 'in-progress' ? 'Continuar' : 'Comenzar'}
               </span>
