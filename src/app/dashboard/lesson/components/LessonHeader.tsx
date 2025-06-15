@@ -24,7 +24,7 @@ export default function LessonHeader({
   const isVocabularyPage = propIsVocabularyPage || pathname.includes('/vocabulary');
 
   return (
-    <header className="fixed top-0 w-full bg-white/95 backdrop-blur-sm z-50 border-b border-gray-100 shadow-sm">
+    <header className="hidden lg:block fixed top-0 w-full bg-white/95 backdrop-blur-sm z-50 border-b border-gray-100 shadow-sm">
       <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center h-16">
           {/* Back Button */}

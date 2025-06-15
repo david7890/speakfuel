@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import Link from 'next/link';
+import { FireIcon } from '@heroicons/react/24/outline';
 
 export default function DashboardNav() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -27,7 +28,7 @@ export default function DashboardNav() {
           <div className="hidden md:flex items-center space-x-4">
             {/* Streak Counter */}
             <div className="flex items-center space-x-2 bg-orange-50 px-3 py-1 rounded-full">
-              <span className="text-orange-500">🔥</span>
+              <FireIcon className="h-4 w-4 text-orange-500" />
               <span className="text-sm font-medium text-orange-700">3 días</span>
             </div>
 
@@ -61,11 +62,18 @@ export default function DashboardNav() {
             </div>
           </div>
 
-          {/* Mobile menu button */}
-          <div className="md:hidden">
+          {/* Mobile streak and menu */}
+          <div className="md:hidden flex items-center space-x-3">
+            {/* Mobile Streak Counter */}
+            <div className="flex items-center space-x-1 bg-orange-50 px-2 py-1 rounded-full">
+              <FireIcon className="h-4 w-4 text-orange-500" />
+              <span className="text-xs font-medium text-orange-700">3 días</span>
+            </div>
+
+            {/* Mobile menu button */}
             <button
               onClick={() => setIsMenuOpen(!isMenuOpen)}
-              className="text-gray-700 hover:text-blue-600 focus:outline-none"
+              className="text-gray-700 hover:text-blue-600 focus:outline-none p-1"
             >
               <svg className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 {isMenuOpen ? (
@@ -83,7 +91,7 @@ export default function DashboardNav() {
            <div className="md:hidden py-4 border-t border-gray-100">
              <div className="flex flex-col space-y-4">
                <div className="flex items-center space-x-2">
-                 <span className="text-orange-500">🔥</span>
+                 <FireIcon className="h-4 w-4 text-orange-500" />
                  <span className="text-sm font-medium text-orange-700">Racha: 3 días</span>
                </div>
                <Link

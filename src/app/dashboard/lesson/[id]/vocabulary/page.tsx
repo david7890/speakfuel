@@ -250,7 +250,7 @@ export default function VocabularyPage() {
       />
 
       {/* Main Content */}
-      <main className="pt-20 pb-24 overflow-x-hidden">
+      <main className="pt-4 lg:pt-24 pb-24 overflow-x-hidden">
         <div className={`transition-all duration-300 ${isTransitioning ? 'opacity-0 transform translate-x-4' : 'opacity-100 transform translate-x-0'}`}>
           <VocabularyCard 
             word={currentWord}

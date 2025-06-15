@@ -122,16 +122,16 @@ export default function QuestionsPage() {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50 overflow-x-hidden">
-      {/* Header */}
+      {/* Lesson Header - Only visible on desktop */}
       <LessonHeader 
         title={lessonData.title}
-        currentSection={3}
+        currentSection={2}
         totalSections={4}
-        sectionName="Preguntas de Comprensión"
+        sectionName="Preguntas"
       />
-
+      
       {/* Main Content */}
-      <main className="pt-20 pb-24 overflow-x-hidden">
+      <main className="pt-4 lg:pt-24 pb-24 overflow-x-hidden">
         <div className={`transition-all duration-300 ${isTransitioning ? 'opacity-0 transform translate-x-4' : 'opacity-100 transform translate-x-0'}`}>
           <MiniStoryQuestions 
             data={lessonData.miniStoryQuestions} 

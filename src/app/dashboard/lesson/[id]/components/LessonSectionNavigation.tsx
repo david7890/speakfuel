@@ -216,66 +216,58 @@ export default function LessonSectionNavigation({
                 </svg>
               </button>
             </div>
-
-            {/* Progress Bar - Mobile */}
-            <div className="mt-3 sm:hidden">
-              <div className="w-full bg-gray-200 rounded-full h-2">
-                <div 
-                  className="bg-orange-500 h-2 rounded-full transition-all duration-500"
-                  style={{ width: `${((currentWordIndex + 1) / totalWords) * 100}%` }}
-                />
-              </div>
-            </div>
           </>
         ) : (
           // Navegación de secciones limpia (solo Previous y Next)
           <>
             {/* Mobile View */}
             <div className="sm:hidden">
-              <div className="flex items-center justify-between mb-3">
+              <div className="grid grid-cols-3 items-center gap-1 min-h-[3rem]">
                 {/* Previous Button */}
-                <button
-                  onClick={handlePrevious}
-                  disabled={isTransitioning}
-                  className={`flex items-center px-3 py-2 rounded-lg font-medium transition-all duration-300 ${
-                    isTransitioning
-                      ? 'opacity-50 cursor-not-allowed'
-                      : 'text-gray-700 hover:text-gray-900 hover:bg-gray-100 active:scale-95'
-                  }`}
-                >
-                  <svg className="w-5 h-5 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
-                  </svg>
-                  <span className="text-sm">Anterior</span>
-                </button>
-
-                {/* Next Button */}
-                <button
-                  onClick={handleNext}
-                  disabled={isTransitioning}
-                  className={`flex items-center px-3 py-2 rounded-lg font-medium transition-all duration-300 ${
-                    isTransitioning
-                      ? 'opacity-50 cursor-not-allowed'
-                      : currentIndex === sections.length - 1
-                      ? 'bg-green-600 text-white hover:bg-green-700 active:scale-95 shadow-lg'
-                      : 'bg-blue-600 text-white hover:bg-blue-700 active:scale-95 shadow-lg'
-                  }`}
-                >
-                  <span className="text-sm mr-1">{currentIndex === sections.length - 1 ? 'Finalizar' : 'Siguiente'}</span>
-                  {currentIndex !== sections.length - 1 && (
-                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                <div className="flex justify-start min-w-0">
+                  <button
+                    onClick={handlePrevious}
+                    disabled={isTransitioning}
+                    className={`flex items-center px-2 py-2 rounded-lg font-medium transition-all duration-300 text-xs ${
+                      isTransitioning
+                        ? 'opacity-50 cursor-not-allowed'
+                        : 'text-gray-700 hover:text-gray-900 hover:bg-gray-100 active:scale-95'
+                    }`}
+                  >
+                    <svg className="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
                     </svg>
-                  )}
-                </button>
-              </div>
+                    <span className="whitespace-nowrap">Anterior</span>
+                  </button>
+                </div>
 
-              {/* Current Section Icon */}
-              {getSectionIcon() && (
-                <div className="text-center">
+                {/* Center Section Icon */}
+                <div className="flex justify-center items-center">
                   {getSectionIcon()}
                 </div>
-              )}
+
+                {/* Next Button */}
+                <div className="flex justify-end min-w-0">
+                  <button
+                    onClick={handleNext}
+                    disabled={isTransitioning}
+                    className={`flex items-center px-2 py-2 rounded-lg font-medium transition-all duration-300 text-xs ${
+                      isTransitioning
+                        ? 'opacity-50 cursor-not-allowed'
+                        : currentIndex === sections.length - 1
+                        ? 'bg-green-600 text-white hover:bg-green-700 active:scale-95 shadow-lg'
+                        : 'bg-blue-600 text-white hover:bg-blue-700 active:scale-95 shadow-lg'
+                    }`}
+                  >
+                    <span className="whitespace-nowrap mr-1">{currentIndex === sections.length - 1 ? 'Finalizar' : 'Siguiente'}</span>
+                    {currentIndex !== sections.length - 1 && (
+                      <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                      </svg>
+                    )}
+                  </button>
+                </div>
+              </div>
             </div>
 
             {/* Desktop View */}
