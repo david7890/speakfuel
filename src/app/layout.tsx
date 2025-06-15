@@ -52,6 +52,12 @@ export const metadata: Metadata = {
     index: true,
     follow: true,
   },
+  themeColor: '#ffffff',
+  appleWebApp: {
+    capable: true,
+    statusBarStyle: 'default',
+    title: 'SpeakFuel',
+  },
 };
 
 export default function RootLayout({
@@ -61,6 +67,13 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="es" className="scroll-smooth">
+      <head>
+        {/* iOS Safari status bar styling */}
+        <meta name="theme-color" content="#ffffff" />
+        <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+        <meta name="apple-mobile-web-app-capable" content="yes" />
+        <meta name="format-detection" content="telephone=no" />
+      </head>
       <body className={`${inter.variable} ${nunito.variable} font-nunito antialiased`}>
         {children}
       </body>

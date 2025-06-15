@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect, useRef } from 'react';
+import { PlayIcon, PauseIcon, BackwardIcon } from '@heroicons/react/24/solid';
 
 interface Question {
   id: number;
@@ -244,21 +245,21 @@ export default function MiniStoryQuestions({ data }: MiniStoryQuestionsProps) {
             </div>
             
             {/* Contenido derecho - 50% del ancho */}
-            <div className="w-1/2 flex flex-col justify-between">
-              <div>
-                <div className="flex items-center space-x-2 mb-2">
+            <div className="w-1/2 flex flex-col justify-center">
+              <div className="text-center mb-4">
+                <div className="flex items-center justify-center space-x-2 mb-2">
                   <div className="w-2 h-2 bg-purple-500 rounded-full animate-pulse"></div>
                   <span className="text-xs font-semibold text-gray-600 uppercase tracking-wide">Questions</span>
                 </div>
-                <h3 className="text-sm font-bold text-gray-900 leading-tight line-clamp-3">
+                <h3 className="text-sm font-bold text-gray-900 leading-tight line-clamp-2">
                   Pregunta {currentQuestionIndex + 1} de {totalQuestions}
                 </h3>
               </div>
               
-              {/* Reproductor compacto en la parte inferior */}
-              <div className="mt-3">
+              {/* Reproductor compacto centrado */}
+              <div>
                 {/* Botones de control */}
-                <div className="flex items-center justify-center space-x-2 mb-2">
+                <div className="flex items-center justify-center space-x-3 mb-2">
                   <button
                     onClick={() => {
                       setCurrentTime(0);
@@ -266,29 +267,23 @@ export default function MiniStoryQuestions({ data }: MiniStoryQuestionsProps) {
                         audioRef.current.currentTime = 0;
                       }
                     }}
-                    className="w-7 h-7 rounded-full flex items-center justify-center transition-all duration-300 bg-white text-gray-600 hover:bg-gray-50 border border-gray-200 shadow-sm"
+                    className="w-10 h-10 rounded-full flex items-center justify-center transition-all duration-300 bg-white text-gray-600 hover:bg-gray-50 border border-gray-200 shadow-sm hover:scale-105"
                   >
-                    <svg className="w-3 h-3" fill="currentColor" viewBox="0 0 24 24">
-                      <path d="M6 6h2v12H6zm3.5 6l8.5 6V6z"/>
-                    </svg>
+                    <BackwardIcon className="w-5 h-5" />
                   </button>
 
                   <button
                     onClick={togglePlayPause}
-                    className={`w-8 h-8 rounded-full flex items-center justify-center transition-all duration-300 shadow-sm ${
+                    className={`w-12 h-12 rounded-full flex items-center justify-center transition-all duration-300 shadow-lg hover:scale-105 ${
                       isPlaying 
                         ? 'bg-purple-600 text-white hover:bg-purple-700' 
                         : 'bg-white text-purple-600 hover:bg-gray-50 border border-purple-200'
                     }`}
                   >
                     {isPlaying ? (
-                      <svg className="w-3 h-3" fill="currentColor" viewBox="0 0 24 24">
-                        <path d="M6 4h4v16H6V4zm8 0h4v16h-4V4z"/>
-                      </svg>
+                      <PauseIcon className="w-6 h-6" />
                     ) : (
-                      <svg className="w-3 h-3 ml-0.5" fill="currentColor" viewBox="0 0 24 24">
-                        <path d="M8 5v14l11-7z"/>
-                      </svg>
+                      <PlayIcon className="w-6 h-6" />
                     )}
                   </button>
                 </div>
@@ -363,7 +358,7 @@ export default function MiniStoryQuestions({ data }: MiniStoryQuestionsProps) {
                 {/* Layout Desktop - Vertical */}
                 <div className="hidden lg:block">
                   {/* Botones de control - Centrados arriba */}
-                  <div className="flex justify-center items-center space-x-2 mb-4">
+                  <div className="flex justify-center items-center space-x-4 mb-4">
                     {/* Botón anterior */}
                     <button
                       onClick={() => {
@@ -372,30 +367,24 @@ export default function MiniStoryQuestions({ data }: MiniStoryQuestionsProps) {
                           audioRef.current.currentTime = 0;
                         }
                       }}
-                      className="w-12 h-12 rounded-full flex items-center justify-center transition-all duration-300 transform hover:scale-110 bg-white text-gray-600 hover:bg-gray-50 border-2 border-gray-200 shadow-lg"
+                      className="w-16 h-16 rounded-full flex items-center justify-center transition-all duration-300 transform hover:scale-110 bg-white text-gray-600 hover:bg-gray-50 border-2 border-gray-200 shadow-lg"
                     >
-                      <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
-                        <path d="M6 6h2v12H6zm3.5 6l8.5 6V6z"/>
-                      </svg>
+                      <BackwardIcon className="w-8 h-8" />
                     </button>
 
                     {/* Botón de reproducir/pausar */}
                     <button
                       onClick={togglePlayPause}
-                      className={`w-12 h-12 rounded-full flex items-center justify-center transition-all duration-300 transform hover:scale-110 shadow-lg ${
+                      className={`w-20 h-20 rounded-full flex items-center justify-center transition-all duration-300 transform hover:scale-110 shadow-lg ${
                         isPlaying 
                           ? 'bg-purple-600 text-white hover:bg-purple-700' 
                           : 'bg-white text-purple-600 hover:bg-gray-50 border-2 border-purple-200'
                       }`}
                     >
                       {isPlaying ? (
-                        <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
-                          <path d="M6 4h4v16H6V4zm8 0h4v16h-4V4z"/>
-                        </svg>
+                        <PauseIcon className="w-10 h-10" />
                       ) : (
-                        <svg className="w-5 h-5 ml-0.5" fill="currentColor" viewBox="0 0 24 24">
-                          <path d="M8 5v14l11-7z"/>
-                        </svg>
+                        <PlayIcon className="w-10 h-10" />
                       )}
                     </button>
                   </div>
@@ -433,7 +422,7 @@ export default function MiniStoryQuestions({ data }: MiniStoryQuestionsProps) {
                     </div>
 
                     {/* Botones de control - Lado derecho */}
-                    <div className="flex items-center space-x-1">
+                    <div className="flex items-center space-x-2">
                       {/* Botón anterior */}
                       <button
                         onClick={() => {
@@ -442,30 +431,24 @@ export default function MiniStoryQuestions({ data }: MiniStoryQuestionsProps) {
                             audioRef.current.currentTime = 0;
                           }
                         }}
-                        className="w-10 h-10 rounded-full flex items-center justify-center transition-all duration-300 transform hover:scale-105 bg-white text-gray-600 hover:bg-gray-50 border-2 border-gray-200 shadow-lg"
+                        className="w-12 h-12 rounded-full flex items-center justify-center transition-all duration-300 transform hover:scale-105 bg-white text-gray-600 hover:bg-gray-50 border-2 border-gray-200 shadow-lg"
                       >
-                        <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
-                          <path d="M6 6h2v12H6zm3.5 6l8.5 6V6z"/>
-                        </svg>
+                        <BackwardIcon className="w-6 h-6" />
                       </button>
 
                       {/* Botón de play/pause */}
                       <button
                         onClick={togglePlayPause}
-                        className={`w-10 h-10 rounded-full flex items-center justify-center transition-all duration-300 transform hover:scale-105 shadow-lg ${
+                        className={`w-14 h-14 rounded-full flex items-center justify-center transition-all duration-300 transform hover:scale-105 shadow-lg ${
                           isPlaying 
                             ? 'bg-purple-600 text-white hover:bg-purple-700' 
                             : 'bg-white text-purple-600 hover:bg-gray-50 border-2 border-purple-200'
                         }`}
                       >
                         {isPlaying ? (
-                          <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
-                            <path d="M6 4h4v16H6V4zm8 0h4v16h-4V4z"/>
-                          </svg>
+                          <PauseIcon className="w-7 h-7" />
                         ) : (
-                          <svg className="w-4 h-4 ml-0.5" fill="currentColor" viewBox="0 0 24 24">
-                            <path d="M8 5v14l11-7z"/>
-                          </svg>
+                          <PlayIcon className="w-7 h-7" />
                         )}
                       </button>
                     </div>
