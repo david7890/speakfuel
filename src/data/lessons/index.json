@@ -1,0 +1,72 @@
+[
+  {
+    "id": 1,
+    "title": "Saludos y Presentaciones",
+    "description": "Aprende a saludar y presentarte en inglés",
+    "difficulty": "beginner",
+    "estimatedTime": 25
+  },
+  {
+    "id": 2,
+    "title": "En el Café",
+    "description": "Domina las conversaciones en cafeterías",
+    "difficulty": "beginner",
+    "estimatedTime": 30
+  },
+  {
+    "id": 3,
+    "title": "Pidiendo Direcciones",
+    "description": "Aprende a pedir y dar direcciones",
+    "difficulty": "beginner",
+    "estimatedTime": 28
+  },
+  {
+    "id": 4,
+    "title": "En el Supermercado",
+    "description": "Vocabulario y frases para ir de compras",
+    "difficulty": "intermediate",
+    "estimatedTime": 32
+  },
+  {
+    "id": 5,
+    "title": "Haciendo Planes",
+    "description": "Cómo hacer planes y citas",
+    "difficulty": "intermediate",
+    "estimatedTime": 30
+  },
+  {
+    "id": 6,
+    "title": "En el Restaurante",
+    "description": "Conversaciones y pedidos en restaurantes",
+    "difficulty": "intermediate",
+    "estimatedTime": 35
+  },
+  {
+    "id": 7,
+    "title": "Hablando del Clima",
+    "description": "Habla sobre el clima y las estaciones",
+    "difficulty": "beginner",
+    "estimatedTime": 25
+  },
+  {
+    "id": 8,
+    "title": "En el Trabajo",
+    "description": "Vocabulario profesional y de oficina",
+    "difficulty": "advanced",
+    "estimatedTime": 40
+  },
+  {
+    "id": 9,
+    "title": "Vacaciones y Viajes",
+    "description": "Planifica y habla sobre viajes",
+    "difficulty": "intermediate",
+    "estimatedTime": 35
+  },
+  {
+    "id": 10,
+    "title": "Entrevista de Trabajo",
+    "description": "Prepárate para entrevistas de trabajo",
+    "difficulty": "advanced",
+    "estimatedTime": 45
+  }
+] 

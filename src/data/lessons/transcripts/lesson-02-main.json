@@ -1,0 +1,46 @@
+{
+  "lessonId": 2,
+  "section": "main",
+  "segments": [
+    {
+      "text": "Welcome to today's lesson about coffee shop culture.",
+      "startTime": 0,
+      "endTime": 3.5
+    },
+    {
+      "text": "Coffee shops have become an integral part of modern social life.",
+      "startTime": 3.5,
+      "endTime": 7.2
+    },
+    {
+      "text": "They serve as meeting places, workspaces, and quiet retreats for people from all walks of life.",
+      "startTime": 7.2,
+      "endTime": 12.8
+    },
+    {
+      "text": "In many cities around the world, the local coffee shop is where community connections are made and maintained.",
+      "startTime": 12.8,
+      "endTime": 19.5
+    },
+    {
+      "text": "The atmosphere of a coffee shop plays a crucial role in creating this sense of community.",
+      "startTime": 19.5,
+      "endTime": 25.2
+    },
+    {
+      "text": "The aroma of freshly brewed coffee, the gentle hum of conversation, and the comfortable seating all contribute to a welcoming environment.",
+      "startTime": 25.2,
+      "endTime": 33.8
+    },
+    {
+      "text": "Whether you're meeting a friend, working on a project, or simply enjoying a moment of solitude, coffee shops offer a unique space.",
+      "startTime": 33.8,
+      "endTime": 42.5
+    },
+    {
+      "text": "They combine the comfort of home with the energy of public life.",
+      "startTime": 42.5,
+      "endTime": 47.0
+    }
+  ]
+} 

@@ -5,16 +5,9 @@ import { useParams, useRouter } from 'next/navigation';
 import LessonHeader from '../../components/LessonHeader';
 import VocabularyCard from '../components/VocabularyCard';
 import LessonSectionNavigation from '../components/LessonSectionNavigation';
+import { getVocabulary, getLessonInfo, type VocabWord, type VocabularyData } from '@/data/lessons';
 
-interface VocabWord {
-  word: string;
-  pronunciation: string;
-  definition: string;
-  example: string;
-  translation: string;
-}
-
-interface VocabularyData {
+interface VocabularyDataWithTitle {
   lessonTitle: string;
   words: VocabWord[];
 }
@@ -26,61 +19,33 @@ export default function VocabularyPage() {
   
   const [currentWordIndex, setCurrentWordIndex] = useState(0);
   const [isTransitioning, setIsTransitioning] = useState(true);
-  const [vocabularyData, setVocabularyData] = useState<VocabularyData | null>(null);
+  const [vocabularyData, setVocabularyData] = useState<VocabularyDataWithTitle | null>(null);
   const [showCompletionModal, setShowCompletionModal] = useState(false);
   const [isNavigating, setIsNavigating] = useState(false);
 
-  // Mock data para vocabulario
+  // Cargar datos de vocabulario
   useEffect(() => {
-    const mockVocabularyData: VocabularyData = {
-      lessonTitle: getLessonTitle(lessonId),
-      words: [
-        {
-          word: "Chiming",
-          pronunciation: "/ˈtʃaɪmɪŋ/",
-          definition: "Making a musical ringing sound, typically that of a bell or clock",
-          example: "The bell was chiming above her head as she entered the coffee shop.",
-          translation: "Sonando (como una campana)"
-        },
-        {
-          word: "Rush",
-          pronunciation: "/rʌʃ/",
-          definition: "A period of intense activity or high demand; a situation requiring urgency",
-          example: "The morning rush is in full swing at the coffee shop.",
-          translation: "Hora pico, prisa"
-        },
-        {
-          word: "Barista",
-          pronunciation: "/bəˈrɪstə/",
-          definition: "A person who prepares and serves coffee drinks, especially espresso-based beverages",
-          example: "Emma, the barista, has memorized Sarah's order perfectly.",
-          translation: "Barista (persona que prepara café)"
-        },
-        {
-          word: "Cappuccino",
-          pronunciation: "/ˌkæpəˈtʃiːnoʊ/",
-          definition: "An Italian coffee drink made with espresso and steamed milk foam",
-          example: "She ordered a large cappuccino with an extra shot of espresso.",
-          translation: "Capuchino"
-        },
-        {
-          word: "Espresso machine",
-          pronunciation: "/ɪˈspreso məˈʃiːn/",
-          definition: "A machine that brews coffee by forcing pressurized hot water through finely ground coffee",
-          example: "Emma works the espresso machine with expert skill every morning.",
-          translation: "Máquina de espresso"
-        },
-        {
-          word: "Settles in",
-          pronunciation: "/ˈsetəlz ɪn/",
-          definition: "To make oneself comfortable in a place; to get established in a routine or location",
-          example: "She settles in for another productive morning at her favorite table.",
-          translation: "Se acomoda, se instala"
+    const loadVocabularyData = async () => {
+      try {
+        const lessonInfo = getLessonInfo(lessonId);
+        const vocabularySection = await getVocabulary(lessonId);
+
+        if (lessonInfo && vocabularySection) {
+          const data: VocabularyDataWithTitle = {
+            lessonTitle: lessonInfo.title,
+            words: vocabularySection.words
+          };
+          
+          setVocabularyData(data);
+        } else {
+          console.error(`No vocabulary data found for lesson ${lessonId}`);
         }
-      ]
+      } catch (error) {
+        console.error('Error loading vocabulary data:', error);
+      }
     };
-    
-    setVocabularyData(mockVocabularyData);
+
+    loadVocabularyData();
     
     // Activate entrance transition after data is set
     setTimeout(() => {

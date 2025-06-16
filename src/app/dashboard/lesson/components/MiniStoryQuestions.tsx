@@ -2,6 +2,8 @@
 
 import { useState, useEffect, useRef } from 'react';
 import { PlayIcon, PauseIcon, BackwardIcon } from '@heroicons/react/24/solid';
+import { useParams } from 'next/navigation';
+import { getAudioUrl } from '@/lib/firebase';
 
 interface Question {
   id: number;
@@ -26,6 +28,10 @@ interface MiniStoryQuestionsProps {
 }
 
 export default function MiniStoryQuestions({ data }: MiniStoryQuestionsProps) {
+  console.log('MiniStoryQuestions data:', data); // Debug log
+  const params = useParams();
+  const lessonId = params?.id ? `lesson${params.id}` : 'lesson1';
+  
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
   const [selectedAnswers, setSelectedAnswers] = useState<{ [key: number]: number }>({});
   const [showExplanation, setShowExplanation] = useState<{ [key: number]: boolean }>({});
@@ -33,83 +39,231 @@ export default function MiniStoryQuestions({ data }: MiniStoryQuestionsProps) {
   const [isPlaying, setIsPlaying] = useState(false);
   const [currentTime, setCurrentTime] = useState(0);
   const [duration, setDuration] = useState(data.duration || 0);
+  const [audioUrl, setAudioUrl] = useState<string>('');
+  const [audioLoading, setAudioLoading] = useState(true);
+  const [audioError, setAudioError] = useState<string | null>(null);
   const audioRef = useRef<HTMLAudioElement>(null);
 
   const currentQuestion = data.questions[currentQuestionIndex];
   const totalQuestions = data.questions.length;
-  const mockDuration = data.duration || 20;
+
+  // Safety check - if no questions available, show a message
+  if (!data.questions || data.questions.length === 0) {
+    return (
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 font-nunito">
+        <div className="bg-white rounded-3xl shadow-xl border border-gray-100 overflow-hidden p-8 text-center">
+          <h2 className="text-2xl font-bold text-gray-900 mb-4">Questions Coming Soon</h2>
+          <p className="text-gray-600">The questions for this lesson are being prepared.</p>
+        </div>
+      </div>
+    );
+  }
+
+  // Safety check - if currentQuestion is undefined
+  if (!currentQuestion) {
+    return (
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 font-nunito">
+        <div className="bg-white rounded-3xl shadow-xl border border-gray-100 overflow-hidden p-8 text-center">
+          <h2 className="text-2xl font-bold text-gray-900 mb-4">Loading Questions...</h2>
+          <p className="text-gray-600">Please wait while we load the questions.</p>
+        </div>
+      </div>
+    );
+  }
+
   const featuredImage = data.featuredImage || "/api/placeholder/800/400";
 
+  // Load audio URL from Firebase Storage
   useEffect(() => {
-    if (audioRef.current) {
-      audioRef.current.addEventListener('timeupdate', handleTimeUpdate);
-      audioRef.current.addEventListener('loadedmetadata', handleLoadedMetadata);
-      
-      return () => {
-        if (audioRef.current) {
-          audioRef.current.removeEventListener('timeupdate', handleTimeUpdate);
-          audioRef.current.removeEventListener('loadedmetadata', handleLoadedMetadata);
-        }
-      };
-    }
-  }, []);
+    const loadAudioUrl = async () => {
+      setAudioLoading(true);
+      setAudioError(null);
 
-  // Simulación de audio si no hay archivo real
-  useEffect(() => {
-    let interval: NodeJS.Timeout;
-    
-    if (isPlaying) {
-      interval = setInterval(() => {
-        setCurrentTime(prev => {
-          if (prev >= mockDuration) {
-            setIsPlaying(false);
-            return 0;
-          }
-          return prev + 0.1;
-        });
-      }, 100);
-    }
-    
-    return () => {
-      if (interval) {
-        clearInterval(interval);
+      try {
+        if (data.audioUrl && data.audioUrl.startsWith('gs://')) {
+          // Convert Firebase Storage URL to actual download URL
+          const path = data.audioUrl.replace('gs://speakfuel-d832c.firebasestorage.app/', '');
+          const url = await getAudioUrl(path);
+          setAudioUrl(url);
+        } else if (data.audioUrl) {
+          // Use provided URL directly
+          setAudioUrl(data.audioUrl);
+        } else {
+          // Fallback to Firebase Storage path - single questions.mp3 file
+          const url = await getAudioUrl(`lessons/${lessonId}/questions.mp3`);
+          setAudioUrl(url);
+        }
+      } catch (error) {
+        console.error('Error loading Questions audio URL (questions.mp3):', error);
+        setAudioError('Audio temporarily unavailable');
+        setAudioUrl('');
+      } finally {
+        setAudioLoading(false);
       }
     };
-  }, [isPlaying, mockDuration]);
 
-  const handleTimeUpdate = () => {
-    if (audioRef.current) {
-      const time = audioRef.current.currentTime;
-      setCurrentTime(time);
+    loadAudioUrl();
+  }, [data.audioUrl, data.duration, lessonId]); // Removed currentQuestionIndex dependency
+
+  useEffect(() => {
+    if (audioRef.current && audioUrl) {
+      const audio = audioRef.current;
+      
+      const handleTimeUpdateEvent = () => {
+        if (audioRef.current) {
+          const time = audioRef.current.currentTime;
+          const audioDuration = audioRef.current.duration;
+          
+          setCurrentTime(time);
+          
+          // Actualizar duración si está disponible y es diferente
+          if (audioDuration && audioDuration !== duration) {
+            console.log('Updating Questions duration from audio element:', audioDuration);
+            setDuration(audioDuration);
+          }
+        }
+      };
+
+      const handleLoadedMetadataEvent = () => {
+        if (audioRef.current) {
+          setDuration(audioRef.current.duration);
+        }
+      };
+
+      const handlePlayEvent = () => {
+        console.log('Questions audio (questions.mp3) play event triggered');
+        setIsPlaying(true);
+      };
+
+      const handlePauseEvent = () => {
+        console.log('Questions audio (questions.mp3) pause event triggered');
+        setIsPlaying(false);
+      };
+
+      const handleEndedEvent = () => {
+        console.log('Questions audio (questions.mp3) ended event triggered');
+        setIsPlaying(false);
+        setCurrentTime(0);
+      };
+
+      const handleErrorEvent = (e: Event) => {
+        console.error('Questions audio (questions.mp3) error event:', e);
+        setAudioError('Audio playback error');
+        setIsPlaying(false);
+      };
+      
+      audio.addEventListener('timeupdate', handleTimeUpdateEvent);
+      audio.addEventListener('loadedmetadata', handleLoadedMetadataEvent);
+      audio.addEventListener('play', handlePlayEvent);
+      audio.addEventListener('pause', handlePauseEvent);
+      audio.addEventListener('ended', handleEndedEvent);
+      audio.addEventListener('error', handleErrorEvent);
+      
+      return () => {
+        audio.removeEventListener('timeupdate', handleTimeUpdateEvent);
+        audio.removeEventListener('loadedmetadata', handleLoadedMetadataEvent);
+        audio.removeEventListener('play', handlePlayEvent);
+        audio.removeEventListener('pause', handlePauseEvent);
+        audio.removeEventListener('ended', handleEndedEvent);
+        audio.removeEventListener('error', handleErrorEvent);
+      };
     }
-  };
+  }, [audioUrl, duration]);
 
-  const handleLoadedMetadata = () => {
-    if (audioRef.current) {
-      setDuration(audioRef.current.duration);
+  const togglePlayPause = async () => {
+    console.log('Questions (questions.mp3) togglePlayPause called, current state:', { 
+      isPlaying, 
+      audioLoading, 
+      audioUrl: !!audioUrl,
+      audioRefCurrent: !!audioRef.current 
+    });
+
+    if (audioLoading) {
+      console.log('Questions audio (questions.mp3) is still loading...');
+      return;
     }
-  };
 
-  const togglePlayPause = () => {
-    if (audioRef.current) {
+    if (!audioUrl) {
+      console.log('No Questions audio (questions.mp3) available');
+      return;
+    }
+
+    if (!audioRef.current) {
+      console.log('Questions audio (questions.mp3) ref not available');
+      return;
+    }
+
+    try {
+      const audio = audioRef.current;
+      
       if (isPlaying) {
-        audioRef.current.pause();
+        console.log('Attempting to pause Questions audio (questions.mp3)');
+        audio.pause();
       } else {
-        audioRef.current.play();
+        console.log('Attempting to play Questions audio (questions.mp3)');
+        await audio.play();
       }
-      setIsPlaying(!isPlaying);
+    } catch (error) {
+      console.error('Error in Questions (questions.mp3) togglePlayPause:', error);
+      setIsPlaying(false);
+      setAudioError('Failed to play audio');
     }
   };
 
   const handleProgressClick = (e: React.MouseEvent<HTMLDivElement>) => {
-    if (audioRef.current) {
+    console.log('Questions (questions.mp3) progress bar clicked');
+    
+    if (!audioRef.current) {
+      console.log('Questions audio (questions.mp3) ref not available for progress click');
+      return;
+    }
+
+    if (!audioUrl) {
+      console.log('No Questions audio (questions.mp3) URL available for progress click');
+      return;
+    }
+
+    try {
+      const audio = audioRef.current;
       const rect = e.currentTarget.getBoundingClientRect();
       const clickX = e.clientX - rect.left;
       const width = rect.width;
-      const newTime = (clickX / width) * duration;
-      audioRef.current.currentTime = newTime;
-      setCurrentTime(newTime);
+      const clickPercentage = clickX / width;
+      const audioDuration = audio.duration || duration;
+      const newTime = clickPercentage * audioDuration;
+      
+      console.log('Questions (questions.mp3) progress click details:', {
+        clickX,
+        width,
+        clickPercentage,
+        audioDuration,
+        newTime,
+        currentTime: audio.currentTime
+      });
+      
+      if (isFinite(newTime) && newTime >= 0 && newTime <= audioDuration) {
+        audio.currentTime = newTime;
+        setCurrentTime(newTime);
+        console.log('Successfully set Questions audio (questions.mp3) time to:', newTime);
+      } else {
+        console.warn('Invalid Questions (questions.mp3) time calculated:', newTime);
+      }
+    } catch (error) {
+      console.error('Error in Questions (questions.mp3) handleProgressClick:', error);
     }
+  };
+
+  const handleRewind = () => {
+    setCurrentTime(0);
+    if (audioRef.current) {
+      audioRef.current.currentTime = 0;
+    }
+  };
+
+  const formatTime = (time: number) => {
+    const minutes = Math.floor(time / 60);
+    const seconds = Math.floor(time % 60);
+    return `${minutes}:${seconds.toString().padStart(2, '0')}`;
   };
 
   const handleAnswerSelect = (questionId: number, answerIndex: number) => {
@@ -221,10 +375,10 @@ export default function MiniStoryQuestions({ data }: MiniStoryQuestionsProps) {
           <div className="flex p-4 gap-4">
             {/* Imagen cuadrada - 50% del ancho */}
             <div className="w-1/2 aspect-square bg-gradient-to-br from-purple-100 to-pink-100 overflow-hidden rounded-xl flex-shrink-0">
-              <img 
-                src={featuredImage} 
-                alt={data.title || "Comprensión de lectura"}
-                className="w-full h-full object-cover"
+                              <img 
+                  src={featuredImage} 
+                  alt={data.title || "Questions"}
+                  className="w-full h-full object-cover"
                 onError={(e) => {
                   e.currentTarget.src = `data:image/svg+xml,${encodeURIComponent(`
                     <svg width="400" height="400" xmlns="http://www.w3.org/2000/svg">
@@ -252,7 +406,7 @@ export default function MiniStoryQuestions({ data }: MiniStoryQuestionsProps) {
                   <span className="text-xs font-semibold text-gray-600 uppercase tracking-wide">Questions</span>
                 </div>
                 <h3 className="text-sm font-bold text-gray-900 leading-tight line-clamp-2">
-                  Pregunta {currentQuestionIndex + 1} de {totalQuestions}
+                  {data.title || "QUESTIONS"}
                 </h3>
               </div>
               
@@ -261,12 +415,7 @@ export default function MiniStoryQuestions({ data }: MiniStoryQuestionsProps) {
                 {/* Botones de control */}
                 <div className="flex items-center justify-center space-x-3 mb-2">
                   <button
-                    onClick={() => {
-                      setCurrentTime(0);
-                      if (audioRef.current) {
-                        audioRef.current.currentTime = 0;
-                      }
-                    }}
+                    onClick={handleRewind}
                     className="w-10 h-10 rounded-full flex items-center justify-center transition-all duration-300 bg-white text-gray-600 hover:bg-gray-50 border border-gray-200 shadow-sm hover:scale-105"
                   >
                     <BackwardIcon className="w-5 h-5" />
@@ -274,13 +423,22 @@ export default function MiniStoryQuestions({ data }: MiniStoryQuestionsProps) {
 
                   <button
                     onClick={togglePlayPause}
+                    disabled={audioLoading || !audioUrl}
                     className={`w-12 h-12 rounded-full flex items-center justify-center transition-all duration-300 shadow-lg hover:scale-105 ${
-                      isPlaying 
+                      audioLoading || !audioUrl
+                        ? 'bg-gray-300 text-gray-500 cursor-not-allowed'
+                        : isPlaying 
                         ? 'bg-purple-600 text-white hover:bg-purple-700' 
                         : 'bg-white text-purple-600 hover:bg-gray-50 border border-purple-200'
                     }`}
                   >
-                    {isPlaying ? (
+                    {audioLoading ? (
+                      <div className="w-4 h-4 border-2 border-gray-400 border-t-transparent rounded-full animate-spin"></div>
+                    ) : !audioUrl ? (
+                      <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M18.364 18.364A9 9 0 005.636 5.636m12.728 12.728L5.636 5.636m12.728 12.728L5.636 5.636" />
+                      </svg>
+                    ) : isPlaying ? (
                       <PauseIcon className="w-6 h-6" />
                     ) : (
                       <PlayIcon className="w-6 h-6" />
@@ -296,9 +454,14 @@ export default function MiniStoryQuestions({ data }: MiniStoryQuestionsProps) {
                   >
                     <div 
                       className="h-1.5 bg-gradient-to-r from-purple-500 to-pink-500 rounded-full transition-all duration-300"
-                      style={{ width: `${(currentTime / mockDuration) * 100}%` }}
+                      style={{ width: `${duration > 0 ? (currentTime / duration) * 100 : 0}%` }}
                     >
                     </div>
+                  </div>
+                  {/* Tiempo de debug */}
+                  <div className="flex justify-between text-xs text-gray-500 mt-1">
+                    <span>{formatTime(currentTime)}</span>
+                    <span>{formatTime(duration)}</span>
                   </div>
                 </div>
               </div>
@@ -322,7 +485,7 @@ export default function MiniStoryQuestions({ data }: MiniStoryQuestionsProps) {
                 <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent z-10" />
                 <img 
                   src={featuredImage} 
-                  alt={data.title || "Comprensión de lectura"}
+                  alt={data.title || "Questions"}
                   className="w-full h-full object-cover"
                   onError={(e) => {
                     // Fallback a imagen generada
@@ -361,12 +524,7 @@ export default function MiniStoryQuestions({ data }: MiniStoryQuestionsProps) {
                   <div className="flex justify-center items-center space-x-4 mb-4">
                     {/* Botón anterior */}
                     <button
-                      onClick={() => {
-                        setCurrentTime(0);
-                        if (audioRef.current) {
-                          audioRef.current.currentTime = 0;
-                        }
-                      }}
+                      onClick={handleRewind}
                       className="w-16 h-16 rounded-full flex items-center justify-center transition-all duration-300 transform hover:scale-110 bg-white text-gray-600 hover:bg-gray-50 border-2 border-gray-200 shadow-lg"
                     >
                       <BackwardIcon className="w-8 h-8" />
@@ -375,13 +533,22 @@ export default function MiniStoryQuestions({ data }: MiniStoryQuestionsProps) {
                     {/* Botón de reproducir/pausar */}
                     <button
                       onClick={togglePlayPause}
+                      disabled={audioLoading || !audioUrl}
                       className={`w-20 h-20 rounded-full flex items-center justify-center transition-all duration-300 transform hover:scale-110 shadow-lg ${
-                        isPlaying 
+                        audioLoading || !audioUrl
+                          ? 'bg-gray-300 text-gray-500 cursor-not-allowed'
+                          : isPlaying 
                           ? 'bg-purple-600 text-white hover:bg-purple-700' 
                           : 'bg-white text-purple-600 hover:bg-gray-50 border-2 border-purple-200'
                       }`}
                     >
-                      {isPlaying ? (
+                      {audioLoading ? (
+                        <div className="w-4 h-4 border-2 border-gray-400 border-t-transparent rounded-full animate-spin"></div>
+                      ) : !audioUrl ? (
+                        <svg className="w-10 h-10" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M18.364 18.364A9 9 0 005.636 5.636m12.728 12.728L5.636 5.636m12.728 12.728L5.636 5.636" />
+                        </svg>
+                      ) : isPlaying ? (
                         <PauseIcon className="w-10 h-10" />
                       ) : (
                         <PlayIcon className="w-10 h-10" />
@@ -397,9 +564,14 @@ export default function MiniStoryQuestions({ data }: MiniStoryQuestionsProps) {
                     >
                       <div 
                         className="h-3 bg-gradient-to-r from-purple-500 to-pink-500 rounded-full transition-all duration-300"
-                        style={{ width: `${(currentTime / mockDuration) * 100}%` }}
+                        style={{ width: `${duration > 0 ? (currentTime / duration) * 100 : 0}%` }}
                       >
                       </div>
+                    </div>
+                    {/* Tiempo de debug */}
+                    <div className="flex justify-between text-sm text-gray-600 mt-2">
+                      <span>{formatTime(currentTime)}</span>
+                      <span>{formatTime(duration)}</span>
                     </div>
                   </div>
                 </div>
@@ -415,9 +587,14 @@ export default function MiniStoryQuestions({ data }: MiniStoryQuestionsProps) {
                       >
                         <div 
                           className="h-2 bg-gradient-to-r from-purple-500 to-pink-500 rounded-full transition-all duration-300"
-                          style={{ width: `${(currentTime / mockDuration) * 100}%` }}
+                          style={{ width: `${duration > 0 ? (currentTime / duration) * 100 : 0}%` }}
                         >
                         </div>
+                      </div>
+                      {/* Tiempo pequeño */}
+                      <div className="flex justify-between text-xs text-gray-500 mt-1">
+                        <span>{formatTime(currentTime)}</span>
+                        <span>{formatTime(duration)}</span>
                       </div>
                     </div>
 
@@ -425,12 +602,7 @@ export default function MiniStoryQuestions({ data }: MiniStoryQuestionsProps) {
                     <div className="flex items-center space-x-2">
                       {/* Botón anterior */}
                       <button
-                        onClick={() => {
-                          setCurrentTime(0);
-                          if (audioRef.current) {
-                            audioRef.current.currentTime = 0;
-                          }
-                        }}
+                        onClick={handleRewind}
                         className="w-12 h-12 rounded-full flex items-center justify-center transition-all duration-300 transform hover:scale-105 bg-white text-gray-600 hover:bg-gray-50 border-2 border-gray-200 shadow-lg"
                       >
                         <BackwardIcon className="w-6 h-6" />
@@ -439,13 +611,22 @@ export default function MiniStoryQuestions({ data }: MiniStoryQuestionsProps) {
                       {/* Botón de play/pause */}
                       <button
                         onClick={togglePlayPause}
+                        disabled={audioLoading || !audioUrl}
                         className={`w-14 h-14 rounded-full flex items-center justify-center transition-all duration-300 transform hover:scale-105 shadow-lg ${
-                          isPlaying 
+                          audioLoading || !audioUrl
+                            ? 'bg-gray-300 text-gray-500 cursor-not-allowed'
+                            : isPlaying 
                             ? 'bg-purple-600 text-white hover:bg-purple-700' 
                             : 'bg-white text-purple-600 hover:bg-gray-50 border-2 border-purple-200'
                         }`}
                       >
-                        {isPlaying ? (
+                        {audioLoading ? (
+                          <div className="w-4 h-4 border-2 border-gray-400 border-t-transparent rounded-full animate-spin"></div>
+                        ) : !audioUrl ? (
+                          <svg className="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M18.364 18.364A9 9 0 005.636 5.636m12.728 12.728L5.636 5.636m12.728 12.728L5.636 5.636" />
+                          </svg>
+                        ) : isPlaying ? (
                           <PauseIcon className="w-7 h-7" />
                         ) : (
                           <PlayIcon className="w-7 h-7" />
@@ -460,16 +641,11 @@ export default function MiniStoryQuestions({ data }: MiniStoryQuestionsProps) {
             {/* Columna derecha: Preguntas y navegación */}
             <div className="lg:h-[600px] flex flex-col">
               <div className="bg-gray-50 rounded-2xl p-6 border border-gray-200 flex-1 flex flex-col">
-                <h3 className="text-lg font-semibold text-gray-900 mb-6 flex items-center justify-between">
-                  <div className="flex items-center">
-                    <svg className="w-5 h-5 text-purple-600 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                    </svg>
-                    Comprensión de Lectura
-                  </div>
-                  <div className="text-sm text-purple-600 font-medium bg-purple-100 px-3 py-1 rounded-full">
-              {currentQuestionIndex + 1} de {totalQuestions}
-                  </div>
+                <h3 className="text-lg font-semibold text-gray-900 mb-6 flex items-center">
+                  <svg className="w-5 h-5 text-purple-600 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                  </svg>
+                  {data.title || "QUESTIONS"}
                 </h3>
                 
                 <div className="flex-1 overflow-y-auto space-y-6">
@@ -534,30 +710,36 @@ export default function MiniStoryQuestions({ data }: MiniStoryQuestionsProps) {
         </div>
 
           {/* Audio element oculto */}
-          <audio
-            ref={audioRef}
-            src={data.audioUrl || "/api/audio/sample-questions.mp3"}
-            onEnded={() => {
-              setIsPlaying(false);
-              setCurrentTime(0);
-            }}
-          />
+          {audioUrl && (
+            <audio
+              ref={audioRef}
+              src={audioUrl}
+              preload="metadata"
+              onLoadStart={() => console.log('Questions audio (questions.mp3) loading started')}
+              onCanPlay={() => console.log('Questions audio (questions.mp3) can play')}
+              onError={(e) => {
+                console.error('Error loading Questions audio (questions.mp3):', e);
+                setAudioError('Failed to load audio file');
+                setAudioLoading(false);
+              }}
+              onLoadedData={() => {
+                console.log('Questions audio (questions.mp3) loaded successfully');
+                setAudioLoading(false);
+                setAudioError(null);
+              }}
+            />
+          )}
         </div>
       </div>
 
       {/* Contenido móvil - Preguntas debajo de la tarjeta */}
       <div className="lg:hidden mx-4">
         <div className="bg-white rounded-2xl shadow-lg border border-gray-100 p-6">
-          <h3 className="text-lg font-semibold text-gray-900 mb-6 flex items-center justify-between">
-            <div className="flex items-center">
-              <svg className="w-5 h-5 text-purple-600 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-              </svg>
-              Comprensión de Lectura
-            </div>
-            <div className="text-sm text-purple-600 font-medium bg-purple-100 px-3 py-1 rounded-full">
-              {currentQuestionIndex + 1} de {totalQuestions}
-            </div>
+          <h3 className="text-lg font-semibold text-gray-900 mb-6 flex items-center">
+            <svg className="w-5 h-5 text-purple-600 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+            </svg>
+            {data.title || "QUESTIONS"}
             </h3>
           
           <div className="space-y-6">

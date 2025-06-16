@@ -1,17 +1,11 @@
 'use client';
 
-import { useState, useMemo, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import LessonHeader from '../../components/LessonHeader';
 import MiniStory from '../../components/MiniStory';
 import LessonSectionNavigation from '../components/LessonSectionNavigation';
-
-interface MiniStoryData {
-  title: string;
-  story: string;
-  characters: string[];
-  setting: string;
-}
+import { getMiniStory, getLessonInfo, type MiniStoryData } from '@/data/lessons';
 
 interface LessonData {
   id: number;
@@ -25,33 +19,34 @@ export default function MiniStoryPage() {
   const router = useRouter();
   const lessonId = parseInt(params.id as string);
   
-  const [isTransitioning, setIsTransitioning] = useState(true); // Start with transition active
+  const [isTransitioning, setIsTransitioning] = useState(true);
+  const [lessonData, setLessonData] = useState<LessonData | null>(null);
 
-  // Mock data para la lección - Usar useMemo para evitar re-renders
-  const lessonData = useMemo<LessonData>(() => {
-    return {
-      id: lessonId,
-      title: getLessonTitle(lessonId),
-      description: getLessonDescription(lessonId),
-      miniStory: {
-        title: "Sarah's Morning Routine",
-        story: `
-          Sarah pushes open the door to her favorite coffee shop, the familiar bell chiming above her head. 
-          The morning rush is in full swing, but she doesn't mind waiting. She knows exactly what she wants.
+  // Cargar datos de la lección
+  useEffect(() => {
+    const loadLessonData = async () => {
+      try {
+        const lessonInfo = getLessonInfo(lessonId);
+        const miniStoryData = await getMiniStory(lessonId);
+
+        if (lessonInfo && miniStoryData) {
+          const data: LessonData = {
+            id: lessonId,
+            title: lessonInfo.title,
+            description: lessonInfo.description,
+            miniStory: miniStoryData
+          };
           
-          "Good morning, Sarah!" calls out Emma, the barista who has memorized her order. 
-          "The usual today?"
-          
-          "You know me too well," Sarah laughs, pulling out her phone to check the time. 
-          "One large cappuccino with an extra shot, please."
-          
-          As Emma works the espresso machine, Sarah finds her favorite corner table by the window. 
-          She opens her laptop and settles in for another productive morning at her "office away from office."
-        `,
-        characters: ["Sarah - Regular customer", "Emma - Friendly barista"],
-        setting: "A busy coffee shop during morning rush"
+          setLessonData(data);
+        } else {
+          console.error(`No ministory data found for lesson ${lessonId}`);
+        }
+      } catch (error) {
+        console.error('Error loading ministory data:', error);
       }
     };
+
+    loadLessonData();
   }, [lessonId]);
 
   // Add entrance transition
@@ -76,6 +71,17 @@ export default function MiniStoryPage() {
       router.push(`/dashboard/lesson/${lessonId}/vocabulary`);
     }, 300);
   };
+
+  if (!lessonData) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-50 to-purple-50">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
+          <p className="text-gray-600">Cargando mini historia...</p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50 overflow-x-hidden">
@@ -110,35 +116,4 @@ export default function MiniStoryPage() {
   );
 }
 
-// Helper functions
-function getLessonTitle(id: number): string {
-  const titles = [
-    "Saludos y Presentaciones",
-    "En el Café", 
-    "Pidiendo Direcciones",
-    "En el Supermercado",
-    "Haciendo Planes",
-    "En el Restaurante",
-    "Hablando del Clima",
-    "En el Trabajo",
-    "Vacaciones y Viajes",
-    "Entrevista de Trabajo"
-  ];
-  return titles[id - 1] || "Lección de Inglés";
-}
-
-function getLessonDescription(id: number): string {
-  const descriptions = [
-    "Aprende a saludar y presentarte en inglés",
-    "Domina las conversaciones en cafeterías",
-    "Aprende a pedir y dar direcciones",
-    "Vocabulario y frases para ir de compras",
-    "Cómo hacer planes y citas",
-    "Conversaciones y pedidos en restaurantes",
-    "Habla sobre el clima y las estaciones",
-    "Vocabulario profesional y de oficina",
-    "Planifica y habla sobre viajes",
-    "Prepárate para entrevistas de trabajo"
-  ];
-  return descriptions[id - 1] || "Aprende inglés de manera práctica";
-} 
+ 

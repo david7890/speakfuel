@@ -1,0 +1,61 @@
+{
+  "lessonId": 1,
+  "section": "ministory",
+  "segments": [
+    {
+      "text": "Maria arrives at her new office building, feeling nervous but excited.",
+      "startTime": 0,
+      "endTime": 5.5
+    },
+    {
+      "text": "She approaches the reception desk where a friendly woman greets her.",
+      "startTime": 5.5,
+      "endTime": 10.2
+    },
+    {
+      "text": "Good morning! Welcome to TechCorp. I'm Jennifer, the receptionist.",
+      "startTime": 10.2,
+      "endTime": 15.8
+    },
+    {
+      "text": "You must be Maria, our new marketing specialist.",
+      "startTime": 15.8,
+      "endTime": 19.2
+    },
+    {
+      "text": "Yes, that's right. Good morning, Jennifer. I'm pleased to meet you.",
+      "startTime": 19.2,
+      "endTime": 24.5
+    },
+    {
+      "text": "Maria replies with a warm smile, feeling more at ease.",
+      "startTime": 24.5,
+      "endTime": 28.8
+    },
+    {
+      "text": "Wonderful! Let me introduce you to your team leader, Mr. Thompson.",
+      "startTime": 28.8,
+      "endTime": 33.5
+    },
+    {
+      "text": "He's expecting you. Jennifer picks up the phone and makes a quick call.",
+      "startTime": 33.5,
+      "endTime": 38.2
+    },
+    {
+      "text": "A few minutes later, a professional-looking man approaches them.",
+      "startTime": 38.2,
+      "endTime": 42.8
+    },
+    {
+      "text": "Good morning, Maria. I'm David Thompson, head of the marketing department.",
+      "startTime": 42.8,
+      "endTime": 48.5
+    },
+    {
+      "text": "Welcome to the team! We're excited to have you on board.",
+      "startTime": 48.5,
+      "endTime": 52.8
+    }
+  ]
+} 

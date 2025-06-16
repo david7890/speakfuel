@@ -5,17 +5,14 @@ import { useParams, useRouter } from 'next/navigation';
 import LessonHeader from '../../components/LessonHeader';
 import MiniStoryQuestions from '../../components/MiniStoryQuestions';
 import LessonSectionNavigation from '../components/LessonSectionNavigation';
-
-interface Question {
-  id: number;
-  question: string;
-  options: string[];
-  correctAnswer: number;
-  explanation: string;
-}
+import { getQuestions, getLessonInfo, type Question, type QuestionsData } from '@/data/lessons';
 
 interface MiniStoryQuestionsData {
   questions: Question[];
+  featuredImage?: string;
+  audioUrl?: string;
+  duration?: number;
+  title?: string;
 }
 
 interface LessonData {
@@ -34,55 +31,59 @@ export default function QuestionsPage() {
   const [lessonData, setLessonData] = useState<LessonData | null>(null);
   const [showCompletionModal, setShowCompletionModal] = useState(false);
 
-  // Mock data para la lección
+  // Cargar datos de las preguntas
   useEffect(() => {
-    const mockLessonData: LessonData = {
-      id: lessonId,
-      title: getLessonTitle(lessonId),
-      description: getLessonDescription(lessonId),
-      miniStoryQuestions: {
-        questions: [
-          {
-            id: 1,
-            question: "What does Sarah order at the coffee shop?",
-            options: [
-              "A small coffee with milk",
-              "A large cappuccino with an extra shot", 
-              "A tea with honey",
-              "A regular cappuccino"
-            ],
-            correctAnswer: 1,
-            explanation: "Sarah orders &apos;one large cappuccino with an extra shot&apos; according to the story."
-          },
-          {
-            id: 2, 
-            question: "How does the barista know Sarah?",
-            options: [
-              "They are old friends",
-              "Sarah is a new customer",
-              "Emma has memorized Sarah's order",
-              "They work together"
-            ],
-            correctAnswer: 2,
-            explanation: "The text mentions that Emma &apos;has memorized her order&apos;, showing Sarah is a regular customer."
-          },
-          {
-            id: 3,
-            question: "Where does Sarah plan to work?",
-            options: [
-              "At the coffee counter",
-              "In her car",
-              "At her favorite corner table by the window",
-              "Standing by the door"
-            ],
-            correctAnswer: 2,
-            explanation: "Sarah &apos;finds her favorite corner table by the window&apos; to work at her &apos;office away from office.&apos;"
-          }
-        ]
+    const loadQuestionsData = async () => {
+      try {
+        const lessonInfo = getLessonInfo(lessonId);
+        const questionsData = await getQuestions(lessonId);
+
+        if (lessonInfo && questionsData) {
+          const data: LessonData = {
+            id: lessonId,
+            title: lessonInfo.title,
+            description: lessonInfo.description,
+            miniStoryQuestions: {
+              questions: [
+                {
+                  id: 1,
+                  question: "What was the main topic of this story?",
+                  options: ["Daily routine", "Travel adventure", "Food preparation", "Work meeting"],
+                  correctAnswer: 0,
+                  explanation: "The story focused on describing a typical daily routine and common activities."
+                },
+                {
+                  id: 2,
+                  question: "Which vocabulary words were emphasized in the story?",
+                  options: ["Time expressions", "Family members", "Weather terms", "Sports activities"],
+                  correctAnswer: 0,
+                  explanation: "The story highlighted various time expressions and daily schedule vocabulary."
+                },
+                {
+                  id: 3,
+                  question: "What was the setting of the story?",
+                  options: ["A school", "A home", "A restaurant", "An office"],
+                  correctAnswer: 1,
+                  explanation: "Most of the activities described took place in a home environment."
+                }
+              ],
+              // Include audio data from questionsData
+              audioUrl: questionsData.audioUrl,
+              duration: questionsData.duration,
+              title: questionsData.title
+            }
+          };
+          
+          setLessonData(data);
+        } else {
+          console.error(`No questions data found for lesson ${lessonId}`);
+        }
+      } catch (error) {
+        console.error('Error loading questions data:', error);
       }
     };
-    
-    setLessonData(mockLessonData);
+
+    loadQuestionsData();
     
     // Add entrance transition
     setTimeout(() => {
@@ -215,36 +216,4 @@ export default function QuestionsPage() {
     </div>
   );
 }
-
-// Helper functions
-function getLessonTitle(id: number): string {
-  const titles = [
-    "Saludos y Presentaciones",
-    "En el Café", 
-    "Pidiendo Direcciones",
-    "En el Supermercado",
-    "Haciendo Planes",
-    "En el Restaurante",
-    "Hablando del Clima",
-    "En el Trabajo",
-    "Vacaciones y Viajes",
-    "Entrevista de Trabajo"
-  ];
-  return titles[id - 1] || "Lección de Inglés";
-}
-
-function getLessonDescription(id: number): string {
-  const descriptions = [
-    "Aprende a saludar y presentarte en inglés",
-    "Domina las conversaciones en cafeterías",
-    "Aprende a pedir y dar direcciones",
-    "Vocabulario y frases para ir de compras",
-    "Cómo hacer planes y citas",
-    "Conversaciones y pedidos en restaurantes",
-    "Habla sobre el clima y las estaciones",
-    "Vocabulario profesional y de oficina",
-    "Planifica y habla sobre viajes",
-    "Prepárate para entrevistas de trabajo"
-  ];
-  return descriptions[id - 1] || "Aprende inglés de manera práctica";
-} 
+ 

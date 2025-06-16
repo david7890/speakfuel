@@ -2,13 +2,13 @@
 
 import { useState, useEffect, useRef } from 'react';
 import { PlayIcon, PauseIcon, BackwardIcon } from '@heroicons/react/24/solid';
+import { useParams } from 'next/navigation';
+import { getAudioUrl } from '@/lib/firebase';
 
 interface MiniStoryProps {
   data: {
     title: string;
     story: string;
-    characters: string[];
-    setting: string;
     audioUrl?: string;
     duration?: number;
     featuredImage?: string;
@@ -19,90 +19,217 @@ interface MiniStoryProps {
 }
 
 export default function MiniStory({ data, onNext, onPrevious }: MiniStoryProps) {
+  const params = useParams();
+  const lessonId = params?.id ? `lesson${params.id}` : 'lesson1';
+  
   const [isPlaying, setIsPlaying] = useState(false);
   const [currentTime, setCurrentTime] = useState(0);
   const [duration, setDuration] = useState(data.duration || 0);
+  const [audioUrl, setAudioUrl] = useState<string>('');
+  const [audioLoading, setAudioLoading] = useState(true);
+  const [audioError, setAudioError] = useState<string | null>(null);
   const audioRef = useRef<HTMLAudioElement>(null);
 
-  const mockDuration = data.duration || 20;
   const featuredImage = data.featuredImage || "/api/placeholder/800/400";
 
+  // Load audio URL from Firebase Storage
   useEffect(() => {
-    if (audioRef.current) {
-      audioRef.current.addEventListener('timeupdate', handleTimeUpdate);
-      audioRef.current.addEventListener('loadedmetadata', handleLoadedMetadata);
-      
-      return () => {
-        if (audioRef.current) {
-          audioRef.current.removeEventListener('timeupdate', handleTimeUpdate);
-          audioRef.current.removeEventListener('loadedmetadata', handleLoadedMetadata);
-        }
-      };
-    }
-  }, []);
+    const loadAudioUrl = async () => {
+      setAudioLoading(true);
+      setAudioError(null);
 
-  useEffect(() => {
-    let interval: NodeJS.Timeout;
-    
-    if (isPlaying) {
-      interval = setInterval(() => {
-        setCurrentTime(prev => {
-          if (prev >= mockDuration) {
-            setIsPlaying(false);
-            return 0;
-          }
-          return prev + 0.1;
-        });
-      }, 100);
-    }
-    
-    return () => {
-      if (interval) {
-        clearInterval(interval);
+      try {
+        if (data.audioUrl && data.audioUrl.startsWith('gs://')) {
+          // Convert Firebase Storage URL to actual download URL
+          const path = data.audioUrl.replace('gs://speakfuel-d832c.firebasestorage.app/', '');
+          const url = await getAudioUrl(path);
+          setAudioUrl(url);
+        } else if (data.audioUrl) {
+          // Use provided URL directly
+          setAudioUrl(data.audioUrl);
+        } else {
+          // Fallback to Firebase Storage path
+          const url = await getAudioUrl(`lessons/${lessonId}/ministory.mp3`);
+          setAudioUrl(url);
+        }
+      } catch (error) {
+        console.error('Error loading MiniStory audio URL:', error);
+        setAudioError('Audio temporarily unavailable');
+        setAudioUrl('');
+      } finally {
+        setAudioLoading(false);
       }
     };
-  }, [isPlaying, mockDuration]);
 
-  const handleTimeUpdate = () => {
-    if (audioRef.current) {
-      const time = audioRef.current.currentTime;
-      setCurrentTime(time);
+    loadAudioUrl();
+  }, [data.audioUrl, data.duration, lessonId]);
+
+  useEffect(() => {
+    if (audioRef.current && audioUrl) {
+      const audio = audioRef.current;
+      
+      const handleTimeUpdateEvent = () => {
+        if (audioRef.current) {
+          const time = audioRef.current.currentTime;
+          const audioDuration = audioRef.current.duration;
+          
+          setCurrentTime(time);
+          
+          // Actualizar duración si está disponible y es diferente
+          if (audioDuration && audioDuration !== duration) {
+            console.log('Updating MiniStory duration from audio element:', audioDuration);
+            setDuration(audioDuration);
+          }
+        }
+      };
+
+      const handleLoadedMetadataEvent = () => {
+        if (audioRef.current) {
+          setDuration(audioRef.current.duration);
+        }
+      };
+
+      const handlePlayEvent = () => {
+        console.log('MiniStory audio play event triggered');
+        setIsPlaying(true);
+      };
+
+      const handlePauseEvent = () => {
+        console.log('MiniStory audio pause event triggered');
+        setIsPlaying(false);
+      };
+
+      const handleEndedEvent = () => {
+        console.log('MiniStory audio ended event triggered');
+        setIsPlaying(false);
+        setCurrentTime(0);
+      };
+
+      const handleErrorEvent = (e: Event) => {
+        console.error('MiniStory audio error event:', e);
+        setAudioError('Audio playback error');
+        setIsPlaying(false);
+      };
+      
+      audio.addEventListener('timeupdate', handleTimeUpdateEvent);
+      audio.addEventListener('loadedmetadata', handleLoadedMetadataEvent);
+      audio.addEventListener('play', handlePlayEvent);
+      audio.addEventListener('pause', handlePauseEvent);
+      audio.addEventListener('ended', handleEndedEvent);
+      audio.addEventListener('error', handleErrorEvent);
+      
+      return () => {
+        audio.removeEventListener('timeupdate', handleTimeUpdateEvent);
+        audio.removeEventListener('loadedmetadata', handleLoadedMetadataEvent);
+        audio.removeEventListener('play', handlePlayEvent);
+        audio.removeEventListener('pause', handlePauseEvent);
+        audio.removeEventListener('ended', handleEndedEvent);
+        audio.removeEventListener('error', handleErrorEvent);
+      };
     }
-  };
+  }, [audioUrl, duration]);
 
-  const handleLoadedMetadata = () => {
-    if (audioRef.current) {
-      setDuration(audioRef.current.duration);
+  const togglePlayPause = async () => {
+    console.log('MiniStory togglePlayPause called, current state:', { 
+      isPlaying, 
+      audioLoading, 
+      audioUrl: !!audioUrl,
+      audioRefCurrent: !!audioRef.current 
+    });
+
+    if (audioLoading) {
+      console.log('MiniStory audio is still loading...');
+      return;
     }
-  };
 
-  const togglePlayPause = () => {
-    if (audioRef.current) {
+    if (!audioUrl) {
+      console.log('No MiniStory audio available');
+      return;
+    }
+
+    if (!audioRef.current) {
+      console.log('MiniStory audio ref not available');
+      return;
+    }
+
+    try {
+      const audio = audioRef.current;
+      
       if (isPlaying) {
-        audioRef.current.pause();
+        console.log('Attempting to pause MiniStory audio');
+        audio.pause();
       } else {
-        audioRef.current.play();
+        console.log('Attempting to play MiniStory audio');
+        await audio.play();
       }
-    setIsPlaying(!isPlaying);
+    } catch (error) {
+      console.error('Error in MiniStory togglePlayPause:', error);
+      setIsPlaying(false);
+      setAudioError('Failed to play audio');
     }
   };
 
   const handleProgressClick = (e: React.MouseEvent<HTMLDivElement>) => {
-    if (audioRef.current) {
+    console.log('MiniStory progress bar clicked');
+    
+    if (!audioRef.current) {
+      console.log('MiniStory audio ref not available for progress click');
+      return;
+    }
+
+    if (!audioUrl) {
+      console.log('No MiniStory audio URL available for progress click');
+      return;
+    }
+
+    try {
+      const audio = audioRef.current;
       const rect = e.currentTarget.getBoundingClientRect();
       const clickX = e.clientX - rect.left;
       const width = rect.width;
-      const newTime = (clickX / width) * duration;
-      audioRef.current.currentTime = newTime;
-      setCurrentTime(newTime);
+      const clickPercentage = clickX / width;
+      const audioDuration = audio.duration || duration;
+      const newTime = clickPercentage * audioDuration;
+      
+      console.log('MiniStory progress click details:', {
+        clickX,
+        width,
+        clickPercentage,
+        audioDuration,
+        newTime,
+        currentTime: audio.currentTime
+      });
+      
+      if (isFinite(newTime) && newTime >= 0 && newTime <= audioDuration) {
+        audio.currentTime = newTime;
+        setCurrentTime(newTime);
+        console.log('Successfully set MiniStory audio time to:', newTime);
+      } else {
+        console.warn('Invalid MiniStory time calculated:', newTime);
+      }
+    } catch (error) {
+      console.error('Error in MiniStory handleProgressClick:', error);
     }
+  };
+
+  const handleRewind = () => {
+    setCurrentTime(0);
+    if (audioRef.current) {
+      audioRef.current.currentTime = 0;
+    }
+  };
+
+  const formatTime = (time: number) => {
+    const minutes = Math.floor(time / 60);
+    const seconds = Math.floor(time % 60);
+    return `${minutes}:${seconds.toString().padStart(2, '0')}`;
   };
 
   return (
     <div className="font-nunito" style={{paddingBottom: '120px'}}>
       {/* Layout Móvil - Tarjeta horizontal compacta */}
       <div className="lg:hidden mb-4 mx-4">
-      <div className="bg-white rounded-2xl shadow-lg border border-gray-100 overflow-hidden">
+        <div className="bg-white rounded-2xl shadow-lg border border-gray-100 overflow-hidden">
           <div className="flex p-4 gap-4">
             {/* Imagen cuadrada - 50% del ancho */}
             <div className="w-1/2 aspect-square bg-gradient-to-br from-green-100 to-teal-100 overflow-hidden rounded-xl flex-shrink-0">
@@ -123,7 +250,7 @@ export default function MiniStory({ data, onNext, onPrevious }: MiniStoryProps) 
                       <text x="200" y="200" text-anchor="middle" fill="white" font-size="20" font-family="system-ui">
                         📚 ${data.title}
                       </text>
-              </svg>
+                    </svg>
                   `)}`;
                 }}
               />
@@ -146,12 +273,7 @@ export default function MiniStory({ data, onNext, onPrevious }: MiniStoryProps) 
                 {/* Botones de control */}
                 <div className="flex items-center justify-center space-x-3 mb-2">
                   <button
-                    onClick={() => {
-                      setCurrentTime(0);
-                      if (audioRef.current) {
-                        audioRef.current.currentTime = 0;
-                      }
-                    }}
+                    onClick={handleRewind}
                     className="w-10 h-10 rounded-full flex items-center justify-center transition-all duration-300 bg-white text-gray-600 hover:bg-gray-50 border border-gray-200 shadow-sm hover:scale-105"
                   >
                     <BackwardIcon className="w-5 h-5" />
@@ -159,13 +281,22 @@ export default function MiniStory({ data, onNext, onPrevious }: MiniStoryProps) 
 
                   <button
                     onClick={togglePlayPause}
+                    disabled={audioLoading || !audioUrl}
                     className={`w-12 h-12 rounded-full flex items-center justify-center transition-all duration-300 shadow-lg hover:scale-105 ${
-                      isPlaying 
+                      audioLoading || !audioUrl
+                        ? 'bg-gray-300 text-gray-500 cursor-not-allowed'
+                        : isPlaying 
                         ? 'bg-green-600 text-white hover:bg-green-700' 
                         : 'bg-white text-green-600 hover:bg-gray-50 border border-green-200'
                     }`}
                   >
-                    {isPlaying ? (
+                    {audioLoading ? (
+                      <div className="w-4 h-4 border-2 border-gray-400 border-t-transparent rounded-full animate-spin"></div>
+                    ) : !audioUrl ? (
+                      <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M18.364 18.364A9 9 0 005.636 5.636m12.728 12.728L5.636 5.636m12.728 12.728L5.636 5.636" />
+                      </svg>
+                    ) : isPlaying ? (
                       <PauseIcon className="w-6 h-6" />
                     ) : (
                       <PlayIcon className="w-6 h-6" />
@@ -174,16 +305,21 @@ export default function MiniStory({ data, onNext, onPrevious }: MiniStoryProps) 
                 </div>
                 
                 {/* Barra de progreso */}
-            <div>
+                <div>
                   <div 
                     className="w-full h-1.5 bg-gray-200 rounded-full cursor-pointer"
                     onClick={handleProgressClick}
                   >
                     <div 
                       className="h-1.5 bg-gradient-to-r from-green-500 to-teal-500 rounded-full transition-all duration-300"
-                      style={{ width: `${(currentTime / mockDuration) * 100}%` }}
+                      style={{ width: `${duration > 0 ? (currentTime / duration) * 100 : 0}%` }}
                     >
                     </div>
+                  </div>
+                  {/* Tiempo de debug */}
+                  <div className="flex justify-between text-xs text-gray-500 mt-1">
+                    <span>{formatTime(currentTime)}</span>
+                    <span>{formatTime(duration)}</span>
                   </div>
                 </div>
               </div>
@@ -192,81 +328,77 @@ export default function MiniStory({ data, onNext, onPrevious }: MiniStoryProps) 
         </div>
       </div>
 
-      {/* Layout Desktop - Mantener el diseño actual */}
+      {/* Layout Desktop */}
       <div className="hidden lg:block max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="bg-white rounded-3xl shadow-xl border border-gray-100 overflow-hidden">
-          
-          {/* Layout principal - Desktop: imagen+reproductor | historia */}
           <div className="px-6 sm:px-8 pt-8 mb-6">
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-12">
-            
-            {/* Columna izquierda: Imagen y Reproductor */}
-            <div className="space-y-6">
-              {/* Imagen destacada */}
-              <div className="relative h-64 sm:h-72 lg:h-64 bg-gradient-to-br from-green-100 to-teal-100 overflow-hidden rounded-2xl">
-                <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent z-10" />
-                <img 
-                  src={featuredImage} 
-                  alt={data.title}
-                  className="w-full h-full object-cover"
-                  onError={(e) => {
-                    // Fallback a imagen generada
-                    e.currentTarget.src = `data:image/svg+xml,${encodeURIComponent(`
-                      <svg width="800" height="400" xmlns="http://www.w3.org/2000/svg">
-                        <defs>
-                          <linearGradient id="grad" x1="0%" y1="0%" x2="100%" y2="100%">
-                            <stop offset="0%" style="stop-color:#10B981;stop-opacity:1" />
-                            <stop offset="100%" style="stop-color:#14B8A6;stop-opacity:1" />
-                          </linearGradient>
-                        </defs>
-                        <rect width="800" height="400" fill="url(#grad)"/>
-                        <text x="400" y="200" text-anchor="middle" fill="white" font-size="24" font-family="system-ui">
-                          📚 ${data.title}
-                        </text>
-                      </svg>
-                    `)}`;
-                  }}
-                />
-                <div className="absolute bottom-4 left-4 z-20">
-                  <div className="bg-white/90 backdrop-blur-sm rounded-2xl px-3 py-2">
-                    <div className="flex items-center space-x-2">
-                      <div className="w-3 h-3 bg-green-500 rounded-full animate-pulse"></div>
-                      <span className="text-sm font-semibold text-gray-800">Mini Story</span>
+              
+              {/* Columna izquierda: Imagen y Reproductor */}
+              <div className="space-y-6">
+                {/* Imagen destacada */}
+                <div className="relative h-64 sm:h-72 lg:h-64 bg-gradient-to-br from-green-100 to-teal-100 overflow-hidden rounded-2xl">
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent z-10" />
+                  <img 
+                    src={featuredImage} 
+                    alt={data.title}
+                    className="w-full h-full object-cover"
+                    onError={(e) => {
+                      e.currentTarget.src = `data:image/svg+xml,${encodeURIComponent(`
+                        <svg width="800" height="400" xmlns="http://www.w3.org/2000/svg">
+                          <defs>
+                            <linearGradient id="grad" x1="0%" y1="0%" x2="100%" y2="100%">
+                              <stop offset="0%" style="stop-color:#10B981;stop-opacity:1" />
+                              <stop offset="100%" style="stop-color:#14B8A6;stop-opacity:1" />
+                            </linearGradient>
+                          </defs>
+                          <rect width="800" height="400" fill="url(#grad)"/>
+                          <text x="400" y="200" text-anchor="middle" fill="white" font-size="24" font-family="system-ui">
+                            📚 ${data.title}
+                          </text>
+                        </svg>
+                      `)}`;
+                    }}
+                  />
+                  <div className="absolute bottom-4 left-4 z-20">
+                    <div className="bg-white/90 backdrop-blur-sm rounded-2xl px-3 py-2">
+                      <div className="flex items-center space-x-2">
+                        <div className="w-3 h-3 bg-green-500 rounded-full animate-pulse"></div>
+                        <span className="text-sm font-semibold text-gray-800">Mini Story</span>
+                      </div>
                     </div>
                   </div>
                 </div>
-              </div>
 
-              {/* Reproductor de audio - Layout diferente para móvil vs desktop */}
-              <div className="lg:bg-gradient-to-r lg:from-green-50 lg:to-teal-50 lg:rounded-2xl lg:p-6 lg:border lg:border-green-100">
-                
-                {/* Layout Desktop - Vertical */}
-                <div className="hidden lg:block">
-                  {/* Botones de control - Centrados arriba */}
+                {/* Reproductor de audio */}
+                <div className="bg-gradient-to-r from-green-50 to-teal-50 rounded-2xl p-6 border border-green-100">
+                  {/* Botones de control */}
                   <div className="flex justify-center items-center space-x-4 mb-4">
-                    {/* Botón anterior */}
                     <button
-                      onClick={() => {
-                        setCurrentTime(0);
-                        if (audioRef.current) {
-                          audioRef.current.currentTime = 0;
-                        }
-                      }}
+                      onClick={handleRewind}
                       className="w-16 h-16 rounded-full flex items-center justify-center transition-all duration-300 transform hover:scale-110 bg-white text-gray-600 hover:bg-gray-50 border-2 border-gray-200 shadow-lg"
                     >
                       <BackwardIcon className="w-8 h-8" />
                     </button>
 
-                    {/* Botón de reproducir/pausar */}
                     <button
                       onClick={togglePlayPause}
+                      disabled={audioLoading || !audioUrl}
                       className={`w-20 h-20 rounded-full flex items-center justify-center transition-all duration-300 transform hover:scale-110 shadow-lg ${
-                        isPlaying 
+                        audioLoading || !audioUrl
+                          ? 'bg-gray-300 text-gray-500 cursor-not-allowed'
+                          : isPlaying 
                           ? 'bg-green-600 text-white hover:bg-green-700' 
                           : 'bg-white text-green-600 hover:bg-gray-50 border-2 border-green-200'
                       }`}
                     >
-                      {isPlaying ? (
+                      {audioLoading ? (
+                        <div className="w-4 h-4 border-2 border-gray-400 border-t-transparent rounded-full animate-spin"></div>
+                      ) : !audioUrl ? (
+                        <svg className="w-10 h-10" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M18.364 18.364A9 9 0 005.636 5.636m12.728 12.728L5.636 5.636m12.728 12.728L5.636 5.636" />
+                        </svg>
+                      ) : isPlaying ? (
                         <PauseIcon className="w-10 h-10" />
                       ) : (
                         <PlayIcon className="w-10 h-10" />
@@ -282,191 +414,93 @@ export default function MiniStory({ data, onNext, onPrevious }: MiniStoryProps) 
                     >
                       <div 
                         className="h-3 bg-gradient-to-r from-green-500 to-teal-500 rounded-full transition-all duration-300"
-                        style={{ width: `${(currentTime / mockDuration) * 100}%` }}
+                        style={{ width: `${duration > 0 ? (currentTime / duration) * 100 : 0}%` }}
                       >
                       </div>
                     </div>
-                  </div>
-                </div>
-
-                {/* Layout Móvil - Horizontal compacto */}
-                <div className="lg:hidden">
-                  <div className="flex items-center space-x-3 py-2">
-                    {/* Barra de progreso - Lado izquierdo */}
-                    <div className="flex-1">
-                      <div 
-                        className="w-full h-2 bg-gray-200 rounded-full cursor-pointer"
-                        onClick={handleProgressClick}
-                      >
-                        <div 
-                          className="h-2 bg-gradient-to-r from-green-500 to-teal-500 rounded-full transition-all duration-300"
-                          style={{ width: `${(currentTime / mockDuration) * 100}%` }}
-                        >
-                        </div>
-                      </div>
-                    </div>
-
-                    {/* Botones de control - Lado derecho */}
-                    <div className="flex items-center space-x-2">
-                      {/* Botón anterior */}
-                      <button
-                        onClick={() => {
-                          setCurrentTime(0);
-                          if (audioRef.current) {
-                            audioRef.current.currentTime = 0;
-                          }
-                        }}
-                        className="w-12 h-12 rounded-full flex items-center justify-center transition-all duration-300 transform hover:scale-105 bg-white text-gray-600 hover:bg-gray-50 border-2 border-gray-200 shadow-lg"
-                      >
-                        <BackwardIcon className="w-6 h-6" />
-                      </button>
-
-                      {/* Botón de play/pause */}
-                      <button
-                        onClick={togglePlayPause}
-                        className={`w-14 h-14 rounded-full flex items-center justify-center transition-all duration-300 transform hover:scale-105 shadow-lg ${
-                          isPlaying 
-                            ? 'bg-green-600 text-white hover:bg-green-700' 
-                            : 'bg-white text-green-600 hover:bg-gray-50 border-2 border-green-200'
-                        }`}
-                      >
-                        {isPlaying ? (
-                          <PauseIcon className="w-7 h-7" />
-                        ) : (
-                          <PlayIcon className="w-7 h-7" />
-                        )}
-                      </button>
+                    {/* Tiempo de debug */}
+                    <div className="flex justify-between text-sm text-gray-600 mt-2">
+                      <span>{formatTime(currentTime)}</span>
+                      <span>{formatTime(duration)}</span>
                     </div>
                   </div>
                 </div>
               </div>
-            </div>
 
-            {/* Columna derecha: Historia y contexto */}
-            <div className="lg:h-[600px] flex flex-col">
-              <div className="bg-gray-50 rounded-2xl p-6 border border-gray-200 flex-1 flex flex-col">
-                <h3 className="text-lg font-semibold text-gray-900 mb-6 flex items-center">
-                  <svg className="w-5 h-5 text-green-600 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.746 0 3.332.477 4.5 1.253v13C19.832 18.477 18.246 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
-                  </svg>
-                  Story & Context
-          </h3>
+              {/* Columna derecha: Historia */}
+              <div className="lg:h-[600px] flex flex-col">
+                <div className="bg-gray-50 rounded-2xl p-6 border border-gray-200 flex-1 flex flex-col">
+                  <h3 className="text-lg font-semibold text-gray-900 mb-6 flex items-center">
+                    <svg className="w-5 h-5 text-green-600 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.746 0 3.332.477 4.5 1.253v13C19.832 18.477 18.246 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
+                    </svg>
+                    Story
+                  </h3>
 
-                <div className="flex-1 overflow-y-auto space-y-6">
-          {/* Story Context */}
-                  <div className="bg-gradient-to-r from-green-50 to-teal-50 rounded-xl p-4 border border-green-100">
-            <div className="grid md:grid-cols-2 gap-4">
-              <div>
-                <h4 className="font-semibold text-gray-900 mb-2 flex items-center">
-                  <svg className="w-4 h-4 text-green-600 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
-                  </svg>
-                  Setting
-                </h4>
-                <p className="text-gray-700 text-sm">{data.setting}</p>
-              </div>
-              <div>
-                <h4 className="font-semibold text-gray-900 mb-2 flex items-center">
-                  <svg className="w-4 h-4 text-green-600 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197m13.5-9a2.5 2.5 0 11-5 0 2.5 2.5 0 015 0z" />
-                  </svg>
-                  Characters
-                </h4>
-                <ul className="text-gray-700 text-sm space-y-1">
-                  {data.characters.map((character, index) => (
-                    <li key={index}>• {character}</li>
-                  ))}
-                </ul>
-              </div>
-            </div>
-          </div>
-
-                  {/* Story Text */}
-                  <div className="bg-white rounded-xl p-6 border-l-4 border-green-500 shadow-sm">
-                    <div className="prose prose-lg max-w-none">
-                      {data.story.split('\n').map((paragraph, index) => (
-                        paragraph.trim() && (
-                          <p key={index} className="text-gray-800 leading-relaxed mb-4 font-medium text-lg">
-                            {paragraph.trim()}
-                          </p>
-                        )
-                      ))}
+                  <div className="flex-1 overflow-y-auto">
+                    <div className="bg-white rounded-xl p-6 border-l-4 border-green-500 shadow-sm">
+                      <div className="prose prose-lg max-w-none">
+                        {data.story.split('\n').map((paragraph, index) => (
+                          paragraph.trim() && (
+                            <p key={index} className="text-gray-800 leading-relaxed mb-4 font-medium text-lg">
+                              {paragraph.trim()}
+                            </p>
+                          )
+                        ))}
+                      </div>
                     </div>
                   </div>
                 </div>
               </div>
             </div>
           </div>
-        </div>
 
-          {/* Audio element oculto */}
-          <audio
-            ref={audioRef}
-            src={data.audioUrl || "/api/audio/sample-ministory.mp3"}
-            onEnded={() => {
-              setIsPlaying(false);
-              setCurrentTime(0);
-            }}
-          />
+          {/* Audio element */}
+          {audioUrl && (
+            <audio
+              ref={audioRef}
+              src={audioUrl}
+              preload="metadata"
+              onLoadStart={() => console.log('MiniStory audio loading started')}
+              onCanPlay={() => console.log('MiniStory audio can play')}
+              onError={(e) => {
+                console.error('Error loading MiniStory audio:', e);
+                setAudioError('Failed to load audio file');
+                setAudioLoading(false);
+              }}
+              onLoadedData={() => {
+                console.log('MiniStory audio loaded successfully');
+                setAudioLoading(false);
+                setAudioError(null);
+              }}
+            />
+          )}
         </div>
       </div>
 
-      {/* Contenido móvil - Historia y contexto debajo de la tarjeta */}
+      {/* Contenido móvil - Historia debajo de la tarjeta */}
       <div className="lg:hidden mx-4">
         <div className="bg-white rounded-2xl shadow-lg border border-gray-100 p-6">
           <h3 className="text-lg font-semibold text-gray-900 mb-6 flex items-center">
             <svg className="w-5 h-5 text-green-600 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.746 0 3.332.477 4.5 1.253v13C19.832 18.477 18.246 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
-                    </svg>
-            Story & Context
+            </svg>
+            Story
           </h3>
           
-          <div className="space-y-6">
-            {/* Story Context */}
-            <div className="bg-gradient-to-r from-green-50 to-teal-50 rounded-xl p-4 border border-green-100">
-              <div className="grid md:grid-cols-2 gap-4">
-                <div>
-                  <h4 className="font-semibold text-gray-900 mb-2 flex items-center">
-                    <svg className="w-4 h-4 text-green-600 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
-                    </svg>
-                    Setting
-                  </h4>
-                  <p className="text-gray-700 text-sm">{data.setting}</p>
-                </div>
-                <div>
-                  <h4 className="font-semibold text-gray-900 mb-2 flex items-center">
-                    <svg className="w-4 h-4 text-green-600 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197m13.5-9a2.5 2.5 0 11-5 0 2.5 2.5 0 015 0z" />
-                    </svg>
-                    Characters
-                  </h4>
-                  <ul className="text-gray-700 text-sm space-y-1">
-                    {data.characters.map((character, index) => (
-                      <li key={index}>• {character}</li>
-                    ))}
-                  </ul>
-                </div>
-            </div>
-          </div>
-
-          {/* Story Text */}
-            <div className="bg-white rounded-xl p-6 border-l-4 border-green-500 shadow-sm">
+          <div className="bg-white rounded-xl p-6 border-l-4 border-green-500 shadow-sm">
             <div className="prose prose-lg max-w-none">
               {data.story.split('\n').map((paragraph, index) => (
                 paragraph.trim() && (
-                    <p key={index} className="text-gray-800 leading-relaxed mb-4 font-medium text-lg">
+                  <p key={index} className="text-gray-800 leading-relaxed mb-4 font-medium text-lg">
                     {paragraph.trim()}
                   </p>
                 )
               ))}
-              </div>
             </div>
           </div>
         </div>
       </div>
-      </div>
+    </div>
   );
 } 

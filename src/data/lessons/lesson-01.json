@@ -1,0 +1,75 @@
+{
+  "id": 1,
+  "title": "Greetings and Introductions",
+  "description": "Learn how to greet and introduce yourself in English",
+  "mainArticle": {
+    "title": "INTRODUCTION",
+    "content": "Learning how to greet people and introduce yourself is one of the most fundamental skills in any language. In English, there are many different ways to say hello and introduce yourself, depending on the situation and who you're talking to.\n\nFormal greetings are used in professional settings, with people you don't know well, or in situations that require respect. Informal greetings are used with friends, family, and in casual situations.\n\nWhen introducing yourself, it's important to consider the context. In a business meeting, you might say your full name and your job title. In a casual setting, your first name might be enough.",
+    "audioUrl": "gs://speakfuel-d832c.firebasestorage.app/lessons/lesson1/main.mp3",
+    "duration": 219,
+    "featuredImage": "gs://speakfuel-d832c.firebasestorage.app/images/lesson-01-hero.jpg"
+  },
+  "vocabulary": {
+    "words": [
+      {
+        "word": "Hello",
+        "pronunciation": "/həˈloʊ/",
+        "definition": "A greeting used when meeting someone or answering the phone",
+        "example": "Hello! Nice to meet you.",
+        "translation": "Hola",
+        "audioUrl": "gs://speakfuel-d832c.firebasestorage.app/lessons/lesson1/vocabulary1.mp3"
+      },
+      {
+        "word": "Introduction",
+        "pronunciation": "/ˌɪntrəˈdʌkʃən/",
+        "definition": "The action of presenting someone or yourself to another person",
+        "example": "Let me make the introductions - this is Sarah.",
+        "translation": "Presentación",
+        "audioUrl": "gs://speakfuel-d832c.firebasestorage.app/lessons/lesson1/vocabulary2.mp3"
+      },
+      {
+        "word": "Pleased",
+        "pronunciation": "/pliːzd/",
+        "definition": "Feeling happy and satisfied",
+        "example": "I'm pleased to meet you.",
+        "translation": "Encantado, complacido",
+        "audioUrl": "gs://speakfuel-d832c.firebasestorage.app/lessons/lesson1/vocabulary3.mp3"
+      },
+      {
+        "word": "Formal",
+        "pronunciation": "/ˈfɔːrməl/",
+        "definition": "Following established rules or customs; official",
+        "example": "We use formal greetings in business meetings.",
+        "translation": "Formal",
+        "audioUrl": "gs://speakfuel-d832c.firebasestorage.app/lessons/lesson1/vocabulary4.mp3"
+      },
+      {
+        "word": "Casual",
+        "pronunciation": "/ˈkæʒuəl/",
+        "definition": "Relaxed and informal",
+        "example": "This is a casual gathering, so just be yourself.",
+        "translation": "Casual, informal",
+        "audioUrl": "gs://speakfuel-d832c.firebasestorage.app/lessons/lesson1/vocabulary5.mp3"
+      },
+      {
+        "word": "Acquaintance",
+        "pronunciation": "/əˈkweɪntəns/",
+        "definition": "A person you know slightly but not very well",
+        "example": "He's just an acquaintance from work.",
+        "translation": "Conocido",
+        "audioUrl": "gs://speakfuel-d832c.firebasestorage.app/lessons/lesson1/vocabulary6.mp3"
+      }
+    ]
+  },
+  "miniStory": {
+    "title": "INTRODUCTION",
+    "story": "Maria arrives at her new office building, feeling nervous but excited. She approaches the reception desk where a friendly woman greets her.\n\n\"Good morning! Welcome to TechCorp. I'm Jennifer, the receptionist. You must be Maria, our new marketing specialist.\"\n\n\"Yes, that's right. Good morning, Jennifer. I'm pleased to meet you,\" Maria replies with a smile.\n\n\"Wonderful! Let me introduce you to your team leader, Mr. Thompson. He's expecting you.\" Jennifer picks up the phone and makes a quick call.\n\nA few minutes later, a professional-looking man approaches. \"Good morning, Maria. I'm David Thompson, head of the marketing department. Welcome to the team!\"",
+    "audioUrl": "gs://speakfuel-d832c.firebasestorage.app/lessons/lesson1/ministory.mp3",
+    "duration": 108
+  },
+  "questions": {
+    "title": "INTRODUCTION",
+    "audioUrl": "gs://speakfuel-d832c.firebasestorage.app/lessons/lesson1/questions.mp3",
+    "duration": 717
+  }
+} 
