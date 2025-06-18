@@ -1,0 +1,77 @@
+{
+    "id": 3,
+    "title": "FOCUS",
+    "description": "FOCUS helps you train your attention and stay present—one phrase at a time.",
+    "mainArticle": {
+      "title": "FOCUS",
+      "content": "FOCUS helps you train your attention and stay present—one phrase at a time.",
+      "audioUrl": "gs://speakfuel-d832c.firebasestorage.app/lessons/lesson3/main.mp3",
+      "duration": 527,
+      "featuredImage": "https://res.cloudinary.com/dhfzcrgtb/image/upload/v1750256221/lesson3_main_lahq76.png"
+    },
+    "vocabulary": {
+      "words": [
+        {
+          "word": "Chiming",
+          "pronunciation": "/ˈtʃaɪmɪŋ/",
+          "definition": "Making a musical ringing sound, typically that of a bell or clock",
+          "example": "The bell was chiming above her head as she entered the coffee shop.",
+          "translation": "Sonando (como una campana)",
+          "audioUrl": "gs://speakfuel-d832c.firebasestorage.app/lessons/lesson-02/vocabulary/chiming.mp3"
+        },
+        {
+          "word": "Rush",
+          "pronunciation": "/rʌʃ/",
+          "definition": "A period of intense activity or high demand; a situation requiring urgency",
+          "example": "The morning rush is in full swing at the coffee shop.",
+          "translation": "Hora pico, prisa",
+          "audioUrl": "gs://speakfuel-d832c.firebasestorage.app/lessons/lesson-02/vocabulary/rush.mp3"
+        },
+        {
+          "word": "Barista",
+          "pronunciation": "/bəˈrɪstə/",
+          "definition": "A person who prepares and serves coffee drinks, especially espresso-based beverages",
+          "example": "Emma, the barista, has memorized Sarah's order perfectly.",
+          "translation": "Barista (persona que prepara café)",
+          "audioUrl": "gs://speakfuel-d832c.firebasestorage.app/lessons/lesson-02/vocabulary/barista.mp3"
+        },
+        {
+          "word": "Cappuccino",
+          "pronunciation": "/ˌkæpəˈtʃiːnoʊ/",
+          "definition": "An Italian coffee drink made with espresso and steamed milk foam",
+          "example": "She ordered a large cappuccino with an extra shot of espresso.",
+          "translation": "Capuchino",
+          "audioUrl": "gs://speakfuel-d832c.firebasestorage.app/lessons/lesson-02/vocabulary/cappuccino.mp3"
+        },
+        {
+          "word": "Espresso machine",
+          "pronunciation": "/ɪˈspreso məˈʃiːn/",
+          "definition": "A machine that brews coffee by forcing pressurized hot water through finely ground coffee",
+          "example": "Emma works the espresso machine with expert skill every morning.",
+          "translation": "Máquina de espresso",
+          "audioUrl": "gs://speakfuel-d832c.firebasestorage.app/lessons/lesson-02/vocabulary/espresso-machine.mp3"
+        },
+        {
+          "word": "Settles in",
+          "pronunciation": "/ˈsetəlz ɪn/",
+          "definition": "To make oneself comfortable in a place; to get established in a routine or location",
+          "example": "She settles in for another productive morning at her favorite table.",
+          "translation": "Se acomoda, se instala",
+          "audioUrl": "gs://speakfuel-d832c.firebasestorage.app/lessons/lesson-02/vocabulary/settles-in.mp3"
+        }
+      ]
+    },
+    "miniStory": {
+      "title": "FOCUS",
+      "story": "Sarah pushes open the door to her favorite coffee shop, the familiar bell chiming above her head. The morning rush is in full swing, but she doesn't mind waiting. She knows exactly what she wants.\n\n\"Good morning, Sarah!\" calls out Emma, the barista who has memorized her order. \"The usual today?\"\n\n\"You know me too well,\" Sarah laughs, pulling out her phone to check the time. \"One large cappuccino with an extra shot, please.\"\n\nAs Emma works the espresso machine, Sarah finds her favorite corner table by the window. She opens her laptop and settles in for another productive morning at her \"office away from office.\"",
+      "audioUrl": "gs://speakfuel-d832c.firebasestorage.app/lessons/lesson3/ministory.mp3",
+      "duration": 86,
+      "featuredImage": "https://res.cloudinary.com/dhfzcrgtb/image/upload/v1750256222/lesson3_ministory_kyffbk.png"
+    },
+    "questions": {
+      "title": "FOCUS",
+      "audioUrl": "gs://speakfuel-d832c.firebasestorage.app/lessons/lesson3/questions.mp3",
+      "duration": 549,
+      "featuredImage": "https://res.cloudinary.com/dhfzcrgtb/image/upload/v1750256222/lesson3_questions_ttmajw.png"
+    }
+} 

@@ -1,9 +1,10 @@
 'use client';
 
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, useMemo } from 'react';
 import { PlayIcon, PauseIcon, BackwardIcon } from '@heroicons/react/24/solid';
 import { useParams } from 'next/navigation';
 import { getAudioUrl } from '@/lib/firebase';
+import { getResponsiveCloudinaryUrl } from '@/lib/cloudinary';
 
 interface Question {
   id: number;
@@ -31,6 +32,7 @@ export default function MiniStoryQuestions({ data }: MiniStoryQuestionsProps) {
   console.log('MiniStoryQuestions data:', data); // Debug log
   const params = useParams();
   const lessonId = params?.id ? `lesson${params.id}` : 'lesson1';
+  const lessonNumber = parseInt(params?.id as string) || 1;
   
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
   const [selectedAnswers, setSelectedAnswers] = useState<{ [key: number]: number }>({});
@@ -71,7 +73,14 @@ export default function MiniStoryQuestions({ data }: MiniStoryQuestionsProps) {
     );
   }
 
-  const featuredImage = data.featuredImage || "/api/placeholder/800/400";
+  // Use Cloudinary image or fallback to provided featuredImage or placeholder
+  const featuredImage = useMemo(() => {
+    if (data.featuredImage) {
+      return data.featuredImage;
+    }
+    // Generate Cloudinary URL for this lesson's questions
+    return getResponsiveCloudinaryUrl(lessonNumber, 'questions', 'desktop');
+  }, [data.featuredImage, lessonNumber]);
 
   // Load audio URL from Firebase Storage
   useEffect(() => {
@@ -93,8 +102,8 @@ export default function MiniStoryQuestions({ data }: MiniStoryQuestionsProps) {
           const url = await getAudioUrl(`lessons/${lessonId}/questions.mp3`);
           setAudioUrl(url);
         }
-      } catch (error) {
-        console.error('Error loading Questions audio URL (questions.mp3):', error);
+              } catch (error) {
+        console.error('Error loading Questions audio URL:', error);
         setAudioError('Audio temporarily unavailable');
         setAudioUrl('');
       } finally {
@@ -118,7 +127,6 @@ export default function MiniStoryQuestions({ data }: MiniStoryQuestionsProps) {
           
           // Actualizar duración si está disponible y es diferente
           if (audioDuration && audioDuration !== duration) {
-            console.log('Updating Questions duration from audio element:', audioDuration);
             setDuration(audioDuration);
           }
         }
@@ -131,23 +139,20 @@ export default function MiniStoryQuestions({ data }: MiniStoryQuestionsProps) {
       };
 
       const handlePlayEvent = () => {
-        console.log('Questions audio (questions.mp3) play event triggered');
         setIsPlaying(true);
       };
 
       const handlePauseEvent = () => {
-        console.log('Questions audio (questions.mp3) pause event triggered');
         setIsPlaying(false);
       };
 
       const handleEndedEvent = () => {
-        console.log('Questions audio (questions.mp3) ended event triggered');
         setIsPlaying(false);
         setCurrentTime(0);
       };
 
       const handleErrorEvent = (e: Event) => {
-        console.error('Questions audio (questions.mp3) error event:', e);
+        console.error('Questions audio error:', e);
         setAudioError('Audio playback error');
         setIsPlaying(false);
       };
@@ -171,25 +176,7 @@ export default function MiniStoryQuestions({ data }: MiniStoryQuestionsProps) {
   }, [audioUrl, duration]);
 
   const togglePlayPause = async () => {
-    console.log('Questions (questions.mp3) togglePlayPause called, current state:', { 
-      isPlaying, 
-      audioLoading, 
-      audioUrl: !!audioUrl,
-      audioRefCurrent: !!audioRef.current 
-    });
-
-    if (audioLoading) {
-      console.log('Questions audio (questions.mp3) is still loading...');
-      return;
-    }
-
-    if (!audioUrl) {
-      console.log('No Questions audio (questions.mp3) available');
-      return;
-    }
-
-    if (!audioRef.current) {
-      console.log('Questions audio (questions.mp3) ref not available');
+    if (audioLoading || !audioUrl || !audioRef.current) {
       return;
     }
 
@@ -197,29 +184,19 @@ export default function MiniStoryQuestions({ data }: MiniStoryQuestionsProps) {
       const audio = audioRef.current;
       
       if (isPlaying) {
-        console.log('Attempting to pause Questions audio (questions.mp3)');
         audio.pause();
       } else {
-        console.log('Attempting to play Questions audio (questions.mp3)');
         await audio.play();
       }
     } catch (error) {
-      console.error('Error in Questions (questions.mp3) togglePlayPause:', error);
+      console.error('Error in Questions togglePlayPause:', error);
       setIsPlaying(false);
       setAudioError('Failed to play audio');
     }
   };
 
   const handleProgressClick = (e: React.MouseEvent<HTMLDivElement>) => {
-    console.log('Questions (questions.mp3) progress bar clicked');
-    
-    if (!audioRef.current) {
-      console.log('Questions audio (questions.mp3) ref not available for progress click');
-      return;
-    }
-
-    if (!audioUrl) {
-      console.log('No Questions audio (questions.mp3) URL available for progress click');
+    if (!audioRef.current || !audioUrl) {
       return;
     }
 
@@ -232,24 +209,12 @@ export default function MiniStoryQuestions({ data }: MiniStoryQuestionsProps) {
       const audioDuration = audio.duration || duration;
       const newTime = clickPercentage * audioDuration;
       
-      console.log('Questions (questions.mp3) progress click details:', {
-        clickX,
-        width,
-        clickPercentage,
-        audioDuration,
-        newTime,
-        currentTime: audio.currentTime
-      });
-      
       if (isFinite(newTime) && newTime >= 0 && newTime <= audioDuration) {
         audio.currentTime = newTime;
         setCurrentTime(newTime);
-        console.log('Successfully set Questions audio (questions.mp3) time to:', newTime);
-      } else {
-        console.warn('Invalid Questions (questions.mp3) time calculated:', newTime);
       }
     } catch (error) {
-      console.error('Error in Questions (questions.mp3) handleProgressClick:', error);
+      console.error('Error in Questions handleProgressClick:', error);
     }
   };
 
@@ -715,15 +680,15 @@ export default function MiniStoryQuestions({ data }: MiniStoryQuestionsProps) {
               ref={audioRef}
               src={audioUrl}
               preload="metadata"
-              onLoadStart={() => console.log('Questions audio (questions.mp3) loading started')}
-              onCanPlay={() => console.log('Questions audio (questions.mp3) can play')}
+              onLoadStart={() => console.log('Questions audio loading started')}
+              onCanPlay={() => console.log('Questions audio can play')}
               onError={(e) => {
-                console.error('Error loading Questions audio (questions.mp3):', e);
+                console.error('Error loading Questions audio:', e);
                 setAudioError('Failed to load audio file');
                 setAudioLoading(false);
               }}
               onLoadedData={() => {
-                console.log('Questions audio (questions.mp3) loaded successfully');
+                console.log('Questions audio loaded successfully');
                 setAudioLoading(false);
                 setAudioError(null);
               }}

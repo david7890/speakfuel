@@ -35,6 +35,7 @@ export interface MiniStoryData {
   story: string;
   audioUrl: string;
   duration: number;
+  featuredImage?: string;
 }
 
 // Tipo para las preguntas
@@ -51,6 +52,7 @@ export interface QuestionsData {
   title: string;
   audioUrl: string;
   duration: number;
+  featuredImage?: string;
 }
 
 // Tipo para una lección completa

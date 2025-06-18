@@ -4,6 +4,7 @@ import { useState, useEffect, useRef, useMemo } from 'react';
 import { PlayIcon, PauseIcon, BackwardIcon } from '@heroicons/react/24/solid';
 import { useParams } from 'next/navigation';
 import { getAudioUrl } from '@/lib/firebase';
+import { getResponsiveCloudinaryUrl } from '@/lib/cloudinary';
 
 interface MainArticleProps {
   data: {
@@ -65,6 +66,7 @@ const createSilentAudio = (duration: number) => {
 export default function MainArticle({ data, onNext, onPrevious }: MainArticleProps) {
   const params = useParams();
   const lessonId = params?.id ? `lesson${params.id}` : 'lesson1';
+  const lessonNumber = parseInt(params?.id as string) || 1;
   
   const [isPlaying, setIsPlaying] = useState(false);
   const [currentTime, setCurrentTime] = useState(0);
@@ -85,7 +87,14 @@ export default function MainArticle({ data, onNext, onPrevious }: MainArticlePro
     { text: "Whether you're meeting a friend or working on a project, coffee shops offer a unique space.", startTime: 16.5, endTime: 22.0 },
   ];
 
-  const featuredImage = data.featuredImage || "/api/placeholder/800/400";
+  // Use Cloudinary image or fallback to provided featuredImage or placeholder
+  const featuredImage = useMemo(() => {
+    if (data.featuredImage) {
+      return data.featuredImage;
+    }
+    // Generate Cloudinary URL for this lesson's main article
+    return getResponsiveCloudinaryUrl(lessonNumber, 'main', 'desktop');
+  }, [data.featuredImage, lessonNumber]);
 
   // Load audio URL from Firebase Storage
   useEffect(() => {

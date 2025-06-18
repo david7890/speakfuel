@@ -1,9 +1,10 @@
 'use client';
 
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, useMemo } from 'react';
 import { PlayIcon, PauseIcon, BackwardIcon } from '@heroicons/react/24/solid';
 import { useParams } from 'next/navigation';
 import { getAudioUrl } from '@/lib/firebase';
+import { getResponsiveCloudinaryUrl } from '@/lib/cloudinary';
 
 interface MiniStoryProps {
   data: {
@@ -21,6 +22,7 @@ interface MiniStoryProps {
 export default function MiniStory({ data, onNext, onPrevious }: MiniStoryProps) {
   const params = useParams();
   const lessonId = params?.id ? `lesson${params.id}` : 'lesson1';
+  const lessonNumber = parseInt(params?.id as string) || 1;
   
   const [isPlaying, setIsPlaying] = useState(false);
   const [currentTime, setCurrentTime] = useState(0);
@@ -30,7 +32,14 @@ export default function MiniStory({ data, onNext, onPrevious }: MiniStoryProps) 
   const [audioError, setAudioError] = useState<string | null>(null);
   const audioRef = useRef<HTMLAudioElement>(null);
 
-  const featuredImage = data.featuredImage || "/api/placeholder/800/400";
+  // Use Cloudinary image or fallback to provided featuredImage or placeholder
+  const featuredImage = useMemo(() => {
+    if (data.featuredImage) {
+      return data.featuredImage;
+    }
+    // Generate Cloudinary URL for this lesson's mini story
+    return getResponsiveCloudinaryUrl(lessonNumber, 'ministory', 'desktop');
+  }, [data.featuredImage, lessonNumber]);
 
   // Load audio URL from Firebase Storage
   useEffect(() => {

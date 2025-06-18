@@ -70,7 +70,8 @@ export default function QuestionsPage() {
               // Include audio data from questionsData
               audioUrl: questionsData.audioUrl,
               duration: questionsData.duration,
-              title: questionsData.title
+              title: questionsData.title,
+              featuredImage: questionsData.featuredImage
             }
           };
           
