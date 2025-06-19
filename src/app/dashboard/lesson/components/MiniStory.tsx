@@ -5,6 +5,7 @@ import { PlayIcon, PauseIcon, BackwardIcon } from '@heroicons/react/24/solid';
 import { useParams } from 'next/navigation';
 import { getAudioUrl } from '@/lib/firebase';
 import { getResponsiveCloudinaryUrl } from '@/lib/cloudinary';
+import { loadTranscript, type TranscriptData } from '@/lib/transcriptLoader';
 
 interface MiniStoryProps {
   data: {
@@ -30,6 +31,8 @@ export default function MiniStory({ data, onNext, onPrevious }: MiniStoryProps) 
   const [audioUrl, setAudioUrl] = useState<string>('');
   const [audioLoading, setAudioLoading] = useState(true);
   const [audioError, setAudioError] = useState<string | null>(null);
+  const [transcript, setTranscript] = useState<TranscriptData | null>(null);
+  const [transcriptLoading, setTranscriptLoading] = useState(true);
   const audioRef = useRef<HTMLAudioElement>(null);
 
   // Use Cloudinary image or fallback to provided featuredImage or placeholder
@@ -40,6 +43,23 @@ export default function MiniStory({ data, onNext, onPrevious }: MiniStoryProps) 
     // Generate Cloudinary URL for this lesson's mini story
     return getResponsiveCloudinaryUrl(lessonNumber, 'ministory', 'desktop');
   }, [data.featuredImage, lessonNumber]);
+
+  // Cargar transcripción real
+  useEffect(() => {
+    const loadTranscriptData = async () => {
+      setTranscriptLoading(true);
+      try {
+        const transcriptData = await loadTranscript(lessonNumber, 'ministory');
+        setTranscript(transcriptData);
+      } catch (error) {
+        console.error('Error loading ministory transcript:', error);
+      } finally {
+        setTranscriptLoading(false);
+      }
+    };
+
+    loadTranscriptData();
+  }, [lessonNumber]);
 
   // Load audio URL from Firebase Storage
   useEffect(() => {
@@ -346,7 +366,7 @@ export default function MiniStory({ data, onNext, onPrevious }: MiniStoryProps) 
               {/* Columna izquierda: Imagen y Reproductor */}
               <div className="space-y-6">
                 {/* Imagen destacada */}
-                <div className="relative h-64 sm:h-72 lg:h-64 bg-gradient-to-br from-green-100 to-teal-100 overflow-hidden rounded-2xl">
+                <div className="relative w-full aspect-square lg:aspect-auto lg:h-80 bg-gradient-to-br from-green-100 to-teal-100 overflow-hidden rounded-2xl">
                   <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent z-10" />
                   <img 
                     src={featuredImage} 
@@ -449,13 +469,30 @@ export default function MiniStory({ data, onNext, onPrevious }: MiniStoryProps) 
                   <div className="flex-1 overflow-y-auto">
                     <div className="bg-white rounded-xl p-6 border-l-4 border-green-500 shadow-sm">
                       <div className="prose prose-lg max-w-none">
-                        {data.story.split('\n').map((paragraph, index) => (
-                          paragraph.trim() && (
+                        {transcriptLoading ? (
+                          <div className="flex items-center justify-center py-8">
+                            <div className="w-6 h-6 border-2 border-green-500 border-t-transparent rounded-full animate-spin mr-3"></div>
+                            <span className="text-gray-600">Loading story...</span>
+                          </div>
+                        ) : transcript?.segments ? (
+                          transcript.segments.map((segment, index) => (
                             <p key={index} className="text-gray-800 leading-relaxed mb-4 font-medium text-lg">
-                              {paragraph.trim()}
+                              {segment.text}
                             </p>
-                          )
-                        ))}
+                          ))
+                        ) : data.story ? (
+                          data.story.split('\n').map((paragraph, index) => (
+                            paragraph.trim() && (
+                              <p key={index} className="text-gray-800 leading-relaxed mb-4 font-medium text-lg">
+                                {paragraph.trim()}
+                              </p>
+                            )
+                          ))
+                        ) : (
+                          <div className="text-center py-8 text-gray-500">
+                            <p>No story available for this lesson.</p>
+                          </div>
+                        )}
                       </div>
                     </div>
                   </div>
@@ -499,13 +536,30 @@ export default function MiniStory({ data, onNext, onPrevious }: MiniStoryProps) 
           
           <div className="bg-white rounded-xl p-6 border-l-4 border-green-500 shadow-sm">
             <div className="prose prose-lg max-w-none">
-              {data.story.split('\n').map((paragraph, index) => (
-                paragraph.trim() && (
+              {transcriptLoading ? (
+                <div className="flex items-center justify-center py-8">
+                  <div className="w-6 h-6 border-2 border-green-500 border-t-transparent rounded-full animate-spin mr-3"></div>
+                  <span className="text-gray-600">Loading story...</span>
+                </div>
+              ) : transcript?.segments ? (
+                transcript.segments.map((segment, index) => (
                   <p key={index} className="text-gray-800 leading-relaxed mb-4 font-medium text-lg">
-                    {paragraph.trim()}
+                    {segment.text}
                   </p>
-                )
-              ))}
+                ))
+              ) : data.story ? (
+                data.story.split('\n').map((paragraph, index) => (
+                  paragraph.trim() && (
+                    <p key={index} className="text-gray-800 leading-relaxed mb-4 font-medium text-lg">
+                      {paragraph.trim()}
+                    </p>
+                  )
+                ))
+              ) : (
+                <div className="text-center py-8 text-gray-500">
+                  <p>No story available for this lesson.</p>
+                </div>
+              )}
             </div>
           </div>
         </div>

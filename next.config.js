@@ -15,13 +15,15 @@ const nextConfig = {
     formats: ['image/webp', 'image/avif'], // Formatos modernos
     deviceSizes: [640, 750, 828, 1080, 1200, 1920], // Breakpoints responsive
     imageSizes: [16, 32, 48, 64, 96, 128, 256, 384], // Tamaños de imagen
-    domains: ['speakfuel.com'], // Dominios permitidos
+    domains: ['speakfuel.com', 'res.cloudinary.com'], // Dominios permitidos (agregado Cloudinary)
     dangerouslyAllowSVG: true,
     contentSecurityPolicy: "default-src 'self'; script-src 'none'; sandbox;",
   },
 
   // Headers de seguridad
   async headers() {
+    const isDevelopment = process.env.NODE_ENV === 'development';
+    
     return [
       {
         source: '/(.*)',
@@ -46,15 +48,22 @@ const nextConfig = {
             key: 'Permissions-Policy',
             value: 'camera=(), microphone=(), geolocation=()',
           },
+          // Deshabilitar caché en desarrollo
+          ...(isDevelopment ? [{
+            key: 'Cache-Control',
+            value: 'no-cache, no-store, must-revalidate',
+          }] : []),
         ],
       },
       {
-        // Caché optimizado para assets estáticos
+        // Caché optimizado para assets estáticos (solo en producción)
         source: '/(.*)\\.(js|css|png|jpg|jpeg|gif|ico|svg|woff|woff2)',
         headers: [
           {
             key: 'Cache-Control',
-            value: 'public, max-age=31536000, immutable',
+            value: isDevelopment 
+              ? 'no-cache, no-store, must-revalidate'
+              : 'public, max-age=31536000, immutable',
           },
         ],
       },

@@ -32,35 +32,30 @@ export function getOptimizedCloudinaryUrl(
     format?: 'auto' | 'webp' | 'jpg' | 'png';
   } = {}
 ): string {
-  const { width = 800, height = 400, quality = 80, format = 'auto' } = options;
+  const { width = 800, height = 800, quality = 80, format = 'auto' } = options;
   
   return `https://res.cloudinary.com/${CLOUD_NAME}/image/upload/w_${width},h_${height},c_fill,q_${quality},f_${format}/v1/lesson${lessonId}_${section}.png`;
 }
 
 /**
  * Get responsive Cloudinary image URL with automatic format and quality
- * @param lessonId - The lesson number
+ * @param lessonNumber - The lesson number
  * @param section - The section type
- * @param size - Preset size ('mobile', 'tablet', 'desktop')
+ * @param viewType - The view type ('mobile' or 'desktop')
  * @returns Responsive Cloudinary URL
  */
 export function getResponsiveCloudinaryUrl(
-  lessonId: number, 
+  lessonNumber: number, 
   section: 'main' | 'ministory' | 'questions',
-  size: 'mobile' | 'tablet' | 'desktop' = 'desktop'
+  viewType: 'mobile' | 'desktop' = 'desktop'
 ): string {
-  const sizeMap = {
-    mobile: { width: 400, height: 400 },
-    tablet: { width: 600, height: 400 },
-    desktop: { width: 800, height: 400 }
-  };
+  const cloudName = process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME || 'dhfzcrgtb';
+  const baseFilename = `lesson${lessonNumber}_${section}`;
   
-  const { width, height } = sizeMap[size];
+  // Different dimensions for mobile vs desktop
+  const dimensions = viewType === 'mobile' 
+    ? 'w_600,h_600,c_fill' // Square for mobile
+    : 'w_800,h_320,c_fill'; // Rectangle for desktop (matching h-80 = 320px)
   
-  return getOptimizedCloudinaryUrl(lessonId, section, {
-    width,
-    height,
-    quality: 85,
-    format: 'auto'
-  });
+  return `https://res.cloudinary.com/${cloudName}/image/upload/${dimensions},f_auto,q_auto/${baseFilename}.png`;
 } 

@@ -5,6 +5,7 @@ import { PlayIcon, PauseIcon, BackwardIcon } from '@heroicons/react/24/solid';
 import { useParams } from 'next/navigation';
 import { getAudioUrl } from '@/lib/firebase';
 import { getResponsiveCloudinaryUrl } from '@/lib/cloudinary';
+import { loadTranscript, getCurrentSegmentIndex, getCurrentWordIndex, type TranscriptSegment, type TranscriptData } from '@/lib/transcriptLoader';
 
 interface MainArticleProps {
   data: {
@@ -76,16 +77,26 @@ export default function MainArticle({ data, onNext, onPrevious }: MainArticlePro
   const [audioUrl, setAudioUrl] = useState<string>('');
   const [audioLoading, setAudioLoading] = useState(true);
   const [audioError, setAudioError] = useState<string | null>(null);
+  const [transcript, setTranscript] = useState<TranscriptData | null>(null);
+  const [transcriptLoading, setTranscriptLoading] = useState(true);
   const audioRef = useRef<HTMLAudioElement>(null);
 
-  // Mock data para demostración
-  const mockTranscript = [
-    { text: "Welcome to today's lesson about coffee shop culture.", startTime: 0, endTime: 3.5 },
-    { text: "Coffee shops have become an integral part of modern social life.", startTime: 3.5, endTime: 7.2 },
-    { text: "They serve as meeting places, workspaces, and quiet retreats.", startTime: 7.2, endTime: 11.8 },
-    { text: "The atmosphere of a coffee shop plays a crucial role in creating community.", startTime: 11.8, endTime: 16.5 },
-    { text: "Whether you're meeting a friend or working on a project, coffee shops offer a unique space.", startTime: 16.5, endTime: 22.0 },
-  ];
+  // Cargar transcripción real
+  useEffect(() => {
+    const loadTranscriptData = async () => {
+      setTranscriptLoading(true);
+      try {
+        const transcriptData = await loadTranscript(lessonNumber, 'main');
+        setTranscript(transcriptData);
+      } catch (error) {
+        console.error('Error loading transcript:', error);
+      } finally {
+        setTranscriptLoading(false);
+      }
+    };
+
+    loadTranscriptData();
+  }, [lessonNumber]);
 
   // Use Cloudinary image or fallback to provided featuredImage or placeholder
   const featuredImage = useMemo(() => {
@@ -155,19 +166,19 @@ export default function MainArticle({ data, onNext, onPrevious }: MainArticlePro
             });
           }
           
-          // Encontrar la frase actual en la transcripción
-          const transcriptIndex = mockTranscript.findIndex(
-            item => time >= item.startTime && time < item.endTime
-          );
-          setCurrentTranscriptIndex(transcriptIndex);
+          // Encontrar el segmento actual en la transcripción
+          if (transcript?.segments) {
+            const segmentIndex = getCurrentSegmentIndex(transcript.segments, time);
+            setCurrentTranscriptIndex(segmentIndex);
 
-          // Simular resaltado de palabra (simplificado)
-          if (transcriptIndex >= 0) {
-            const phrase = mockTranscript[transcriptIndex];
-            const phraseProgress = (time - phrase.startTime) / (phrase.endTime - phrase.startTime);
-            const words = phrase.text.split(' ');
-            const wordIndex = Math.floor(phraseProgress * words.length);
-            setCurrentWordIndex(wordIndex);
+            // Resaltado de palabra usando la función utilitaria
+            if (segmentIndex >= 0) {
+              const currentSegment = transcript.segments[segmentIndex];
+              const wordIndex = getCurrentWordIndex(currentSegment, time);
+              setCurrentWordIndex(wordIndex);
+            } else {
+              setCurrentWordIndex(-1);
+            }
           }
         }
       };
@@ -218,7 +229,7 @@ export default function MainArticle({ data, onNext, onPrevious }: MainArticlePro
         audio.removeEventListener('error', handleErrorEvent);
       };
     }
-  }, [audioUrl]); // Dependencia en audioUrl para re-setup cuando cambie
+  }, [audioUrl, transcript]); // Dependencia en audioUrl y transcript para re-setup cuando cambien
 
   const togglePlayPause = async () => {
     console.log('togglePlayPause called, current state:', { 
@@ -468,7 +479,7 @@ export default function MainArticle({ data, onNext, onPrevious }: MainArticlePro
             {/* Columna izquierda: Imagen y Reproductor */}
             <div className="space-y-6">
               {/* Imagen destacada */}
-              <div className="relative h-64 sm:h-72 lg:h-64 bg-gradient-to-br from-blue-100 to-purple-100 overflow-hidden rounded-2xl">
+              <div className="relative w-full aspect-square lg:aspect-auto lg:h-80 bg-gradient-to-br from-blue-100 to-purple-100 overflow-hidden rounded-2xl">
                 <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent z-10" />
                 <img 
                   src={featuredImage} 
@@ -636,16 +647,27 @@ export default function MainArticle({ data, onNext, onPrevious }: MainArticlePro
                 </h3>
                 
                 <div className="text-xl leading-relaxed space-y-4 flex-1 overflow-y-auto">
-                  {mockTranscript.map((phrase, phraseIndex) => (
-                    <p key={phraseIndex} className="transition-all duration-500">
-                      {phrase.text.split(' ').map((word, wordIndex) => (
-                        <span key={wordIndex}>
-                          {renderTranscriptWord(word, wordIndex, phraseIndex)}
-                          {wordIndex < phrase.text.split(' ').length - 1 && ' '}
-                        </span>
-                      ))}
-                    </p>
-                  ))}
+                  {transcriptLoading ? (
+                    <div className="flex items-center justify-center py-8">
+                      <div className="w-6 h-6 border-2 border-blue-500 border-t-transparent rounded-full animate-spin mr-3"></div>
+                      <span className="text-gray-600">Loading transcript...</span>
+                    </div>
+                  ) : transcript?.segments ? (
+                    transcript.segments.map((segment: TranscriptSegment, segmentIndex: number) => (
+                      <p key={segmentIndex} className="transition-all duration-500">
+                        {segment.text.split(' ').map((word: string, wordIndex: number) => (
+                          <span key={wordIndex}>
+                            {renderTranscriptWord(word, wordIndex, segmentIndex)}
+                            {wordIndex < segment.text.split(' ').length - 1 && ' '}
+                          </span>
+                        ))}
+                      </p>
+                    ))
+                  ) : (
+                    <div className="text-center py-8 text-gray-500">
+                      <p>No transcript available for this lesson.</p>
+                    </div>
+                  )}
                 </div>
               </div>
             </div>
@@ -686,16 +708,27 @@ export default function MainArticle({ data, onNext, onPrevious }: MainArticlePro
           </h3>
           
           <div className="text-lg leading-relaxed space-y-4">
-            {mockTranscript.map((phrase, phraseIndex) => (
-              <p key={phraseIndex} className="transition-all duration-500">
-                {phrase.text.split(' ').map((word, wordIndex) => (
-                  <span key={wordIndex}>
-                    {renderTranscriptWord(word, wordIndex, phraseIndex)}
-                    {wordIndex < phrase.text.split(' ').length - 1 && ' '}
-                  </span>
-                ))}
-              </p>
-            ))}
+            {transcriptLoading ? (
+              <div className="flex items-center justify-center py-8">
+                <div className="w-6 h-6 border-2 border-blue-500 border-t-transparent rounded-full animate-spin mr-3"></div>
+                <span className="text-gray-600">Loading transcript...</span>
+              </div>
+            ) : transcript?.segments ? (
+              transcript.segments.map((segment: TranscriptSegment, segmentIndex: number) => (
+                <p key={segmentIndex} className="transition-all duration-500">
+                  {segment.text.split(' ').map((word: string, wordIndex: number) => (
+                    <span key={wordIndex}>
+                      {renderTranscriptWord(word, wordIndex, segmentIndex)}
+                      {wordIndex < segment.text.split(' ').length - 1 && ' '}
+                    </span>
+                  ))}
+                </p>
+              ))
+            ) : (
+              <div className="text-center py-8 text-gray-500">
+                <p>No transcript available for this lesson.</p>
+              </div>
+            )}
           </div>
         </div>
       </div>
