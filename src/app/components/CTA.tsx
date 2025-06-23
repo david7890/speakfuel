@@ -1,8 +1,10 @@
 'use client';
 
 import { useState } from 'react';
+import { useRouter } from 'next/navigation';
 
 export default function CTA() {
+  const router = useRouter();
   const [email, setEmail] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
 
@@ -10,12 +12,12 @@ export default function CTA() {
     e.preventDefault();
     setIsSubmitting(true);
     
-    // Simular envío del formulario
+    // Guardar email y redirigir al checkout
     setTimeout(() => {
       setIsSubmitting(false);
-      setEmail('');
-      alert('¡Gracias! Te hemos enviado el acceso gratuito a tu email.');
-    }, 2000);
+      // Pasar el email al checkout via URL params
+      router.push(`/checkout?email=${encodeURIComponent(email)}`);
+    }, 500);
   };
 
   const plans = [
@@ -185,6 +187,7 @@ export default function CTA() {
                 </ul>
                 
                 <button
+                  onClick={() => router.push('/checkout')}
                   className={`w-full py-3 rounded-lg font-medium text-lg transition-all duration-300 ${
                     plan.popular
                       ? 'bg-gradient-to-r from-blue-600 to-purple-600 text-white hover:from-blue-700 hover:to-purple-700 shadow-lg hover:shadow-xl'

@@ -4,8 +4,23 @@ import { useState } from 'react';
 import Link from 'next/link';
 import { FireIcon } from '@heroicons/react/24/outline';
 
-export default function DashboardNav() {
+interface DashboardNavProps {
+  userName?: string;
+  currentStreak?: number;
+  onSignOut?: () => void;
+}
+
+export default function DashboardNav({ 
+  userName = 'Usuario', 
+  currentStreak = 0,
+  onSignOut 
+}: DashboardNavProps) {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  
+  // Obtener la primera letra del nombre del usuario
+  const getUserInitial = (name: string) => {
+    return name.charAt(0).toUpperCase();
+  };
 
   return (
     <nav className="fixed top-0 w-full bg-white/95 backdrop-blur-sm z-50 border-b border-gray-100 shadow-sm">
@@ -29,7 +44,9 @@ export default function DashboardNav() {
             {/* Streak Counter */}
             <div className="flex items-center space-x-2 bg-orange-50 px-3 py-1 rounded-full">
               <FireIcon className="h-4 w-4 text-orange-500" />
-              <span className="text-sm font-medium text-orange-700">3 días</span>
+              <span className="text-sm font-medium text-orange-700">
+                {currentStreak} día{currentStreak !== 1 ? 's' : ''}
+              </span>
             </div>
 
             {/* Profile Avatar */}
@@ -38,7 +55,7 @@ export default function DashboardNav() {
                 onClick={() => setIsMenuOpen(!isMenuOpen)}
                 className="w-10 h-10 bg-gradient-to-r from-blue-600 to-purple-600 rounded-full flex items-center justify-center text-white font-medium hover:shadow-lg transition-all duration-300"
               >
-                M
+                {getUserInitial(userName)}
               </button>
               
                              {/* Dropdown Menu - Simplified */}
@@ -53,7 +70,10 @@ export default function DashboardNav() {
                    </Link>
                    <button
                      className="block w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-red-50 transition-colors"
-                     onClick={() => setIsMenuOpen(false)}
+                     onClick={() => {
+                       setIsMenuOpen(false);
+                       onSignOut?.();
+                     }}
                    >
                      Cerrar Sesión
                    </button>
@@ -67,7 +87,9 @@ export default function DashboardNav() {
             {/* Mobile Streak Counter */}
             <div className="flex items-center space-x-1 bg-orange-50 px-2 py-1 rounded-full">
               <FireIcon className="h-4 w-4 text-orange-500" />
-              <span className="text-xs font-medium text-orange-700">3 días</span>
+              <span className="text-xs font-medium text-orange-700">
+                {currentStreak} día{currentStreak !== 1 ? 's' : ''}
+              </span>
             </div>
 
             {/* Mobile menu button */}
@@ -92,7 +114,9 @@ export default function DashboardNav() {
              <div className="flex flex-col space-y-4">
                <div className="flex items-center space-x-2">
                  <FireIcon className="h-4 w-4 text-orange-500" />
-                 <span className="text-sm font-medium text-orange-700">Racha: 3 días</span>
+                 <span className="text-sm font-medium text-orange-700">
+                   Racha: {currentStreak} día{currentStreak !== 1 ? 's' : ''}
+                 </span>
                </div>
                <Link
                  href="/"
@@ -103,7 +127,10 @@ export default function DashboardNav() {
                </Link>
                <button
                  className="text-left text-red-600 hover:text-red-700 transition-colors"
-                 onClick={() => setIsMenuOpen(false)}
+                 onClick={() => {
+                   setIsMenuOpen(false);
+                   onSignOut?.();
+                 }}
                >
                  Cerrar Sesión
                </button>

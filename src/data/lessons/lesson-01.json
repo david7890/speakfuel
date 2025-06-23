@@ -63,7 +63,6 @@
   },
   "miniStory": {
     "title": "INTRODUCTION",
-    "story": "Maria arrives at her new office building, feeling nervous but excited. She approaches the reception desk where a friendly woman greets her.\n\n\"Good morning! Welcome to TechCorp. I'm Jennifer, the receptionist. You must be Maria, our new marketing specialist.\"\n\n\"Yes, that's right. Good morning, Jennifer. I'm pleased to meet you,\" Maria replies with a smile.\n\n\"Wonderful! Let me introduce you to your team leader, Mr. Thompson. He's expecting you.\" Jennifer picks up the phone and makes a quick call.\n\nA few minutes later, a professional-looking man approaches. \"Good morning, Maria. I'm David Thompson, head of the marketing department. Welcome to the team!\"",
     "audioUrl": "gs://speakfuel-d832c.firebasestorage.app/lessons/lesson1/ministory.mp3",
     "duration": 108,
     "featuredImage": "https://res.cloudinary.com/dhfzcrgtb/image/upload/v1750256195/lesson1_ministory_zypisg.png"

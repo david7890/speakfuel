@@ -1,10 +1,11 @@
 import { Metadata } from 'next';
 import Header from './components/Header';
 import Hero from './components/Hero';
-import Benefits from './components/Benefits';
 import HowItWorks from './components/HowItWorks';
+import LeadMagnet from './components/LeadMagnet';
 import Testimonials from './components/Testimonials';
-import CTA from './components/CTA';
+import CourseContent from './components/CourseContent';
+import PricingCTA from './components/PricingCTA';
 import Footer from './components/Footer';
 
 // Configuración SEO avanzada
@@ -66,19 +67,16 @@ export const metadata: Metadata = {
   category: 'education',
 };
 
-// Forzar SSG - Página completamente estática
-export const dynamic = 'force-static';
-export const revalidate = false;
-
 export default function Home() {
   return (
     <main className="min-h-screen">
       <Header />
       <Hero />
-      <Benefits />
       <HowItWorks />
+      <LeadMagnet />
       <Testimonials />
-      <CTA />
+      <CourseContent />
+      <PricingCTA />
       <Footer />
     </main>
   );

@@ -5,6 +5,7 @@ import { PlayIcon, PauseIcon, BackwardIcon } from '@heroicons/react/24/solid';
 import { useParams } from 'next/navigation';
 import { getAudioUrl } from '@/lib/firebase';
 import { getResponsiveCloudinaryUrl } from '@/lib/cloudinary';
+import { loadTranscript, getCurrentSegmentIndex, getCurrentWordIndex, type TranscriptSegment, type TranscriptData } from '@/lib/transcriptLoader';
 
 interface Question {
   id: number;
@@ -34,44 +35,24 @@ export default function MiniStoryQuestions({ data }: MiniStoryQuestionsProps) {
   const lessonId = params?.id ? `lesson${params.id}` : 'lesson1';
   const lessonNumber = parseInt(params?.id as string) || 1;
   
-  const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
-  const [selectedAnswers, setSelectedAnswers] = useState<{ [key: number]: number }>({});
-  const [showExplanation, setShowExplanation] = useState<{ [key: number]: boolean }>({});
-  const [isCompleted, setIsCompleted] = useState(false);
+  // Removido: Variables de preguntas ya que ahora es solo transcripción
   const [isPlaying, setIsPlaying] = useState(false);
   const [currentTime, setCurrentTime] = useState(0);
   const [duration, setDuration] = useState(data.duration || 0);
   const [audioUrl, setAudioUrl] = useState<string>('');
   const [audioLoading, setAudioLoading] = useState(true);
   const [audioError, setAudioError] = useState<string | null>(null);
+  const [transcript, setTranscript] = useState<TranscriptData | null>(null);
+  const [transcriptLoading, setTranscriptLoading] = useState(true);
+  const [currentTranscriptIndex, setCurrentTranscriptIndex] = useState(-1);
+  const [currentWordIndex, setCurrentWordIndex] = useState(-1);
   const audioRef = useRef<HTMLAudioElement>(null);
+  const mobileTranscriptRef = useRef<HTMLDivElement>(null);
+  const desktopTranscriptRef = useRef<HTMLDivElement>(null);
+  const segmentRefs = useRef<(HTMLParagraphElement | null)[]>([]);
+  const desktopSegmentRefs = useRef<(HTMLParagraphElement | null)[]>([]);
 
-  const currentQuestion = data.questions[currentQuestionIndex];
-  const totalQuestions = data.questions.length;
-
-  // Safety check - if no questions available, show a message
-  if (!data.questions || data.questions.length === 0) {
-    return (
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 font-nunito">
-        <div className="bg-white rounded-3xl shadow-xl border border-gray-100 overflow-hidden p-8 text-center">
-          <h2 className="text-2xl font-bold text-gray-900 mb-4">Questions Coming Soon</h2>
-          <p className="text-gray-600">The questions for this lesson are being prepared.</p>
-        </div>
-      </div>
-    );
-  }
-
-  // Safety check - if currentQuestion is undefined
-  if (!currentQuestion) {
-    return (
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 font-nunito">
-        <div className="bg-white rounded-3xl shadow-xl border border-gray-100 overflow-hidden p-8 text-center">
-          <h2 className="text-2xl font-bold text-gray-900 mb-4">Loading Questions...</h2>
-          <p className="text-gray-600">Please wait while we load the questions.</p>
-        </div>
-      </div>
-    );
-  }
+  // Removido: Lógica de preguntas ya que ahora es solo transcripción
 
   // Use Cloudinary image or fallback to provided featuredImage or placeholder
   const featuredImage = useMemo(() => {
@@ -81,6 +62,81 @@ export default function MiniStoryQuestions({ data }: MiniStoryQuestionsProps) {
     // Generate Cloudinary URL for this lesson's questions
     return getResponsiveCloudinaryUrl(lessonNumber, 'questions', 'desktop');
   }, [data.featuredImage, lessonNumber]);
+
+  // Cargar transcripción real
+  useEffect(() => {
+    const loadTranscriptData = async () => {
+      setTranscriptLoading(true);
+      try {
+        const transcriptData = await loadTranscript(lessonNumber, 'ministory');
+        setTranscript(transcriptData);
+      } catch (error) {
+        console.error('Error loading ministory transcript for questions:', error);
+      } finally {
+        setTranscriptLoading(false);
+      }
+    };
+
+    loadTranscriptData();
+  }, [lessonNumber]);
+
+  // Auto-scroll para ambas vistas cuando cambie el segmento actual
+  useEffect(() => {
+    if (currentTranscriptIndex >= 0) {
+      // Auto-scroll para vista móvil usando transform
+      setTimeout(() => {
+        if (segmentRefs.current[currentTranscriptIndex] && mobileTranscriptRef.current) {
+          const currentSegmentElement = segmentRefs.current[currentTranscriptIndex];
+          const containerElement = mobileTranscriptRef.current;
+          const contentElement = containerElement.children[0] as HTMLElement;
+          
+          if (contentElement) {
+            const elementTop = currentSegmentElement.offsetTop;
+            const containerHeight = containerElement.offsetHeight;
+            
+            // Para el primer segmento, mantener en posición inicial
+            let targetTranslateY;
+            if (currentTranscriptIndex === 0) {
+              targetTranslateY = 0; // No mover nada, mantener el primer párrafo visible
+            } else if (currentTranscriptIndex === 1) {
+              targetTranslateY = Math.max(0, elementTop - 40); // Solo un poco de padding arriba
+            } else {
+              targetTranslateY = elementTop - (containerHeight * 0.3); // 30% desde arriba para el resto
+            }
+            
+            contentElement.style.transform = `translateY(-${Math.max(0, targetTranslateY)}px)`;
+            contentElement.style.transition = 'transform 0.6s cubic-bezier(0.4, 0, 0.2, 1)';
+          }
+        }
+      }, 100);
+
+      // Auto-scroll para vista desktop usando transform
+      setTimeout(() => {
+        if (desktopSegmentRefs.current[currentTranscriptIndex] && desktopTranscriptRef.current) {
+          const currentSegmentElement = desktopSegmentRefs.current[currentTranscriptIndex];
+          const containerElement = desktopTranscriptRef.current;
+          const contentElement = containerElement.children[0] as HTMLElement;
+          
+          // Ahora uso el mismo patrón que en móvil: contenedor > div de contenido
+          if (currentSegmentElement && contentElement) {
+            const elementTop = currentSegmentElement.offsetTop;
+            const containerHeight = containerElement.offsetHeight;
+            
+            // Para los primeros 2 segmentos, mantener en la parte superior
+            let targetTranslateY;
+            if (currentTranscriptIndex <= 1) {
+              targetTranslateY = Math.max(0, elementTop - 50); // Solo un poco de padding arriba
+            } else {
+              targetTranslateY = elementTop - (containerHeight * 0.25); // 25% desde arriba
+            }
+            
+            contentElement.style.transform = `translateY(-${Math.max(0, targetTranslateY)}px)`;
+            contentElement.style.transition = 'transform 0.6s cubic-bezier(0.4, 0, 0.2, 1)';
+          }
+        }
+      }, 100);
+    }
+  }, [currentTranscriptIndex]);
 
   // Load audio URL from Firebase Storage
   useEffect(() => {
@@ -129,6 +185,21 @@ export default function MiniStoryQuestions({ data }: MiniStoryQuestionsProps) {
           if (audioDuration && audioDuration !== duration) {
             setDuration(audioDuration);
           }
+          
+          // Encontrar el segmento actual en la transcripción
+          if (transcript?.segments) {
+            const segmentIndex = getCurrentSegmentIndex(transcript.segments, time);
+            setCurrentTranscriptIndex(segmentIndex);
+
+            // Resaltado de palabra usando la función utilitaria
+            if (segmentIndex >= 0) {
+              const currentSegment = transcript.segments[segmentIndex];
+              const wordIndex = getCurrentWordIndex(currentSegment, time);
+              setCurrentWordIndex(wordIndex);
+            } else {
+              setCurrentWordIndex(-1);
+            }
+          }
         }
       };
 
@@ -149,6 +220,24 @@ export default function MiniStoryQuestions({ data }: MiniStoryQuestionsProps) {
       const handleEndedEvent = () => {
         setIsPlaying(false);
         setCurrentTime(0);
+        setCurrentTranscriptIndex(-1);
+        setCurrentWordIndex(-1);
+        
+        // Resetear auto-scroll usando transform
+        if (mobileTranscriptRef.current) {
+          const contentElement = mobileTranscriptRef.current.children[0] as HTMLElement;
+          if (contentElement) {
+            contentElement.style.transform = 'translateY(0px)';
+            contentElement.style.transition = 'transform 0.6s cubic-bezier(0.4, 0, 0.2, 1)';
+          }
+        }
+        if (desktopTranscriptRef.current) {
+          const contentElement = desktopTranscriptRef.current.children[0] as HTMLElement;
+          if (contentElement) {
+            contentElement.style.transform = 'translateY(0px)';
+            contentElement.style.transition = 'transform 0.6s cubic-bezier(0.4, 0, 0.2, 1)';
+          }
+        }
       };
 
       const handleErrorEvent = (e: Event) => {
@@ -173,7 +262,7 @@ export default function MiniStoryQuestions({ data }: MiniStoryQuestionsProps) {
         audio.removeEventListener('error', handleErrorEvent);
       };
     }
-  }, [audioUrl, duration]);
+  }, [audioUrl, transcript]);
 
   const togglePlayPause = async () => {
     if (audioLoading || !audioUrl || !audioRef.current) {
@@ -220,8 +309,26 @@ export default function MiniStoryQuestions({ data }: MiniStoryQuestionsProps) {
 
   const handleRewind = () => {
     setCurrentTime(0);
+    setCurrentTranscriptIndex(-1);
+    setCurrentWordIndex(-1);
     if (audioRef.current) {
       audioRef.current.currentTime = 0;
+    }
+    
+    // Resetear auto-scroll usando transform
+    if (mobileTranscriptRef.current) {
+      const contentElement = mobileTranscriptRef.current.children[0] as HTMLElement;
+      if (contentElement) {
+        contentElement.style.transform = 'translateY(0px)';
+        contentElement.style.transition = 'transform 0.6s cubic-bezier(0.4, 0, 0.2, 1)';
+      }
+    }
+    if (desktopTranscriptRef.current) {
+      const contentElement = desktopTranscriptRef.current.children[0] as HTMLElement;
+      if (contentElement) {
+        contentElement.style.transform = 'translateY(0px)';
+        contentElement.style.transition = 'transform 0.6s cubic-bezier(0.4, 0, 0.2, 1)';
+      }
     }
   };
 
@@ -231,106 +338,35 @@ export default function MiniStoryQuestions({ data }: MiniStoryQuestionsProps) {
     return `${minutes}:${seconds.toString().padStart(2, '0')}`;
   };
 
-  const handleAnswerSelect = (questionId: number, answerIndex: number) => {
-    if (selectedAnswers[questionId] !== undefined) return;
-
-    setSelectedAnswers(prev => ({
-      ...prev,
-      [questionId]: answerIndex
-    }));
-
-    setTimeout(() => {
-      setShowExplanation(prev => ({
-        ...prev,
-        [questionId]: true
-      }));
-    }, 500);
-  };
-
-  const handleNextQuestion = () => {
-    if (currentQuestionIndex < totalQuestions - 1) {
-      setCurrentQuestionIndex(currentQuestionIndex + 1);
-    } else {
-      setIsCompleted(true);
-    }
-  };
-
-  const getOptionStyle = (questionId: number, optionIndex: number) => {
-    const selectedAnswer = selectedAnswers[questionId];
-    const correctAnswer = currentQuestion.correctAnswer;
-    const isSelected = selectedAnswer === optionIndex;
-    const isCorrect = optionIndex === correctAnswer;
-    const hasAnswered = selectedAnswer !== undefined;
-
-    if (!hasAnswered) {
-      return "bg-white border-2 border-gray-200 hover:border-purple-300 hover:bg-purple-50 cursor-pointer";
-    }
-
-    if (isSelected && isCorrect) {
-      return "bg-green-100 border-2 border-green-500 text-green-800";
-    }
-
-    if (isSelected && !isCorrect) {
-      return "bg-red-100 border-2 border-red-500 text-red-800";
-    }
-
-    if (!isSelected && isCorrect) {
-      return "bg-green-50 border-2 border-green-300 text-green-700";
-    }
-
-    return "bg-gray-50 border-2 border-gray-200 text-gray-600";
-  };
-
-  const getScore = () => {
-    let correct = 0;
-    data.questions.forEach(question => {
-      if (selectedAnswers[question.id] === question.correctAnswer) {
-        correct++;
-      }
-    });
-    return correct;
-  };
-
-  if (isCompleted) {
-    const score = getScore();
-    const percentage = Math.round((score / totalQuestions) * 100);
+  const renderTranscriptWord = (word: string, wordIndex: number, phraseIndex: number) => {
+    const isCurrentPhrase = phraseIndex === currentTranscriptIndex;
+    const isCurrentWord = isCurrentPhrase && wordIndex === currentWordIndex;
+    const isPreviousWord = isCurrentPhrase && wordIndex < currentWordIndex;
+    const isPreviousPhrase = phraseIndex < currentTranscriptIndex;
 
     return (
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 font-nunito">
-        <div className="bg-white rounded-3xl shadow-xl border border-gray-100 overflow-hidden">
-          <div className="bg-gradient-to-r from-purple-600 to-pink-600 px-8 py-6">
-            <div className="text-center">
-              <div className="w-16 h-16 bg-white/20 rounded-full flex items-center justify-center mx-auto mb-4">
-                <svg className="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
-                </svg>
-              </div>
-              <h2 className="text-2xl font-bold text-white">¡Preguntas Completadas!</h2>
-              <p className="text-purple-100">Excelente comprensión de la historia</p>
-            </div>
-          </div>
-
-          <div className="p-8 text-center">
-            <div className="mb-8">
-              <div className="text-4xl font-bold text-gray-900 mb-2">{score}/{totalQuestions}</div>
-              <div className="text-lg text-gray-600 mb-4">Respuestas Correctas</div>
-              
-              <div className={`p-6 rounded-xl ${percentage >= 70 ? 'bg-green-50 border-green-200' : 'bg-yellow-50 border-yellow-200'} border`}>
-                <div className="text-lg font-semibold mb-2">
-                  {percentage >= 70 ? '🎉 ¡Excelente!' : '👍 ¡Buen trabajo!'}
-                </div>
-                <p className="text-gray-700">
-                  {percentage >= 70 
-                    ? '¡Tienes una excelente comprensión de la historia!'
-                    : 'Has entendido bien la historia. ¡Sigue practicando!'}
-                </p>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
+      <span
+        key={`${phraseIndex}-${wordIndex}`}
+        className={`transition-all duration-300 ${
+          isCurrentWord
+            ? 'bg-purple-200 text-purple-900'
+            : isPreviousWord
+            ? 'bg-purple-100 text-purple-800'
+            : isCurrentPhrase
+            ? 'text-gray-900'
+            : isPreviousPhrase
+            ? 'text-gray-400'
+            : 'text-gray-600'
+        }`}
+      >
+        {word}
+      </span>
     );
-  }
+  };
+
+
+
+  // Simplificamos removiendo la lógica de preguntas ya que ahora es solo transcripción
 
   return (
     <div className="font-nunito">
@@ -603,72 +639,64 @@ export default function MiniStoryQuestions({ data }: MiniStoryQuestionsProps) {
               </div>
             </div>
 
-            {/* Columna derecha: Preguntas y navegación */}
+            {/* Columna derecha: Transcripción */}
             <div className="lg:h-[600px] flex flex-col">
-              <div className="bg-gray-50 rounded-2xl p-6 border border-gray-200 flex-1 flex flex-col">
-                <h3 className="text-lg font-semibold text-gray-900 mb-6 flex items-center">
-                  <svg className="w-5 h-5 text-purple-600 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                  </svg>
-                  {data.title || "QUESTIONS"}
-                </h3>
-                
-                <div className="flex-1 overflow-y-auto space-y-6">
-                  {/* Question */}
-                  <div className="bg-white rounded-xl p-6 border border-gray-200">
-                    <h4 className="text-lg font-semibold text-gray-900 mb-6">
-                      {currentQuestion.question}
-                    </h4>
-
-                    {/* Options */}
-                    <div className="space-y-3">
-                      {currentQuestion.options.map((option, index) => (
-                        <button
-                          key={index}
-                          onClick={() => handleAnswerSelect(currentQuestion.id, index)}
-                          disabled={selectedAnswers[currentQuestion.id] !== undefined}
-                          className={`w-full p-4 rounded-xl text-left transition-all duration-300 ${getOptionStyle(currentQuestion.id, index)}`}
-                        >
-                          <div className="flex items-center space-x-3">
-                            <div className="w-6 h-6 rounded-full border-2 border-current flex items-center justify-center text-xs font-bold">
-                              {String.fromCharCode(65 + index)}
-                            </div>
-                            <span>{option}</span>
-                          </div>
-                        </button>
-                      ))}
-                    </div>
-                  </div>
-
-                  {/* Explanation */}
-                  {showExplanation[currentQuestion.id] && (
-                    <div className="bg-blue-50 border border-blue-200 rounded-xl p-6">
-                      <div className="flex items-start space-x-3">
-                        <div className="w-6 h-6 bg-blue-100 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5">
-                          <svg className="w-4 h-4 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                          </svg>
-                        </div>
-                        <div>
-                          <h5 className="font-semibold text-blue-800 mb-2">Explicación</h5>
-                          <p className="text-blue-700 text-sm">{currentQuestion.explanation}</p>
-                        </div>
+              <div className="bg-gray-50 rounded-2xl border border-gray-200 flex-1 flex flex-col overflow-hidden">
+                {/* Contenedor de transcripción con auto-scroll */}
+                <div 
+                  ref={desktopTranscriptRef}
+                  className="flex-1 p-6 overflow-hidden"
+                  style={{ 
+                    touchAction: 'none',
+                    userSelect: 'none'
+                  }}
+                  onWheel={(e) => e.preventDefault()}
+                  onTouchStart={(e) => e.preventDefault()}
+                  onTouchMove={(e) => e.preventDefault()}
+                  onTouchEnd={(e) => e.preventDefault()}
+                  onPointerDown={(e) => e.preventDefault()}
+                >
+                  <div className="text-xl leading-relaxed space-y-4">
+                    {transcriptLoading ? (
+                      <div className="flex items-center justify-center py-16">
+                        <div className="w-6 h-6 border-2 border-purple-500 border-t-transparent rounded-full animate-spin mr-3"></div>
+                        <span className="text-gray-600">Loading transcript...</span>
                       </div>
-                    </div>
-                  )}
-                </div>
-
-                {/* Navigation */}
-                {selectedAnswers[currentQuestion.id] !== undefined && (
-                  <div className="flex justify-center mt-6 pt-6 border-t border-gray-200">
-                    <button
-                      onClick={handleNextQuestion}
-                      className="px-8 py-3 bg-gradient-to-r from-purple-600 to-pink-600 text-white rounded-xl hover:from-purple-700 hover:to-pink-700 transition-all duration-300 shadow-lg hover:shadow-xl"
-                    >
-                      {currentQuestionIndex === totalQuestions - 1 ? 'Terminar' : 'Siguiente Pregunta'}
-                    </button>
+                    ) : transcript?.segments ? (
+                      transcript.segments.map((segment: TranscriptSegment, segmentIndex: number) => (
+                        <p 
+                          key={segmentIndex} 
+                          ref={(el) => {
+                            desktopSegmentRefs.current[segmentIndex] = el;
+                          }}
+                          className={`transition-all duration-500 py-3 px-4 rounded-lg ${
+                            segmentIndex === currentTranscriptIndex
+                              ? 'bg-purple-50 border-l-4 border-purple-500 shadow-sm'
+                              : segmentIndex < currentTranscriptIndex
+                              ? 'opacity-60'
+                              : 'opacity-80'
+                          }`}
+                        >
+                          {segment.text.split(' ').map((word: string, wordIndex: number) => (
+                            <span key={wordIndex}>
+                              {renderTranscriptWord(word, wordIndex, segmentIndex)}
+                              {wordIndex < segment.text.split(' ').length - 1 && ' '}
+                            </span>
+                          ))}
+                        </p>
+                      ))
+                    ) : (
+                      <div className="text-center py-16 text-gray-500">
+                        <p>No transcript available for this lesson.</p>
+                      </div>
+                    )}
+                    
+                    {/* Espaciado inferior para permitir scroll hacia arriba */}
+                    {transcript?.segments && transcript.segments.length > 0 && (
+                      <div className="h-32"></div>
+                    )}
                   </div>
-                )}
+                </div>
               </div>
             </div>
           </div>
@@ -697,71 +725,63 @@ export default function MiniStoryQuestions({ data }: MiniStoryQuestionsProps) {
         </div>
       </div>
 
-      {/* Contenido móvil - Preguntas debajo de la tarjeta */}
+      {/* Transcripción móvil - Auto-scroll container */}
       <div className="lg:hidden mx-4">
-        <div className="bg-white rounded-2xl shadow-lg border border-gray-100 p-6">
-          <h3 className="text-lg font-semibold text-gray-900 mb-6 flex items-center">
-            <svg className="w-5 h-5 text-purple-600 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-            </svg>
-            {data.title || "QUESTIONS"}
-            </h3>
-          
-          <div className="space-y-6">
-            {/* Question */}
-            <div className="bg-gray-50 rounded-xl p-6 border border-gray-200">
-              <h4 className="text-lg font-semibold text-gray-900 mb-6">
-                {currentQuestion.question}
-              </h4>
-
-            {/* Options */}
-            <div className="space-y-3">
-              {currentQuestion.options.map((option, index) => (
-                <button
-                  key={index}
-                  onClick={() => handleAnswerSelect(currentQuestion.id, index)}
-                  disabled={selectedAnswers[currentQuestion.id] !== undefined}
-                  className={`w-full p-4 rounded-xl text-left transition-all duration-300 ${getOptionStyle(currentQuestion.id, index)}`}
-                >
-                  <div className="flex items-center space-x-3">
-                    <div className="w-6 h-6 rounded-full border-2 border-current flex items-center justify-center text-xs font-bold">
-                      {String.fromCharCode(65 + index)}
-                    </div>
-                    <span>{option}</span>
-                  </div>
-                </button>
-              ))}
-            </div>
-          </div>
-
-          {/* Explanation */}
-          {showExplanation[currentQuestion.id] && (
-              <div className="bg-blue-50 border border-blue-200 rounded-xl p-6">
-              <div className="flex items-start space-x-3">
-                <div className="w-6 h-6 bg-blue-100 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5">
-                  <svg className="w-4 h-4 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                  </svg>
+        <div className="bg-white rounded-2xl shadow-lg border border-gray-100 overflow-hidden">
+          {/* Contenedor de transcripción con altura fija y auto-scroll */}
+          <div 
+            ref={mobileTranscriptRef}
+            className="h-64 overflow-hidden p-6"
+            style={{ 
+              touchAction: 'none',
+              userSelect: 'none'
+            }}
+            onWheel={(e) => e.preventDefault()}
+            onTouchStart={(e) => e.preventDefault()}
+            onTouchMove={(e) => e.preventDefault()}
+            onTouchEnd={(e) => e.preventDefault()}
+            onPointerDown={(e) => e.preventDefault()}
+          >
+            <div className="text-lg leading-relaxed space-y-4">
+              {transcriptLoading ? (
+                <div className="flex items-center justify-center py-16">
+                  <div className="w-6 h-6 border-2 border-purple-500 border-t-transparent rounded-full animate-spin mr-3"></div>
+                  <span className="text-gray-600">Loading transcript...</span>
                 </div>
-                <div>
-                  <h5 className="font-semibold text-blue-800 mb-2">Explicación</h5>
-                  <p className="text-blue-700 text-sm">{currentQuestion.explanation}</p>
+              ) : transcript?.segments ? (
+                transcript.segments.map((segment: TranscriptSegment, segmentIndex: number) => (
+                  <p 
+                    key={segmentIndex} 
+                    ref={(el) => {
+                      segmentRefs.current[segmentIndex] = el;
+                    }}
+                    className={`transition-all duration-500 py-2 px-3 rounded-lg ${
+                      segmentIndex === currentTranscriptIndex
+                        ? 'bg-purple-50 border-l-4 border-purple-500 shadow-sm'
+                        : segmentIndex < currentTranscriptIndex
+                        ? 'opacity-60'
+                        : 'opacity-80'
+                    }`}
+                  >
+                    {segment.text.split(' ').map((word: string, wordIndex: number) => (
+                      <span key={wordIndex}>
+                        {renderTranscriptWord(word, wordIndex, segmentIndex)}
+                        {wordIndex < segment.text.split(' ').length - 1 && ' '}
+                      </span>
+                    ))}
+                  </p>
+                ))
+              ) : (
+                <div className="text-center py-16 text-gray-500">
+                  <p>No transcript available for this lesson.</p>
                 </div>
-              </div>
+              )}
+              
+              {/* Espaciado inferior para permitir scroll hacia arriba */}
+              {transcript?.segments && transcript.segments.length > 0 && (
+                <div className="h-32"></div>
+              )}
             </div>
-          )}
-
-          {/* Navigation */}
-          {selectedAnswers[currentQuestion.id] !== undefined && (
-              <div className="flex justify-center pt-6 border-t border-gray-200">
-              <button
-                onClick={handleNextQuestion}
-                  className="px-8 py-3 bg-gradient-to-r from-purple-600 to-pink-600 text-white rounded-xl hover:from-purple-700 hover:to-pink-700 transition-all duration-300 shadow-lg hover:shadow-xl"
-              >
-                {currentQuestionIndex === totalQuestions - 1 ? 'Terminar' : 'Siguiente Pregunta'}
-              </button>
-            </div>
-          )}
           </div>
         </div>
       </div>

@@ -5,7 +5,7 @@ import { PlayIcon, PauseIcon, BackwardIcon } from '@heroicons/react/24/solid';
 import { useParams } from 'next/navigation';
 import { getAudioUrl } from '@/lib/firebase';
 import { getResponsiveCloudinaryUrl } from '@/lib/cloudinary';
-import { loadTranscript, type TranscriptData } from '@/lib/transcriptLoader';
+import { loadTranscript, getCurrentSegmentIndex, getCurrentWordIndex, type TranscriptSegment, type TranscriptData } from '@/lib/transcriptLoader';
 
 interface MiniStoryProps {
   data: {
@@ -33,7 +33,13 @@ export default function MiniStory({ data, onNext, onPrevious }: MiniStoryProps) 
   const [audioError, setAudioError] = useState<string | null>(null);
   const [transcript, setTranscript] = useState<TranscriptData | null>(null);
   const [transcriptLoading, setTranscriptLoading] = useState(true);
+  const [currentTranscriptIndex, setCurrentTranscriptIndex] = useState(-1);
+  const [currentWordIndex, setCurrentWordIndex] = useState(-1);
   const audioRef = useRef<HTMLAudioElement>(null);
+  const mobileTranscriptRef = useRef<HTMLDivElement>(null);
+  const desktopTranscriptRef = useRef<HTMLDivElement>(null);
+  const segmentRefs = useRef<(HTMLParagraphElement | null)[]>([]);
+  const desktopSegmentRefs = useRef<(HTMLParagraphElement | null)[]>([]);
 
   // Use Cloudinary image or fallback to provided featuredImage or placeholder
   const featuredImage = useMemo(() => {
@@ -60,6 +66,89 @@ export default function MiniStory({ data, onNext, onPrevious }: MiniStoryProps) 
 
     loadTranscriptData();
   }, [lessonNumber]);
+
+  // Auto-scroll para ambas vistas cuando cambie el segmento actual
+  useEffect(() => {
+    if (currentTranscriptIndex >= 0) {
+      // Auto-scroll para vista móvil usando transform
+      setTimeout(() => {
+        if (segmentRefs.current[currentTranscriptIndex] && mobileTranscriptRef.current) {
+          const currentSegmentElement = segmentRefs.current[currentTranscriptIndex];
+          const containerElement = mobileTranscriptRef.current;
+          const contentElement = containerElement.children[0] as HTMLElement;
+          
+          if (contentElement) {
+            const elementTop = currentSegmentElement.offsetTop;
+            const containerHeight = containerElement.offsetHeight;
+            
+            // Para el primer segmento, mantener en posición inicial
+            let targetTranslateY;
+            if (currentTranscriptIndex === 0) {
+              targetTranslateY = 0; // No mover nada, mantener el primer párrafo visible
+            } else if (currentTranscriptIndex === 1) {
+              targetTranslateY = Math.max(0, elementTop - 40); // Solo un poco de padding arriba
+            } else {
+              targetTranslateY = elementTop - (containerHeight * 0.3); // 30% desde arriba para el resto
+            }
+            
+            console.log('MiniStory Mobile auto-scroll transform:', {
+              currentIndex: currentTranscriptIndex,
+              elementTop,
+              containerHeight,
+              targetTranslateY: Math.max(0, targetTranslateY),
+              isFirstSegment: currentTranscriptIndex === 0,
+              isSecondSegment: currentTranscriptIndex === 1,
+              isLaterSegment: currentTranscriptIndex > 1
+            });
+            
+            contentElement.style.transform = `translateY(-${Math.max(0, targetTranslateY)}px)`;
+            contentElement.style.transition = 'transform 0.6s cubic-bezier(0.4, 0, 0.2, 1)';
+          }
+        }
+      }, 100);
+
+      // Auto-scroll para vista desktop usando transform
+      setTimeout(() => {
+        if (desktopSegmentRefs.current[currentTranscriptIndex] && desktopTranscriptRef.current) {
+          const currentSegmentElement = desktopSegmentRefs.current[currentTranscriptIndex];
+          const containerElement = desktopTranscriptRef.current;
+          const contentElement = containerElement.children[0] as HTMLElement;
+          
+          console.log('MiniStory Desktop auto-scroll attempt:', {
+            currentIndex: currentTranscriptIndex,
+            hasCurrentSegment: !!currentSegmentElement,
+            hasContainer: !!containerElement,
+            hasContentElement: !!contentElement
+          });
+          
+          // Ahora uso el mismo patrón que en móvil: contenedor > div de contenido
+          if (currentSegmentElement && contentElement) {
+            const elementTop = currentSegmentElement.offsetTop;
+            const containerHeight = containerElement.offsetHeight;
+            
+            // Para los primeros 2 segmentos, mantener en la parte superior
+            let targetTranslateY;
+            if (currentTranscriptIndex <= 1) {
+              targetTranslateY = Math.max(0, elementTop - 50); // Solo un poco de padding arriba
+            } else {
+              targetTranslateY = elementTop - (containerHeight * 0.25); // 25% desde arriba
+            }
+            
+            console.log('MiniStory Desktop auto-scroll transform:', {
+              currentIndex: currentTranscriptIndex,
+              elementTop,
+              containerHeight,
+              targetTranslateY: Math.max(0, targetTranslateY),
+              isEarlySegment: currentTranscriptIndex <= 1
+            });
+            
+            contentElement.style.transform = `translateY(-${Math.max(0, targetTranslateY)}px)`;
+            contentElement.style.transition = 'transform 0.6s cubic-bezier(0.4, 0, 0.2, 1)';
+          }
+        }
+      }, 100);
+    }
+  }, [currentTranscriptIndex]);
 
   // Load audio URL from Firebase Storage
   useEffect(() => {
@@ -109,6 +198,21 @@ export default function MiniStory({ data, onNext, onPrevious }: MiniStoryProps) 
             console.log('Updating MiniStory duration from audio element:', audioDuration);
             setDuration(audioDuration);
           }
+          
+          // Encontrar el segmento actual en la transcripción
+          if (transcript?.segments) {
+            const segmentIndex = getCurrentSegmentIndex(transcript.segments, time);
+            setCurrentTranscriptIndex(segmentIndex);
+
+            // Resaltado de palabra usando la función utilitaria
+            if (segmentIndex >= 0) {
+              const currentSegment = transcript.segments[segmentIndex];
+              const wordIndex = getCurrentWordIndex(currentSegment, time);
+              setCurrentWordIndex(wordIndex);
+            } else {
+              setCurrentWordIndex(-1);
+            }
+          }
         }
       };
 
@@ -132,6 +236,24 @@ export default function MiniStory({ data, onNext, onPrevious }: MiniStoryProps) 
         console.log('MiniStory audio ended event triggered');
         setIsPlaying(false);
         setCurrentTime(0);
+        setCurrentTranscriptIndex(-1);
+        setCurrentWordIndex(-1);
+        
+        // Resetear auto-scroll usando transform
+        if (mobileTranscriptRef.current) {
+          const contentElement = mobileTranscriptRef.current.children[0] as HTMLElement;
+          if (contentElement) {
+            contentElement.style.transform = 'translateY(0px)';
+            contentElement.style.transition = 'transform 0.6s cubic-bezier(0.4, 0, 0.2, 1)';
+          }
+        }
+        if (desktopTranscriptRef.current) {
+          const contentElement = desktopTranscriptRef.current.children[0] as HTMLElement;
+          if (contentElement) {
+            contentElement.style.transform = 'translateY(0px)';
+            contentElement.style.transition = 'transform 0.6s cubic-bezier(0.4, 0, 0.2, 1)';
+          }
+        }
       };
 
       const handleErrorEvent = (e: Event) => {
@@ -156,7 +278,7 @@ export default function MiniStory({ data, onNext, onPrevious }: MiniStoryProps) 
         audio.removeEventListener('error', handleErrorEvent);
       };
     }
-  }, [audioUrl, duration]);
+  }, [audioUrl, transcript]);
 
   const togglePlayPause = async () => {
     console.log('MiniStory togglePlayPause called, current state:', { 
@@ -243,8 +365,26 @@ export default function MiniStory({ data, onNext, onPrevious }: MiniStoryProps) 
 
   const handleRewind = () => {
     setCurrentTime(0);
+    setCurrentTranscriptIndex(-1);
+    setCurrentWordIndex(-1);
     if (audioRef.current) {
       audioRef.current.currentTime = 0;
+    }
+    
+    // Resetear auto-scroll usando transform
+    if (mobileTranscriptRef.current) {
+      const contentElement = mobileTranscriptRef.current.children[0] as HTMLElement;
+      if (contentElement) {
+        contentElement.style.transform = 'translateY(0px)';
+        contentElement.style.transition = 'transform 0.6s cubic-bezier(0.4, 0, 0.2, 1)';
+      }
+    }
+    if (desktopTranscriptRef.current) {
+      const contentElement = desktopTranscriptRef.current.children[0] as HTMLElement;
+      if (contentElement) {
+        contentElement.style.transform = 'translateY(0px)';
+        contentElement.style.transition = 'transform 0.6s cubic-bezier(0.4, 0, 0.2, 1)';
+      }
     }
   };
 
@@ -252,6 +392,32 @@ export default function MiniStory({ data, onNext, onPrevious }: MiniStoryProps) 
     const minutes = Math.floor(time / 60);
     const seconds = Math.floor(time % 60);
     return `${minutes}:${seconds.toString().padStart(2, '0')}`;
+  };
+
+  const renderTranscriptWord = (word: string, wordIndex: number, phraseIndex: number) => {
+    const isCurrentPhrase = phraseIndex === currentTranscriptIndex;
+    const isCurrentWord = isCurrentPhrase && wordIndex === currentWordIndex;
+    const isPreviousWord = isCurrentPhrase && wordIndex < currentWordIndex;
+    const isPreviousPhrase = phraseIndex < currentTranscriptIndex;
+
+    return (
+      <span
+        key={`${phraseIndex}-${wordIndex}`}
+        className={`transition-all duration-300 ${
+          isCurrentWord
+            ? 'bg-green-200 text-green-900'
+            : isPreviousWord
+            ? 'bg-green-100 text-green-800'
+            : isCurrentPhrase
+            ? 'text-gray-900'
+            : isPreviousPhrase
+            ? 'text-gray-400'
+            : 'text-gray-600'
+        }`}
+      >
+        {word}
+      </span>
+    );
   };
 
   return (
@@ -456,44 +622,62 @@ export default function MiniStory({ data, onNext, onPrevious }: MiniStoryProps) 
                 </div>
               </div>
 
-              {/* Columna derecha: Historia */}
+              {/* Columna derecha: Transcripción */}
               <div className="lg:h-[600px] flex flex-col">
-                <div className="bg-gray-50 rounded-2xl p-6 border border-gray-200 flex-1 flex flex-col">
-                  <h3 className="text-lg font-semibold text-gray-900 mb-6 flex items-center">
-                    <svg className="w-5 h-5 text-green-600 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.746 0 3.332.477 4.5 1.253v13C19.832 18.477 18.246 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
-                    </svg>
-                    Story
-                  </h3>
-
-                  <div className="flex-1 overflow-y-auto">
-                    <div className="bg-white rounded-xl p-6 border-l-4 border-green-500 shadow-sm">
-                      <div className="prose prose-lg max-w-none">
-                        {transcriptLoading ? (
-                          <div className="flex items-center justify-center py-8">
-                            <div className="w-6 h-6 border-2 border-green-500 border-t-transparent rounded-full animate-spin mr-3"></div>
-                            <span className="text-gray-600">Loading story...</span>
-                          </div>
-                        ) : transcript?.segments ? (
-                          transcript.segments.map((segment, index) => (
-                            <p key={index} className="text-gray-800 leading-relaxed mb-4 font-medium text-lg">
-                              {segment.text}
-                            </p>
-                          ))
-                        ) : data.story ? (
-                          data.story.split('\n').map((paragraph, index) => (
-                            paragraph.trim() && (
-                              <p key={index} className="text-gray-800 leading-relaxed mb-4 font-medium text-lg">
-                                {paragraph.trim()}
-                              </p>
-                            )
-                          ))
-                        ) : (
-                          <div className="text-center py-8 text-gray-500">
-                            <p>No story available for this lesson.</p>
-                          </div>
-                        )}
-                      </div>
+                <div className="bg-gray-50 rounded-2xl border border-gray-200 flex-1 flex flex-col overflow-hidden">
+                  {/* Contenedor de transcripción con auto-scroll */}
+                  <div 
+                    ref={desktopTranscriptRef}
+                    className="flex-1 p-6 overflow-hidden"
+                    style={{ 
+                      touchAction: 'none',
+                      userSelect: 'none'
+                    }}
+                    onWheel={(e) => e.preventDefault()}
+                    onTouchStart={(e) => e.preventDefault()}
+                    onTouchMove={(e) => e.preventDefault()}
+                    onTouchEnd={(e) => e.preventDefault()}
+                    onPointerDown={(e) => e.preventDefault()}
+                  >
+                    <div className="text-xl leading-relaxed space-y-4">
+                      {transcriptLoading ? (
+                        <div className="flex items-center justify-center py-16">
+                          <div className="w-6 h-6 border-2 border-green-500 border-t-transparent rounded-full animate-spin mr-3"></div>
+                          <span className="text-gray-600">Loading transcript...</span>
+                        </div>
+                      ) : transcript?.segments ? (
+                        transcript.segments.map((segment: TranscriptSegment, segmentIndex: number) => (
+                          <p 
+                            key={segmentIndex} 
+                            ref={(el) => {
+                              desktopSegmentRefs.current[segmentIndex] = el;
+                            }}
+                            className={`transition-all duration-500 py-3 px-4 rounded-lg ${
+                              segmentIndex === currentTranscriptIndex
+                                ? 'bg-green-50 border-l-4 border-green-500 shadow-sm'
+                                : segmentIndex < currentTranscriptIndex
+                                ? 'opacity-60'
+                                : 'opacity-80'
+                            }`}
+                          >
+                            {segment.text.split(' ').map((word: string, wordIndex: number) => (
+                              <span key={wordIndex}>
+                                {renderTranscriptWord(word, wordIndex, segmentIndex)}
+                                {wordIndex < segment.text.split(' ').length - 1 && ' '}
+                              </span>
+                            ))}
+                          </p>
+                        ))
+                      ) : (
+                        <div className="text-center py-16 text-gray-500">
+                          <p>No transcript available for this lesson.</p>
+                        </div>
+                      )}
+                      
+                      {/* Espaciado inferior para permitir scroll hacia arriba */}
+                      {transcript?.segments && transcript.segments.length > 0 && (
+                        <div className="h-32"></div>
+                      )}
                     </div>
                   </div>
                 </div>
@@ -524,41 +708,61 @@ export default function MiniStory({ data, onNext, onPrevious }: MiniStoryProps) 
         </div>
       </div>
 
-      {/* Contenido móvil - Historia debajo de la tarjeta */}
+      {/* Transcripción móvil - Auto-scroll container */}
       <div className="lg:hidden mx-4">
-        <div className="bg-white rounded-2xl shadow-lg border border-gray-100 p-6">
-          <h3 className="text-lg font-semibold text-gray-900 mb-6 flex items-center">
-            <svg className="w-5 h-5 text-green-600 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.746 0 3.332.477 4.5 1.253v13C19.832 18.477 18.246 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
-            </svg>
-            Story
-          </h3>
-          
-          <div className="bg-white rounded-xl p-6 border-l-4 border-green-500 shadow-sm">
-            <div className="prose prose-lg max-w-none">
+        <div className="bg-white rounded-2xl shadow-lg border border-gray-100 overflow-hidden">
+          {/* Contenedor de transcripción con altura fija y auto-scroll */}
+          <div 
+            ref={mobileTranscriptRef}
+            className="h-64 overflow-hidden p-6"
+            style={{ 
+              touchAction: 'none',
+              userSelect: 'none'
+            }}
+            onWheel={(e) => e.preventDefault()}
+            onTouchStart={(e) => e.preventDefault()}
+            onTouchMove={(e) => e.preventDefault()}
+            onTouchEnd={(e) => e.preventDefault()}
+            onPointerDown={(e) => e.preventDefault()}
+          >
+            <div className="text-lg leading-relaxed space-y-4">
               {transcriptLoading ? (
-                <div className="flex items-center justify-center py-8">
+                <div className="flex items-center justify-center py-16">
                   <div className="w-6 h-6 border-2 border-green-500 border-t-transparent rounded-full animate-spin mr-3"></div>
-                  <span className="text-gray-600">Loading story...</span>
+                  <span className="text-gray-600">Loading transcript...</span>
                 </div>
               ) : transcript?.segments ? (
-                transcript.segments.map((segment, index) => (
-                  <p key={index} className="text-gray-800 leading-relaxed mb-4 font-medium text-lg">
-                    {segment.text}
+                transcript.segments.map((segment: TranscriptSegment, segmentIndex: number) => (
+                  <p 
+                    key={segmentIndex} 
+                    ref={(el) => {
+                      segmentRefs.current[segmentIndex] = el;
+                    }}
+                    className={`transition-all duration-500 py-2 px-3 rounded-lg ${
+                      segmentIndex === currentTranscriptIndex
+                        ? 'bg-green-50 border-l-4 border-green-500 shadow-sm'
+                        : segmentIndex < currentTranscriptIndex
+                        ? 'opacity-60'
+                        : 'opacity-80'
+                    }`}
+                  >
+                    {segment.text.split(' ').map((word: string, wordIndex: number) => (
+                      <span key={wordIndex}>
+                        {renderTranscriptWord(word, wordIndex, segmentIndex)}
+                        {wordIndex < segment.text.split(' ').length - 1 && ' '}
+                      </span>
+                    ))}
                   </p>
                 ))
-              ) : data.story ? (
-                data.story.split('\n').map((paragraph, index) => (
-                  paragraph.trim() && (
-                    <p key={index} className="text-gray-800 leading-relaxed mb-4 font-medium text-lg">
-                      {paragraph.trim()}
-                    </p>
-                  )
-                ))
               ) : (
-                <div className="text-center py-8 text-gray-500">
-                  <p>No story available for this lesson.</p>
+                <div className="text-center py-16 text-gray-500">
+                  <p>No transcript available for this lesson.</p>
                 </div>
+              )}
+              
+              {/* Espaciado inferior para permitir scroll hacia arriba */}
+              {transcript?.segments && transcript.segments.length > 0 && (
+                <div className="h-32"></div>
               )}
             </div>
           </div>

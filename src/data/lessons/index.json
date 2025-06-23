@@ -1,35 +1,35 @@
 [
   {
     "id": 1,
-    "title": "Saludos y Presentaciones",
+    "title": "Introduction",
     "description": "Aprende a saludar y presentarte en inglés",
     "difficulty": "beginner",
     "estimatedTime": 25
   },
   {
     "id": 2,
-    "title": "En el Café",
+    "title": "Emotional Mastery",
     "description": "Domina las conversaciones en cafeterías",
     "difficulty": "beginner",
     "estimatedTime": 30
   },
   {
     "id": 3,
-    "title": "Pidiendo Direcciones",
+    "title": "Flow",
     "description": "Aprende a pedir y dar direcciones",
     "difficulty": "beginner",
     "estimatedTime": 28
   },
   {
     "id": 4,
-    "title": "En el Supermercado",
+    "title": "Focus",
     "description": "Vocabulario y frases para ir de compras",
     "difficulty": "intermediate",
     "estimatedTime": 32
   },
   {
     "id": 5,
-    "title": "Haciendo Planes",
+    "title": "Beliefs",
     "description": "Cómo hacer planes y citas",
     "difficulty": "intermediate",
     "estimatedTime": 30

@@ -453,6 +453,7 @@ export default function MainArticle({ data, onNext, onPrevious }: MainArticlePro
   const renderTranscriptWord = (word: string, wordIndex: number, phraseIndex: number) => {
     const isCurrentPhrase = phraseIndex === currentTranscriptIndex;
     const isCurrentWord = isCurrentPhrase && wordIndex === currentWordIndex;
+    const isPreviousWord = isCurrentPhrase && wordIndex < currentWordIndex;
     const isPreviousPhrase = phraseIndex < currentTranscriptIndex;
 
     return (
@@ -460,9 +461,11 @@ export default function MainArticle({ data, onNext, onPrevious }: MainArticlePro
         key={`${phraseIndex}-${wordIndex}`}
         className={`transition-all duration-300 ${
           isCurrentWord
-            ? 'bg-blue-200 text-blue-900 font-semibold px-1 py-0.5 rounded-md shadow-sm'
+            ? 'bg-blue-200 text-blue-900'
+            : isPreviousWord
+            ? 'bg-blue-100 text-blue-800'
             : isCurrentPhrase
-            ? 'text-gray-900 font-medium'
+            ? 'text-gray-900'
             : isPreviousPhrase
             ? 'text-gray-400'
             : 'text-gray-600'
