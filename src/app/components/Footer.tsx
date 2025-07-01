@@ -37,7 +37,7 @@ export default function Footer() {
               <a href="/privacy" className="hover:text-white transition-colors">
                 Privacidad
               </a>
-              <a href="/auth/signin" className="hover:text-white transition-colors">
+              <a href="/acceso" className="hover:text-white transition-colors">
                 Acceso estudiantes
               </a>
             </div>

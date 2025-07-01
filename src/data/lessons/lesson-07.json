@@ -1,0 +1,76 @@
+{
+    "id": 7,
+    "title": "Identity",
+    "description": "FOCUS helps you train your attention and stay present—one phrase at a time.",
+    "mainArticle": {
+      "title": "Identity",
+      "content": "FOCUS helps you train your attention and stay present—one phrase at a time.",
+      "audioUrl": "gs://speakfuel-d832c.firebasestorage.app/lessons/lesson7/main.mp3",
+      "duration": 506,
+      "featuredImage": "https://res.cloudinary.com/dhfzcrgtb/image/upload/v1751333403/lesson7_main_j23o7u.png"
+    },
+    "vocabulary": {
+      "words": [
+        {
+          "word": "Chiming",
+          "pronunciation": "/ˈtʃaɪmɪŋ/",
+          "definition": "Making a musical ringing sound, typically that of a bell or clock",
+          "example": "The bell was chiming above her head as she entered the coffee shop.",
+          "translation": "Sonando (como una campana)",
+          "audioUrl": "gs://speakfuel-d832c.firebasestorage.app/lessons/lesson7/vocabulary/chiming.mp3"
+        },
+        {
+          "word": "Rush",
+          "pronunciation": "/rʌʃ/",
+          "definition": "A period of intense activity or high demand; a situation requiring urgency",
+          "example": "The morning rush is in full swing at the coffee shop.",
+          "translation": "Hora pico, prisa",
+          "audioUrl": "gs://speakfuel-d832c.firebasestorage.app/lessons/lesson7/vocabulary/rush.mp3"
+        },
+        {
+          "word": "Barista",
+          "pronunciation": "/bəˈrɪstə/",
+          "definition": "A person who prepares and serves coffee drinks, especially espresso-based beverages",
+          "example": "Emma, the barista, has memorized Sarah's order perfectly.",
+          "translation": "Barista (persona que prepara café)",
+          "audioUrl": "gs://speakfuel-d832c.firebasestorage.app/lessons/lesson7/vocabulary/barista.mp3"
+        },
+        {
+          "word": "Cappuccino",
+          "pronunciation": "/ˌkæpəˈtʃiːnoʊ/",
+          "definition": "An Italian coffee drink made with espresso and steamed milk foam",
+          "example": "She ordered a large cappuccino with an extra shot of espresso.",
+          "translation": "Capuchino",
+          "audioUrl": "gs://speakfuel-d832c.firebasestorage.app/lessons/lesson7/vocabulary/cappuccino.mp3"
+        },
+        {
+          "word": "Espresso machine",
+          "pronunciation": "/ɪˈspreso məˈʃiːn/",
+          "definition": "A machine that brews coffee by forcing pressurized hot water through finely ground coffee",
+          "example": "Emma works the espresso machine with expert skill every morning.",
+          "translation": "Máquina de espresso",
+          "audioUrl": "gs://speakfuel-d832c.firebasestorage.app/lessons/lesson7/vocabulary/espresso-machine.mp3"
+        },
+        {
+          "word": "Settles in",
+          "pronunciation": "/ˈsetəlz ɪn/",
+          "definition": "To make oneself comfortable in a place; to get established in a routine or location",
+          "example": "She settles in for another productive morning at her favorite table.",
+          "translation": "Se acomoda, se instala",
+          "audioUrl": "gs://speakfuel-d832c.firebasestorage.app/lessons/lesson7/vocabulary/settles-in.mp3"
+        }
+      ]
+    },
+    "miniStory": {
+        "title": "Identity",
+      "audioUrl": "gs://speakfuel-d832c.firebasestorage.app/lessons/lesson7/ministory.mp3",
+      "duration": 169,
+      "featuredImage": "https://res.cloudinary.com/dhfzcrgtb/image/upload/v1751333404/lesson7_ministory_xvc7nw.png"
+    },
+    "questions": {
+      "title": "Identity",
+      "audioUrl": "gs://speakfuel-d832c.firebasestorage.app/lessons/lesson7/questions.mp3",
+      "duration": 358,
+        "featuredImage": "https://res.cloudinary.com/dhfzcrgtb/image/upload/v1751333404/lesson7_ministory_xvc7nw.png"
+    }
+} 

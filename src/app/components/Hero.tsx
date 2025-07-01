@@ -27,7 +27,7 @@ export default function Hero() {
         {/* Link discreto */}
         <div>
           <a
-            href="/auth/signin"
+            href="/acceso"
             className="text-sm text-gray-500 hover:text-gray-700 transition-colors"
           >
             ¿Ya compraste? Accede aquí.
