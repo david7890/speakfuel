@@ -6,8 +6,8 @@ export default function DebugReset() {
   const [email, setEmail] = useState('');
   const [loading, setLoading] = useState(false);
   const [checkLoading, setCheckLoading] = useState(false);
-  const [result, setResult] = useState<any>(null);
-  const [checkResult, setCheckResult] = useState<any>(null);
+  const [result, setResult] = useState<{success?: boolean; message?: string; error?: string; details?: Record<string, unknown>} | null>(null);
+  const [checkResult, setCheckResult] = useState<{found?: boolean; error?: string; user?: {email: string}; profile?: {has_paid_access: boolean}; function_result?: {has_access: boolean}; debug_info?: Record<string, unknown>} | null>(null);
 
   // Solo mostrar en desarrollo
   if (process.env.NODE_ENV !== 'development') {
@@ -236,8 +236,8 @@ export default function DebugReset() {
           <h3 className="font-medium text-green-900 mb-2">📋 Instrucciones:</h3>
           <ol className="text-sm text-green-800 space-y-1">
             <li>1. Introduce el email del usuario</li>
-            <li>2. Haz clic en <strong>"🔍 Verificar Estado"</strong> para ver el estado actual</li>
-            <li>3. Si tiene <code className="bg-green-100 px-1 rounded">has_paid_access: true</code>, haz clic en <strong>"🔄 Resetear Acceso"</strong></li>
+            <li>2. Haz clic en <strong>&ldquo;🔍 Verificar Estado&rdquo;</strong> para ver el estado actual</li>
+            <li>3. Si tiene <code className="bg-green-100 px-1 rounded">has_paid_access: true</code>, haz clic en <strong>&ldquo;🔄 Resetear Acceso&rdquo;</strong></li>
             <li>4. Verifica de nuevo para confirmar que cambió a <code className="bg-red-100 px-1 rounded">false</code></li>
             <li>5. Ahora el usuario podrá pasar por <code className="bg-green-100 px-1 rounded">/checkout</code> de nuevo</li>
           </ol>

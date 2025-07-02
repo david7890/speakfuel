@@ -1,10 +1,11 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, Suspense } from 'react';
 import { useSearchParams } from 'next/navigation';
+import Link from 'next/link';
 import { SessionDurations } from '@/lib/auth-helpers';
 
-export default function Acceso() {
+function AccesoContent() {
   const [email, setEmail] = useState('');
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState<{ type: 'success' | 'error'; text: string } | null>(null);
@@ -151,14 +152,22 @@ export default function Acceso() {
           <p className="text-sm text-gray-500 mb-2">
             ¿No compraste aún?
           </p>
-          <a 
+          <Link 
             href="/" 
             className="text-blue-600 hover:text-blue-700 text-sm font-medium transition-colors"
           >
             Volver al inicio
-          </a>
+          </Link>
         </div>
       </div>
     </div>
+  );
+}
+
+export default function Acceso() {
+  return (
+    <Suspense fallback={<div className="min-h-screen bg-white flex items-center justify-center"><div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div></div>}>
+      <AccesoContent />
+    </Suspense>
   );
 } 

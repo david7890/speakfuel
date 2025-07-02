@@ -1,10 +1,10 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, Suspense } from 'react';
 import { useSearchParams } from 'next/navigation';
 import { SessionDurations } from '@/lib/auth-helpers';
 
-export default function Gracias() {
+function GraciasContent() {
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState<{ type: 'success' | 'error'; text: string } | null>(null);
   const [email, setEmail] = useState('');
@@ -199,7 +199,7 @@ export default function Gracias() {
             </li>
             <li className="flex items-start">
               <span className="font-semibold mr-2">3.</span>
-              <span>Haz clic en "Acceder al curso"</span>
+              <span>Haz clic en &ldquo;Acceder al curso&rdquo;</span>
             </li>
             <li className="flex items-start">
               <span className="font-semibold mr-2">4.</span>
@@ -284,5 +284,13 @@ export default function Gracias() {
         )}
       </div>
     </div>
+  );
+}
+
+export default function Gracias() {
+  return (
+    <Suspense fallback={<div className="min-h-screen bg-white flex items-center justify-center"><div className="animate-spin rounded-full h-8 w-8 border-b-2 border-green-600"></div></div>}>
+      <GraciasContent />
+    </Suspense>
   );
 } 

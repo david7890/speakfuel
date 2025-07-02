@@ -30,7 +30,7 @@ export default function Testimonials() {
           {testimonials.map((testimonial, index) => (
             <div key={index} className="bg-gray-50 p-6 rounded-lg">
               <p className="text-gray-700 mb-4 italic">
-                "{testimonial.review}"
+                &ldquo;{testimonial.review}&rdquo;
               </p>
               <div>
                 <p className="font-semibold text-gray-900">{testimonial.name}</p>

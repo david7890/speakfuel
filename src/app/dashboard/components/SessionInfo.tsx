@@ -4,11 +4,6 @@ import { useState, useEffect } from 'react';
 import { createClient } from '@/lib/supabase/client';
 
 export default function SessionInfo() {
-  // Solo mostrar en desarrollo
-  if (process.env.NODE_ENV !== 'development') {
-    return null;
-  }
-
   const [sessionInfo, setSessionInfo] = useState<{
     expiresAt: Date | null;
     timeUntilExpiry: string;
@@ -18,6 +13,9 @@ export default function SessionInfo() {
   });
 
   const supabase = createClient();
+  
+  // Solo mostrar en desarrollo
+  const isDevelopment = process.env.NODE_ENV === 'development';
 
   useEffect(() => {
     const updateSessionInfo = async () => {
@@ -60,7 +58,7 @@ export default function SessionInfo() {
     return () => clearInterval(interval);
   }, [supabase]);
 
-  if (!sessionInfo.expiresAt) {
+  if (!isDevelopment || !sessionInfo.expiresAt) {
     return null;
   }
 

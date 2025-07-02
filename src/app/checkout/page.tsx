@@ -1,10 +1,11 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, Suspense } from 'react';
 import { useSearchParams } from 'next/navigation';
+import Link from 'next/link';
 import { SessionDurations } from '@/lib/auth-helpers';
 
-export default function Checkout() {
+function CheckoutContent() {
   const [email, setEmail] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -141,14 +142,22 @@ export default function Checkout() {
           <p className="text-xs text-gray-500 mb-2">
             🔒 Pago seguro con Stripe • Garantía de 30 días
           </p>
-          <a 
+          <Link 
             href="/" 
             className="text-blue-600 hover:text-blue-700 text-sm transition-colors"
           >
             ← Volver al inicio
-          </a>
+          </Link>
         </div>
       </div>
     </div>
+  );
+}
+
+export default function Checkout() {
+  return (
+    <Suspense fallback={<div className="min-h-screen bg-white flex items-center justify-center"><div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div></div>}>
+      <CheckoutContent />
+    </Suspense>
   );
 } 

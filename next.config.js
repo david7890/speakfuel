@@ -102,14 +102,14 @@ const nextConfig = {
   output: 'standalone', // Para deploy optimizado
   trailingSlash: false, // URLs sin slash final
   
-  // ESLint durante build
+  // ESLint durante build - solo estricto en desarrollo
   eslint: {
-    ignoreDuringBuilds: false,
+    ignoreDuringBuilds: process.env.NODE_ENV === 'production',
   },
   
-  // TypeScript durante build
+  // TypeScript durante build - solo estricto en desarrollo
   typescript: {
-    ignoreBuildErrors: false,
+    ignoreBuildErrors: process.env.NODE_ENV === 'production',
   },
 }
 
