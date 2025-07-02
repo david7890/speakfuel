@@ -2,8 +2,9 @@
 
 import { createClient } from '@/lib/supabase/client';
 import { useRouter } from 'next/navigation';
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useCallback } from 'react';
 import type { AuthChangeEvent, Session } from '@supabase/supabase-js';
+import { getRememberMePreference, clearRememberMePreference } from '@/lib/auth-helpers';
 
 export interface UserProfile {
   id: string;
@@ -39,6 +40,65 @@ export function useAuth() {
 
   const router = useRouter();
   const supabase = createClient();
+
+  // Función para verificar y renovar sesión si es necesario
+  const checkAndRefreshSession = useCallback(async () => {
+    try {
+      const { data: { session }, error } = await supabase.auth.getSession();
+      
+      if (error) {
+        console.error('❌ Error checking session:', error);
+        return null;
+      }
+      
+      if (session) {
+        const expiresAt = new Date(session.expires_at! * 1000);
+        const now = new Date();
+        const timeUntilExpiry = expiresAt.getTime() - now.getTime();
+        
+        // Si el token expira en menos de 10 minutos, intentar renovar
+        if (timeUntilExpiry < 10 * 60 * 1000) {
+          console.log('🔄 Token expires soon, attempting refresh...');
+          
+          const { data: refreshData, error: refreshError } = await supabase.auth.refreshSession();
+          
+          if (refreshError) {
+            console.error('❌ Error refreshing session:', refreshError);
+            // Si no se puede renovar, limpiar preferencias y sesión
+            clearRememberMePreference();
+            return null;
+          }
+          
+          if (refreshData.session) {
+            console.log('✅ Session refreshed successfully');
+            return refreshData.session;
+          }
+        }
+        
+        return session;
+      }
+      
+      return null;
+    } catch (error) {
+      console.error('❌ Unexpected error checking session:', error);
+      return null;
+    }
+  }, [supabase]);
+
+  // Función para verificar sesión periódicamente
+  useEffect(() => {
+    if (!authState.user) return;
+
+    const preferences = getRememberMePreference();
+    if (!preferences.rememberMe) return; // Solo para sesiones extendidas
+    
+    // Verificar sesión cada 30 minutos
+    const interval = setInterval(() => {
+      checkAndRefreshSession();
+    }, 30 * 60 * 1000);
+
+    return () => clearInterval(interval);
+  }, [authState.user, checkAndRefreshSession]);
 
   const fetchUserData = async (user: any): Promise<{ profile: UserProfile | null; progress: LessonProgress[] }> => {
     try {
@@ -200,9 +260,10 @@ export function useAuth() {
     initializeAuth();
 
     const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event: AuthChangeEvent, session: Session | null) => {
-      console.log('🔄 Auth state changed:', event);
+      console.log('🔄 Auth state changed:', event, session?.user?.id);
       
       if (event === 'SIGNED_IN' && session?.user) {
+        console.log('✅ User signed in, fetching user data...');
         const { profile, progress } = await fetchUserData(session.user);
         setAuthState({
           user: session.user,
@@ -210,7 +271,16 @@ export function useAuth() {
           lessonProgress: progress,
           isLoading: false
         });
+      } else if (event === 'TOKEN_REFRESHED' && session?.user) {
+        console.log('🔄 Token refreshed successfully');
+        // Mantener datos existentes, solo actualizar sesión
+        setAuthState(prev => ({
+          ...prev,
+          user: session.user
+        }));
       } else if (event === 'SIGNED_OUT') {
+        console.log('👋 User signed out');
+        clearRememberMePreference();
         setAuthState({
           user: null,
           profile: null,
@@ -225,9 +295,16 @@ export function useAuth() {
   }, [supabase, router]);
 
   const signOut = async () => {
+    console.log('👋 Signing out user...');
+    
+    // Limpiar preferencias de remember me
+    clearRememberMePreference();
+    
     const { error } = await supabase.auth.signOut();
     if (error) {
-      console.error('Sign out error:', error);
+      console.error('❌ Sign out error:', error);
+    } else {
+      console.log('✅ User signed out successfully');
     }
   };
 

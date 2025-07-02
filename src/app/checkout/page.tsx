@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import { useSearchParams } from 'next/navigation';
+import { SessionDurations } from '@/lib/auth-helpers';
 
 export default function Checkout() {
   const [email, setEmail] = useState('');
@@ -21,7 +22,11 @@ export default function Checkout() {
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ email }),
+        body: JSON.stringify({ 
+          email,
+          rememberMe: true, // Siempre 30 días por defecto
+          sessionDuration: SessionDurations.EXTENDED // 30 días
+        }),
       });
 
       const data = await response.json();
@@ -36,10 +41,7 @@ export default function Checkout() {
       } else {
         // Manejar caso especial: usuario ya tiene acceso
         if (data.type === 'already_paid') {
-          setError(data.error + ' Redirigiendo a la página de acceso...');
-          setTimeout(() => {
-            window.location.href = '/acceso?from=checkout';
-          }, 2000);
+          setError(data.error + ' Puedes ir a la página de acceso si quieres entrar al curso.');
         } else {
           setError(data.error || 'Error procesando el pago');
         }

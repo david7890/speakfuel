@@ -4,6 +4,7 @@ import { useRouter } from 'next/navigation';
 import { useAuth } from '@/hooks/useAuth';
 import DashboardHeader from './components/DashboardHeader';
 import LessonCard from './components/LessonCard';
+import SessionInfo from './components/SessionInfo';
 import lessonsData from '@/data/lessons/index.json';
 
 // Forzar CSR - Dashboard es privado y dinámico
@@ -205,6 +206,9 @@ export default function Dashboard() {
         user={userData}
         onContinueClick={handleContinueClick}
       />
+
+      {/* Session Information */}
+      <SessionInfo />
 
       {/* Lessons Grid */}
       <div className="mt-12">

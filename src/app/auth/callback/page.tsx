@@ -17,6 +17,9 @@ export default function AuthCallback() {
         console.log('📍 Hash:', window.location.hash);
         console.log('📍 Search:', window.location.search);
         
+        // Log de información (30 días por defecto para todos)
+        console.log('💾 Using default 30-day session duration');
+        
         // Método 1: Verificar query parameters (token_hash)
         const tokenHash = searchParams.get('token_hash');
         const type = searchParams.get('type');

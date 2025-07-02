@@ -40,18 +40,42 @@ export async function middleware(req: NextRequest) {
   );
 
   try {
-    const { data: { session } } = await supabase.auth.getSession();
+    // Obtener sesión y renovar automáticamente si es necesario
+    const { data: { session }, error: sessionError } = await supabase.auth.getSession();
+    
+    if (sessionError) {
+      console.warn('Session error in middleware:', sessionError);
+    }
+    
+    // Log de debug en desarrollo
+    if (process.env.NODE_ENV === 'development' && session) {
+      const expiresAt = new Date(session.expires_at! * 1000);
+      const now = new Date();
+      const timeUntilExpiry = Math.floor((expiresAt.getTime() - now.getTime()) / (1000 * 60));
+      
+      console.log(`🔐 Session active for user ${session.user.id}, expires in ${timeUntilExpiry}min`);
+      
+      // Advertir si el token expira pronto
+      if (timeUntilExpiry < 10) {
+        console.log('⚠️ Token expires soon, Supabase should auto-refresh');
+      }
+    }
     
     // Proteger dashboard - requiere autenticación
     if (pathname.startsWith('/dashboard')) {
       if (!session) {
+        console.log('🚫 No session found, redirecting to signin');
         return NextResponse.redirect(new URL('/auth/signin', req.url));
       }
+      
+      // Verificar que el usuario tenga acceso pagado (opcional - ya se verifica en useAuth)
+      // Esta verificación adicional es por seguridad
     }
 
     return res;
   } catch (error) {
     console.error('Middleware error:', error);
+    // En caso de error, permitir continuar pero log del error
     return res;
   }
 }

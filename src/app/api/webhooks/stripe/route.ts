@@ -23,9 +23,12 @@ export async function POST(request: NextRequest) {
     if (event.type === 'checkout.session.completed') {
       const session = event.data.object as Stripe.Checkout.Session;
       const customerEmail = session.customer_email || session.metadata?.customer_email;
+      const rememberMe = session.metadata?.remember_me === 'true';
+      const sessionDuration = parseInt(session.metadata?.session_duration || '259200'); // Default 3 days
 
       console.log('🎉 Processing successful payment for session:', session.id);
       console.log('📧 Customer email:', customerEmail);
+      console.log(`🔒 Session preferences: Remember=${rememberMe}, Duration=${Math.floor(sessionDuration / (24 * 60 * 60))}days`);
 
       if (!customerEmail) {
         console.error('❌ No customer email found in session');
@@ -80,13 +83,25 @@ export async function POST(request: NextRequest) {
 
         console.log('✅ Access granted:', accessData);
 
-        // 3. Enviar Magic Link
-        console.log('📨 Sending magic link...');
+        // 3. Enviar Magic Link con configuración de sesión
+        console.log('📨 Sending magic link with session preferences...');
+        
+        const redirectUrl = new URL('/auth/callback', process.env.NEXT_PUBLIC_SITE_URL!);
+        // Agregar parámetros para configurar la sesión
+        if (rememberMe) {
+          redirectUrl.searchParams.set('remember', 'true');
+          redirectUrl.searchParams.set('duration', sessionDuration.toString());
+        }
+        
         const { error: magicLinkError } = await supabase.auth.signInWithOtp({
           email: customerEmail,
           options: {
-            emailRedirectTo: `${process.env.NEXT_PUBLIC_SITE_URL}/auth/callback`,
+            emailRedirectTo: redirectUrl.toString(),
             shouldCreateUser: false,
+            data: {
+              remember_me: rememberMe,
+              session_duration: sessionDuration
+            }
           },
         });
 

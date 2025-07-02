@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { useSearchParams } from 'next/navigation';
+import { SessionDurations } from '@/lib/auth-helpers';
 
 export default function Acceso() {
   const [email, setEmail] = useState('');
@@ -30,7 +31,11 @@ export default function Acceso() {
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ email }),
+        body: JSON.stringify({ 
+          email,
+          rememberMe: true, // Siempre 30 días
+          sessionDuration: SessionDurations.EXTENDED // 30 días
+        }),
       });
 
       const data = await response.json();

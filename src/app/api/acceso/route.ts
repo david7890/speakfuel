@@ -3,7 +3,7 @@ import { NextRequest, NextResponse } from 'next/server';
 
 export async function POST(request: NextRequest) {
   try {
-    const { email } = await request.json();
+    const { email, rememberMe = false, sessionDuration = 3 * 24 * 60 * 60 } = await request.json();
 
     if (!email) {
       return NextResponse.json(
@@ -11,6 +11,8 @@ export async function POST(request: NextRequest) {
         { status: 400 }
       );
     }
+
+    console.log(`🔐 Processing access request for ${email} (Remember: ${rememberMe ? 'Yes' : 'No'})`);
 
     const supabase = createAdminClient();
 
@@ -37,12 +39,24 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Si tiene acceso, enviar Magic Link
+    // Si tiene acceso, enviar Magic Link con configuración de sesión
+    const redirectUrl = new URL('/auth/callback', process.env.NEXT_PUBLIC_SITE_URL!);
+    
+    // Agregar parámetros para configurar la sesión
+    if (rememberMe) {
+      redirectUrl.searchParams.set('remember', 'true');
+      redirectUrl.searchParams.set('duration', sessionDuration.toString());
+    }
+    
     const { error: signInError } = await supabase.auth.signInWithOtp({
       email,
       options: {
-        emailRedirectTo: `${process.env.NEXT_PUBLIC_SITE_URL}/auth/callback`,
+        emailRedirectTo: redirectUrl.toString(),
         shouldCreateUser: false, // No crear usuario, debe existir
+        data: {
+          remember_me: rememberMe,
+          session_duration: sessionDuration
+        }
       },
     });
 

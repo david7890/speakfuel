@@ -4,25 +4,25 @@ import { NextRequest, NextResponse } from 'next/server';
 
 export async function POST(request: NextRequest) {
   try {
-    const { email } = await request.json();
+    const { email, rememberMe = true, sessionDuration = 30 * 24 * 60 * 60 } = await request.json();
 
     if (!email || !email.includes('@')) {
       return NextResponse.json({ error: 'Email válido requerido' }, { status: 400 });
     }
 
-    console.log('🛒 Checkout request for:', email);
+    console.log(`🛒 Checkout request for: ${email} (Remember: ${rememberMe ? 'Yes' : 'No'})`);
 
     // **NUEVA VERIFICACIÓN: Comprobar si ya tiene acceso pagado**
     const supabase = createAdminClient();
     
     try {
-      const { data: hasAccess, error: checkError } = await supabase
+      const { data: accessData, error: checkError } = await supabase
         .rpc('check_user_paid_access', { user_email: email });
 
       if (checkError) {
         console.error('❌ Error checking paid access:', checkError);
         // Continuar con el checkout en caso de error de verificación
-      } else if (hasAccess) {
+      } else if (accessData && accessData.has_access) {
         console.log('🚫 User already has paid access:', email);
         return NextResponse.json({ 
           error: 'Ya tienes acceso al curso', 
@@ -56,10 +56,12 @@ export async function POST(request: NextRequest) {
       ],
       mode: 'payment',
       customer_email: email,
-      success_url: `${process.env.NEXT_PUBLIC_SITE_URL}/gracias?session_id={CHECKOUT_SESSION_ID}`,
-      cancel_url: `${process.env.NEXT_PUBLIC_SITE_URL}/checkout`,
+      success_url: `${process.env.NEXT_PUBLIC_SITE_URL}/gracias?session_id={CHECKOUT_SESSION_ID}&remember=${rememberMe}&duration=${sessionDuration}`,
+      cancel_url: `${process.env.NEXT_PUBLIC_SITE_URL}/checkout?canceled=true`,
       metadata: {
         customer_email: email,
+        remember_me: rememberMe.toString(),
+        session_duration: sessionDuration.toString(),
       },
     });
 

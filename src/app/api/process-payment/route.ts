@@ -24,6 +24,10 @@ export async function POST(request: NextRequest) {
     }
 
     const customerEmail = session.customer_email || session.customer_details?.email;
+    const rememberMe = session.metadata?.remember_me === 'true';
+    const sessionDuration = parseInt(session.metadata?.session_duration || '259200'); // Default 3 days
+    
+    console.log(`🔒 Processing with session preferences: Remember=${rememberMe}, Duration=${Math.floor(sessionDuration / (24 * 60 * 60))}days`);
 
     if (!customerEmail) {
       return NextResponse.json(
@@ -100,13 +104,25 @@ export async function POST(request: NextRequest) {
 
       console.log('✅ Access granted:', accessData);
 
-      // 3. Enviar Magic Link
-      console.log('📨 Sending magic link...');
+      // 3. Enviar Magic Link con configuración de sesión
+      console.log('📨 Sending magic link with session preferences...');
+      
+      const redirectUrl = new URL('/auth/callback', process.env.NEXT_PUBLIC_SITE_URL!);
+      // Agregar parámetros para configurar la sesión
+      if (rememberMe) {
+        redirectUrl.searchParams.set('remember', 'true');
+        redirectUrl.searchParams.set('duration', sessionDuration.toString());
+      }
+      
       const { error: magicLinkError } = await supabase.auth.signInWithOtp({
         email: customerEmail,
         options: {
-          emailRedirectTo: `${process.env.NEXT_PUBLIC_SITE_URL}/auth/callback`,
+          emailRedirectTo: redirectUrl.toString(),
           shouldCreateUser: false,
+          data: {
+            remember_me: rememberMe,
+            session_duration: sessionDuration
+          }
         },
       });
 

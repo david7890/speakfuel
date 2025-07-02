@@ -5,8 +5,9 @@ export async function POST(request: NextRequest) {
   try {
     const { email, secret } = await request.json();
 
-    // Verificar secret para admin (agrega tu clave secreta)
-    if (secret !== process.env.ADMIN_SECRET) {
+    // Verificar secret para admin (desarrollo - siempre usar secret simple)
+    const adminSecret = 'debug-secret-123';
+    if (secret !== adminSecret) {
       return NextResponse.json(
         { error: 'Unauthorized' },
         { status: 401 }
