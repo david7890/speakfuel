@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { useParams, useRouter } from 'next/navigation';
+import { useAuth } from '@/hooks/useAuth';
 import LessonHeader from '../../components/LessonHeader';
 import MiniStoryQuestions from '../../components/MiniStoryQuestions';
 import LessonSectionNavigation from '../components/LessonSectionNavigation';
@@ -25,6 +26,7 @@ interface LessonData {
 export default function QuestionsPage() {
   const params = useParams();
   const router = useRouter();
+  const { refreshUserData } = useAuth();
   const lessonId = parseInt(params.id as string);
   
   const [isTransitioning, setIsTransitioning] = useState(true);
@@ -240,12 +242,30 @@ export default function QuestionsPage() {
             console.log('🔓 Lección', lessonId + 1, 'desbloqueada!');
           }
         }
+        
+        // ✨ CRÍTICO: Sincronizar datos del usuario antes de redirigir
+        console.log('🔄 Sincronizando datos del usuario...');
+        try {
+          const refreshSuccess = await refreshUserData();
+          if (refreshSuccess) {
+            console.log('✅ Datos sincronizados correctamente');
+          } else {
+            console.warn('⚠️ No se pudieron sincronizar los datos, pero continuando...');
+          }
+        } catch (error) {
+          console.error('❌ Error sincronizando datos:', error);
+          // Continuar de todas formas para evitar trapping
+        }
       }
     } catch (error) {
       console.error('❌ Error completando lección:', error);
+      alert('Hubo un problema guardando tu progreso. Por favor, recarga la página si el dashboard no se actualiza correctamente.');
     }
     
-    router.push('/dashboard');
+    // Breve delay para permitir que la sincronización se complete
+    setTimeout(() => {
+      router.push('/dashboard');
+    }, 200);
   };
 
   if (!lessonData) {
@@ -293,114 +313,66 @@ export default function QuestionsPage() {
       {/* Completion Modal */}
       {showCompletionModal && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 animate-fadeIn p-4">
-          <div className="bg-white rounded-2xl p-4 sm:p-6 lg:p-8 max-w-md w-full max-h-[90vh] overflow-y-auto text-center animate-slideUp">
-            {/* Celebration Animation */}
-            <div className="relative mb-4 sm:mb-6">
-              <div className="text-4xl sm:text-6xl mb-2 sm:mb-4 animate-bounce">🎉</div>
-              <div className="absolute inset-0 flex items-center justify-center">
-                <div className="text-2xl sm:text-4xl animate-pulse">✨</div>
-              </div>
-            </div>
+          <div className="bg-white rounded-2xl p-6 max-w-sm w-full text-center animate-slideUp">
+            {/* Celebration */}
+            <div className="text-5xl mb-3 animate-bounce">🎉</div>
             
-            <h3 className="text-xl sm:text-2xl font-bold text-gray-900 mb-3 sm:mb-4">
+            <h3 className="text-xl font-bold text-gray-900 mb-3">
               ¡Lección Completada!
             </h3>
             
-            <p className="text-sm sm:text-base text-gray-600 mb-4 sm:mb-6 leading-relaxed">
-              🏆 Has completado exitosamente <span className="font-semibold text-blue-600">&ldquo;{lessonData.title}&rdquo;</span>
-              <br />
-              <br />
-              ¡Has dominado el vocabulario, la historia y las preguntas!
+            <p className="text-gray-600 mb-4">
+              <span className="font-semibold text-blue-600">&ldquo;{lessonData.title}&rdquo;</span>
             </p>
 
-            {/* Estrellas y Repeticiones */}
-            <div className="bg-gradient-to-r from-yellow-50 to-orange-50 rounded-xl p-3 sm:p-6 mb-4 sm:mb-6 border border-yellow-200">
-              <div className="text-center mb-2 sm:mb-4">
-                <div className="text-2xl sm:text-4xl mb-1 sm:mb-2">
-                  {currentRepetitions + 1 >= 5 ? '⭐⭐⭐' : 
-                   currentRepetitions + 1 >= 3 ? '⭐⭐' : '⭐'}
-                </div>
-                <div className="text-sm sm:text-lg font-bold text-yellow-700">
-                  {currentRepetitions + 1 >= 5 ? '3 Estrellas Doradas!' : 
-                   currentRepetitions + 1 >= 3 ? '2 Estrellas Doradas!' : '1 Estrella Dorada!'}
-                </div>
+            {/* Progress Info */}
+            <div className="bg-yellow-50 rounded-lg p-4 mb-4 border border-yellow-200">
+              <div className="text-2xl mb-2">
+                {currentRepetitions + 1 >= 5 ? '⭐⭐⭐' : 
+                 currentRepetitions + 1 >= 3 ? '⭐⭐' : '⭐'}
               </div>
-              
-              <div className="text-center">
-                <div className="text-lg sm:text-2xl font-bold text-orange-600 mb-1">
-                  🔁 {currentRepetitions + 1}/7 repeticiones
-                </div>
-                <div className="text-xs sm:text-sm text-gray-600">
-                  {currentRepetitions + 1 < 7 ? 'Continúa practicando para dominar la lección' : '¡Lección completamente dominada!'}
-                </div>
+              <div className="text-sm font-bold text-yellow-700 mb-1">
+                {currentRepetitions + 1 >= 5 ? 'Dominada' : 
+                 currentRepetitions + 1 >= 3 ? 'Avanzada' : 'Completada'}
               </div>
-            </div>
-
-            {/* Motivational Text */}
-            <div className="mb-4 sm:mb-6">
-              <div className="bg-gradient-to-r from-blue-50 to-purple-50 rounded-xl p-3 sm:p-4">
-                <div className="text-center">
-                  <div className="text-xl sm:text-2xl mb-1 sm:mb-2">🎉</div>
-                  <div className="text-sm sm:text-lg font-semibold text-gray-800">
-                    {isFirstCompletion ? '¡Excelente trabajo!' : '¡Sigue mejorando!'}
-                  </div>
-                  <div className="text-xs sm:text-sm text-gray-600 mt-1">
-                    {isFirstCompletion ? 
-                      'Has completado tu primera vez esta lección' : 
-                      `Ya has completado esta lección ${currentRepetitions} veces`}
-                  </div>
-                </div>
+              <div className="text-xs text-gray-600">
+                {currentRepetitions + 1}/7 repeticiones
               </div>
             </div>
 
             {/* Unlock Next Lesson */}
             {isFirstCompletion && lessonId < 8 && (
-              <div className="mb-4 sm:mb-6">
-                <div className="bg-gradient-to-r from-green-50 to-emerald-50 rounded-xl p-3 sm:p-4 border border-green-200">
-                  <div className="text-center">
-                    <div className="text-xl sm:text-2xl mb-1 sm:mb-2">🔓</div>
-                    <div className="text-sm sm:text-lg font-bold text-green-700">
-                      ¡Lección {lessonId + 1} Desbloqueada!
-                    </div>
-                    <div className="text-xs sm:text-sm text-gray-600 mt-1">
-                      Ahora puedes acceder a la siguiente lección
-                    </div>
-                  </div>
+              <div className="bg-green-50 rounded-lg p-3 mb-4 border border-green-200">
+                <div className="text-lg mb-1">🔓</div>
+                <div className="text-sm font-bold text-green-700">
+                  ¡Lección {lessonId + 1} Desbloqueada!
                 </div>
               </div>
             )}
 
-            {/* Achievement Badge */}
-            <div className="mb-4 sm:mb-6">
-              <div className="inline-flex items-center bg-gradient-to-r from-yellow-400 to-orange-500 text-white px-3 sm:px-4 py-1.5 sm:py-2 rounded-full text-xs sm:text-sm font-medium shadow-lg">
-                🏅 {currentRepetitions + 1 >= 7 ? 'Lección Dominada' : 'Lección Completada'}
-              </div>
-            </div>
-
             {/* Action Buttons */}
-            <div className="space-y-2 sm:space-y-3">
+            <div className="space-y-3">
               <button
                 onClick={handleLessonComplete}
-                className="w-full bg-gradient-to-r from-blue-600 to-blue-700 text-white py-3 sm:py-4 px-6 sm:px-8 rounded-xl font-bold text-base sm:text-lg hover:from-blue-700 hover:to-blue-800 transition-all duration-300 transform hover:scale-105 shadow-lg hover:shadow-xl border-2 border-blue-200"
+                className="w-full bg-blue-600 text-white py-3 px-6 rounded-xl font-bold hover:bg-blue-700 transition-colors"
               >
                 🏠 Regresar al Dashboard
               </button>
               
-              {/* Botón secundario para repetir */}
               <button
                 onClick={() => {
                   setShowCompletionModal(false);
                   router.push(`/dashboard/lesson/${lessonId}/main`);
                 }}
-                className="w-full bg-gradient-to-r from-green-500 to-green-600 text-white py-2.5 sm:py-3 px-4 sm:px-6 rounded-xl font-medium text-sm sm:text-base hover:from-green-600 hover:to-green-700 transition-all duration-300 shadow-md hover:shadow-lg"
+                className="w-full bg-green-500 text-white py-2.5 px-4 rounded-xl font-medium hover:bg-green-600 transition-colors"
               >
                 🔄 Repetir Lección
               </button>
             </div>
 
             {/* Keyboard Hint */}
-            <p className="text-xs text-gray-400 mt-3 sm:mt-4">
-              Presiona <kbd className="px-1.5 sm:px-2 py-0.5 sm:py-1 bg-gray-100 rounded text-gray-600 text-xs">Enter</kbd> para regresar al dashboard
+            <p className="text-xs text-gray-400 mt-3">
+              Presiona <kbd className="px-2 py-1 bg-gray-100 rounded text-gray-600 text-xs">Enter</kbd> para continuar
             </p>
           </div>
         </div>

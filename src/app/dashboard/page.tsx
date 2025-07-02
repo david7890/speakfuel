@@ -12,7 +12,7 @@ export const dynamic = 'force-dynamic';
 
 export default function Dashboard() {
   const router = useRouter();
-  const { user, profile, lessonProgress, isLoading } = useAuth();
+  const { user, profile, lessonProgress, isLoading, error, clearError, forceRefresh } = useAuth();
 
   // Mapear difficulty del JSON a los valores esperados por el componente
   const mapDifficulty = (difficulty: string) => {
@@ -166,12 +166,60 @@ export default function Dashboard() {
     router.push('/dashboard/lesson/1/main');
   };
 
+  // Estado de error con opciones de recuperación
+  if (error && !isLoading) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50 flex items-center justify-center p-4">
+        <div className="text-center max-w-md w-full">
+          <div className="bg-white rounded-2xl p-8 shadow-lg border border-red-200">
+            <div className="text-4xl mb-4">⚠️</div>
+            <h3 className="text-xl font-bold text-gray-900 mb-4">
+              Problema de Conexión
+            </h3>
+            <p className="text-gray-600 mb-6 leading-relaxed">
+              {error}
+            </p>
+            
+            <div className="space-y-3">
+              <button
+                onClick={() => {
+                  clearError();
+                  forceRefresh();
+                }}
+                className="w-full bg-blue-600 text-white py-3 px-6 rounded-xl font-medium hover:bg-blue-700 transition-colors"
+              >
+                🔄 Reintentar
+              </button>
+              
+              <button
+                onClick={() => {
+                  clearError();
+                  window.location.reload();
+                }}
+                className="w-full bg-gray-100 text-gray-700 py-3 px-6 rounded-xl font-medium hover:bg-gray-200 transition-colors"
+              >
+                🔄 Recargar Página
+              </button>
+            </div>
+            
+            <p className="text-sm text-gray-500 mt-4">
+              Si el problema persiste, verifica tu conexión a internet
+            </p>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
   if (isLoading) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50 flex items-center justify-center">
         <div className="text-center">
           <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
           <p className="text-gray-600">Cargando tu progreso...</p>
+          <p className="text-sm text-gray-500 mt-2">
+            Esto no debería tomar más de unos segundos...
+          </p>
         </div>
       </div>
     );
