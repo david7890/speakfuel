@@ -292,21 +292,21 @@ export default function QuestionsPage() {
 
       {/* Completion Modal */}
       {showCompletionModal && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 animate-fadeIn">
-          <div className="bg-white rounded-2xl p-8 max-w-md w-full mx-4 text-center animate-slideUp">
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 animate-fadeIn p-4">
+          <div className="bg-white rounded-2xl p-4 sm:p-6 lg:p-8 max-w-md w-full max-h-[90vh] overflow-y-auto text-center animate-slideUp">
             {/* Celebration Animation */}
-            <div className="relative mb-6">
-              <div className="text-6xl mb-4 animate-bounce">🎉</div>
+            <div className="relative mb-4 sm:mb-6">
+              <div className="text-4xl sm:text-6xl mb-2 sm:mb-4 animate-bounce">🎉</div>
               <div className="absolute inset-0 flex items-center justify-center">
-                <div className="text-4xl animate-pulse">✨</div>
+                <div className="text-2xl sm:text-4xl animate-pulse">✨</div>
               </div>
             </div>
             
-            <h3 className="text-2xl font-bold text-gray-900 mb-4">
+            <h3 className="text-xl sm:text-2xl font-bold text-gray-900 mb-3 sm:mb-4">
               ¡Lección Completada!
             </h3>
             
-            <p className="text-gray-600 mb-6 leading-relaxed">
+            <p className="text-sm sm:text-base text-gray-600 mb-4 sm:mb-6 leading-relaxed">
               🏆 Has completado exitosamente <span className="font-semibold text-blue-600">&ldquo;{lessonData.title}&rdquo;</span>
               <br />
               <br />
@@ -314,37 +314,37 @@ export default function QuestionsPage() {
             </p>
 
             {/* Estrellas y Repeticiones */}
-            <div className="bg-gradient-to-r from-yellow-50 to-orange-50 rounded-xl p-6 mb-6 border border-yellow-200">
-              <div className="text-center mb-4">
-                <div className="text-4xl mb-2">
+            <div className="bg-gradient-to-r from-yellow-50 to-orange-50 rounded-xl p-3 sm:p-6 mb-4 sm:mb-6 border border-yellow-200">
+              <div className="text-center mb-2 sm:mb-4">
+                <div className="text-2xl sm:text-4xl mb-1 sm:mb-2">
                   {currentRepetitions + 1 >= 5 ? '⭐⭐⭐' : 
                    currentRepetitions + 1 >= 3 ? '⭐⭐' : '⭐'}
                 </div>
-                <div className="text-lg font-bold text-yellow-700">
+                <div className="text-sm sm:text-lg font-bold text-yellow-700">
                   {currentRepetitions + 1 >= 5 ? '3 Estrellas Doradas!' : 
                    currentRepetitions + 1 >= 3 ? '2 Estrellas Doradas!' : '1 Estrella Dorada!'}
                 </div>
               </div>
               
               <div className="text-center">
-                <div className="text-2xl font-bold text-orange-600 mb-1">
+                <div className="text-lg sm:text-2xl font-bold text-orange-600 mb-1">
                   🔁 {currentRepetitions + 1}/7 repeticiones
                 </div>
-                <div className="text-sm text-gray-600">
+                <div className="text-xs sm:text-sm text-gray-600">
                   {currentRepetitions + 1 < 7 ? 'Continúa practicando para dominar la lección' : '¡Lección completamente dominada!'}
                 </div>
               </div>
             </div>
 
             {/* Motivational Text */}
-            <div className="mb-6">
-              <div className="bg-gradient-to-r from-blue-50 to-purple-50 rounded-xl p-4">
+            <div className="mb-4 sm:mb-6">
+              <div className="bg-gradient-to-r from-blue-50 to-purple-50 rounded-xl p-3 sm:p-4">
                 <div className="text-center">
-                  <div className="text-2xl mb-2">🎉</div>
-                  <div className="text-lg font-semibold text-gray-800">
+                  <div className="text-xl sm:text-2xl mb-1 sm:mb-2">🎉</div>
+                  <div className="text-sm sm:text-lg font-semibold text-gray-800">
                     {isFirstCompletion ? '¡Excelente trabajo!' : '¡Sigue mejorando!'}
                   </div>
-                  <div className="text-sm text-gray-600 mt-1">
+                  <div className="text-xs sm:text-sm text-gray-600 mt-1">
                     {isFirstCompletion ? 
                       'Has completado tu primera vez esta lección' : 
                       `Ya has completado esta lección ${currentRepetitions} veces`}
@@ -355,14 +355,14 @@ export default function QuestionsPage() {
 
             {/* Unlock Next Lesson */}
             {isFirstCompletion && lessonId < 8 && (
-              <div className="mb-6">
-                <div className="bg-gradient-to-r from-green-50 to-emerald-50 rounded-xl p-4 border border-green-200">
+              <div className="mb-4 sm:mb-6">
+                <div className="bg-gradient-to-r from-green-50 to-emerald-50 rounded-xl p-3 sm:p-4 border border-green-200">
                   <div className="text-center">
-                    <div className="text-2xl mb-2">🔓</div>
-                    <div className="text-lg font-bold text-green-700">
+                    <div className="text-xl sm:text-2xl mb-1 sm:mb-2">🔓</div>
+                    <div className="text-sm sm:text-lg font-bold text-green-700">
                       ¡Lección {lessonId + 1} Desbloqueada!
                     </div>
-                    <div className="text-sm text-gray-600 mt-1">
+                    <div className="text-xs sm:text-sm text-gray-600 mt-1">
                       Ahora puedes acceder a la siguiente lección
                     </div>
                   </div>
@@ -371,17 +371,17 @@ export default function QuestionsPage() {
             )}
 
             {/* Achievement Badge */}
-            <div className="mb-6">
-              <div className="inline-flex items-center bg-gradient-to-r from-yellow-400 to-orange-500 text-white px-4 py-2 rounded-full text-sm font-medium shadow-lg">
+            <div className="mb-4 sm:mb-6">
+              <div className="inline-flex items-center bg-gradient-to-r from-yellow-400 to-orange-500 text-white px-3 sm:px-4 py-1.5 sm:py-2 rounded-full text-xs sm:text-sm font-medium shadow-lg">
                 🏅 {currentRepetitions + 1 >= 7 ? 'Lección Dominada' : 'Lección Completada'}
               </div>
             </div>
 
             {/* Action Buttons */}
-            <div className="space-y-3">
+            <div className="space-y-2 sm:space-y-3">
               <button
                 onClick={handleLessonComplete}
-                className="w-full bg-gradient-to-r from-blue-600 to-blue-700 text-white py-4 px-8 rounded-xl font-bold text-lg hover:from-blue-700 hover:to-blue-800 transition-all duration-300 transform hover:scale-105 shadow-lg hover:shadow-xl border-2 border-blue-200"
+                className="w-full bg-gradient-to-r from-blue-600 to-blue-700 text-white py-3 sm:py-4 px-6 sm:px-8 rounded-xl font-bold text-base sm:text-lg hover:from-blue-700 hover:to-blue-800 transition-all duration-300 transform hover:scale-105 shadow-lg hover:shadow-xl border-2 border-blue-200"
               >
                 🏠 Regresar al Dashboard
               </button>
@@ -392,15 +392,15 @@ export default function QuestionsPage() {
                   setShowCompletionModal(false);
                   router.push(`/dashboard/lesson/${lessonId}/main`);
                 }}
-                className="w-full bg-gradient-to-r from-green-500 to-green-600 text-white py-3 px-6 rounded-xl font-medium hover:from-green-600 hover:to-green-700 transition-all duration-300 shadow-md hover:shadow-lg"
+                className="w-full bg-gradient-to-r from-green-500 to-green-600 text-white py-2.5 sm:py-3 px-4 sm:px-6 rounded-xl font-medium text-sm sm:text-base hover:from-green-600 hover:to-green-700 transition-all duration-300 shadow-md hover:shadow-lg"
               >
                 🔄 Repetir Lección
               </button>
             </div>
 
             {/* Keyboard Hint */}
-            <p className="text-xs text-gray-400 mt-4">
-              Presiona <kbd className="px-2 py-1 bg-gray-100 rounded text-gray-600">Enter</kbd> para regresar al dashboard
+            <p className="text-xs text-gray-400 mt-3 sm:mt-4">
+              Presiona <kbd className="px-1.5 sm:px-2 py-0.5 sm:py-1 bg-gray-100 rounded text-gray-600 text-xs">Enter</kbd> para regresar al dashboard
             </p>
           </div>
         </div>
