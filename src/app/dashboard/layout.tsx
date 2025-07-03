@@ -1,8 +1,10 @@
 'use client';
 
+import { useState, useEffect } from 'react';
 import { usePathname } from 'next/navigation';
 import { useAuth } from '@/hooks/useAuth';
 import DashboardNav from './components/DashboardNav';
+import StreakToast from './components/StreakToast';
 
 export default function DashboardLayout({
   children,
@@ -11,6 +13,27 @@ export default function DashboardLayout({
 }) {
   const pathname = usePathname();
   const { user, profile, signOut } = useAuth();
+  const [toastStreak, setToastStreak] = useState<number | null>(null);
+  
+  // Escuchar por actualizaciones de racha desde localStorage
+  useEffect(() => {
+    const checkForStreakUpdate = () => {
+      const streakUpdate = localStorage.getItem('streak_updated');
+      if (streakUpdate) {
+        const newStreak = parseInt(streakUpdate);
+        setToastStreak(newStreak);
+        localStorage.removeItem('streak_updated'); // Limpiar el flag
+      }
+    };
+
+    // Revisar inmediatamente
+    checkForStreakUpdate();
+    
+    // Revisar periódicamente por si nos perdimos el evento
+    const interval = setInterval(checkForStreakUpdate, 1000);
+    
+    return () => clearInterval(interval);
+  }, []);
   
   // Hide DashboardNav on lesson pages
   const isLessonPage = pathname.includes('/lesson/');
@@ -35,6 +58,12 @@ export default function DashboardLayout({
       <main className={isLessonPage ? '' : 'pt-16'}>
         {children}
       </main>
+      
+      {/* Toast de racha */}
+      <StreakToast 
+        newStreak={toastStreak} 
+        onClose={() => setToastStreak(null)} 
+      />
     </div>
   );
 } 

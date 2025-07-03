@@ -5,6 +5,7 @@ import { useAuth } from '@/hooks/useAuth';
 import DashboardHeader from './components/DashboardHeader';
 import LessonCard from './components/LessonCard';
 import SessionInfo from './components/SessionInfo';
+import StreakCalendar from './components/StreakCalendar';
 import lessonsData from '@/data/lessons/index.json';
 
 // Forzar CSR - Dashboard es privado y dinámico
@@ -249,6 +250,12 @@ export default function Dashboard() {
 
   return (
     <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+      {/* Streak Calendar */}
+      <StreakCalendar 
+        userId={user?.id}
+        currentStreak={profile?.current_streak || 0}
+      />
+      
       {/* Header */}
       <DashboardHeader 
         user={userData}
@@ -291,32 +298,117 @@ export default function Dashboard() {
         </div>
       </div>
 
-      {/* Motivational Footer */}
-      <div className="mt-16 text-center">
-          <div className="bg-white rounded-2xl p-8 shadow-lg border border-gray-100">
-            <div className="text-4xl mb-4">🎯</div>
-            <h3 className="text-xl font-bold text-gray-900 mb-2">
-              ¡Vas muy bien!
+      {/* Enhanced Motivational Footer */}
+      <div className="mt-16">
+        <div className="bg-gradient-to-br from-blue-50 via-white to-purple-50 rounded-2xl p-6 sm:p-8 shadow-sm border border-gray-100 relative overflow-hidden">
+          {/* Background decoration */}
+          <div className="absolute top-0 right-0 w-32 h-32 bg-gradient-to-br from-blue-100 to-purple-100 rounded-full -translate-y-16 translate-x-16 opacity-50"></div>
+          <div className="absolute bottom-0 left-0 w-24 h-24 bg-gradient-to-tr from-orange-100 to-yellow-100 rounded-full translate-y-12 -translate-x-12 opacity-50"></div>
+          
+          <div className="relative text-center">
+            {/* Dynamic content based on user progress */}
+            <div className="text-4xl mb-4 animate-fadeIn">
+              {userStats.completedLessons === 0 && '🚀'}
+              {userStats.completedLessons >= 1 && userStats.completedLessons <= 2 && '⭐'}
+              {userStats.completedLessons >= 3 && userStats.completedLessons <= 5 && '🔥'}
+              {userStats.completedLessons >= 6 && userStats.completedLessons <= 7 && '🏆'}
+              {userStats.completedLessons === 8 && '👑'}
+            </div>
+            
+            <h3 className="text-xl font-bold text-gray-900 mb-3">
+              {userStats.completedLessons === 0 && '¡Tu viaje comienza aquí!'}
+              {userStats.completedLessons >= 1 && userStats.completedLessons <= 2 && `¡Excelente inicio, ${userData.name}!`}
+              {userStats.completedLessons >= 3 && userStats.completedLessons <= 5 && `¡Vas por buen camino, ${userData.name}!`}
+              {userStats.completedLessons >= 6 && userStats.completedLessons <= 7 && `¡Casi lo logras, ${userData.name}!`}
+              {userStats.completedLessons === 8 && `¡Increíble, ${userData.name}! ¡Completaste todo!`}
             </h3>
-            <p className="text-gray-600 mb-4">
-              Cada lección completada te acerca más a la fluidez en inglés
+            
+            <p className="text-gray-600 mb-6 max-w-lg mx-auto leading-relaxed">
+              {userStats.completedLessons === 0 && 'Estás a punto de comenzar una experiencia increíble. ¡Tu primera lección te espera!'}
+              {userStats.completedLessons >= 1 && userStats.completedLessons <= 2 && `Has completado ${userStats.completedLessons} de 8 lecciones. Cada paso cuenta en tu camino hacia la fluidez.`}
+              {userStats.completedLessons >= 3 && userStats.completedLessons <= 5 && `¡Ya llevas ${userStats.completedLessons} lecciones! Tu constancia está dando frutos.`}
+              {userStats.completedLessons >= 6 && userStats.completedLessons <= 7 && `Solo ${8 - userStats.completedLessons} lección${8 - userStats.completedLessons !== 1 ? 'es' : ''} más para completar todo el curso. ¡Estás muy cerca!`}
+              {userStats.completedLessons === 8 && '¡Has dominado todas las lecciones! Puedes repetirlas para reforzar tu aprendizaje.'}
             </p>
-            <div className="flex items-center justify-center space-x-6 text-sm text-gray-500">
-              <div className="flex items-center">
-                <span className="w-2 h-2 bg-green-500 rounded-full mr-2"></span>
-                Constancia diaria
+
+            {/* Progress visualization */}
+            <div className="bg-white/80 rounded-xl p-4 sm:p-6 mb-6 backdrop-blur-sm">
+              <div className="flex items-center justify-between mb-3">
+                <span className="text-sm font-medium text-gray-700">Progreso del Curso</span>
+                <span className="text-sm font-bold text-blue-600">
+                  {userStats.completedLessons}/{userStats.totalLessons}
+                </span>
               </div>
-              <div className="flex items-center">
-                <span className="w-2 h-2 bg-blue-500 rounded-full mr-2"></span>
-                Progreso medible
+              
+              <div className="w-full bg-gray-200 rounded-full h-3 mb-4 overflow-hidden">
+                <div 
+                  className="h-full bg-gradient-to-r from-blue-500 to-purple-500 rounded-full transition-all duration-1000 ease-out"
+                  style={{ width: `${(userStats.completedLessons / userStats.totalLessons) * 100}%` }}
+                ></div>
               </div>
-              <div className="flex items-center">
-                <span className="w-2 h-2 bg-purple-500 rounded-full mr-2"></span>
-                Resultados reales
+              
+              {/* Stats row */}
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 text-center">
+                <div className="bg-gradient-to-br from-green-50 to-emerald-50 rounded-lg p-3 border border-green-100">
+                  <div className="text-lg font-bold text-green-600">{profile?.current_streak || 0}</div>
+                  <div className="text-xs text-green-700 font-medium">Días de racha</div>
+                </div>
+                
+                <div className="bg-gradient-to-br from-blue-50 to-indigo-50 rounded-lg p-3 border border-blue-100">
+                  <div className="text-lg font-bold text-blue-600">{userStats.completedLessons}</div>
+                  <div className="text-xs text-blue-700 font-medium">Lecciones completadas</div>
+                </div>
+                
+                <div className="bg-gradient-to-br from-purple-50 to-violet-50 rounded-lg p-3 border border-purple-100">
+                  <div className="text-lg font-bold text-purple-600">
+                    {Math.round((userStats.completedLessons / userStats.totalLessons) * 100)}%
+                  </div>
+                  <div className="text-xs text-purple-700 font-medium">Progreso total</div>
+                </div>
               </div>
             </div>
+
+            {/* Motivational call to action */}
+            {userStats.completedLessons < 8 && (
+              <div className="bg-gradient-to-r from-blue-500 to-purple-500 rounded-xl p-4 text-white">
+                <p className="text-sm font-medium mb-2">
+                  {userStats.completedLessons === 0 && '¡Comienza tu primera lección ahora!'}
+                  {userStats.completedLessons >= 1 && userStats.completedLessons <= 3 && '¡Mantén el impulso!'}
+                  {userStats.completedLessons >= 4 && userStats.completedLessons <= 6 && '¡El final está a la vista!'}
+                  {userStats.completedLessons === 7 && '¡Una última lección para la gloria!'}
+                </p>
+                <button
+                  onClick={handleContinueClick}
+                  className="bg-white text-blue-600 px-6 py-2 rounded-lg font-medium hover:bg-gray-50 transition-colors text-sm"
+                >
+                  {userStats.completedLessons === 0 ? 'Comenzar Ahora' : 'Continuar Aprendiendo'}
+                </button>
+              </div>
+            )}
+
+            {/* Completion celebration */}
+            {userStats.completedLessons === 8 && (
+              <div className="bg-gradient-to-r from-yellow-400 to-orange-500 rounded-xl p-4 text-white">
+                <p className="text-sm font-medium mb-2">🎉 ¡Felicitaciones por completar todo el curso!</p>
+                <div className="flex flex-col sm:flex-row gap-2 justify-center">
+                  <button
+                    onClick={handleContinueClick}
+                    className="bg-white text-orange-600 px-4 py-2 rounded-lg font-medium hover:bg-gray-50 transition-colors text-sm"
+                  >
+                    Repasar Lecciones
+                  </button>
+                  <button
+                    onClick={() => router.push('/')}
+                    className="bg-white/20 backdrop-blur-sm border border-white/30 text-white px-4 py-2 rounded-lg font-medium hover:bg-white/30 transition-colors text-sm"
+                  >
+                    Compartir Logro
+                  </button>
+                </div>
+              </div>
+            )}
           </div>
         </div>
+      </div>
     </div>
   );
 } 

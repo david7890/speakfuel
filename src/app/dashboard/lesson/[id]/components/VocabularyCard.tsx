@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import { SpeakerWaveIcon } from '@heroicons/react/24/outline';
 
 interface VocabWord {
   word: string;
@@ -72,9 +73,7 @@ export default function VocabularyCard({ word, wordIndex, totalWords }: Vocabula
                         <div className="w-1 h-4 bg-white rounded animate-bounce" style={{animationDelay: '0.2s'}}></div>
                       </div>
                     ) : (
-                      <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15.536 8.464a5 5 0 010 7.072m2.828-9.9a9 9 0 010 14.142M8.586 17H2v-6h2.586L12 3.586z" />
-                      </svg>
+                      <SpeakerWaveIcon className="w-6 h-6" />
                     )}
                   </button>
                 </div>

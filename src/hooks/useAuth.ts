@@ -244,7 +244,8 @@ export function useAuth() {
     
     for (let attempt = 1; attempt <= maxRetries; attempt++) {
       try {
-        const timeout = Math.min(5000 * attempt, 15000); // 5s, 10s, 15s
+        // Timeouts más tolerantes: 15s, 25s, 35s
+        const timeout = Math.min(15000 + (attempt - 1) * 10000, 35000);
         console.log(`🔄 Attempt ${attempt}/${maxRetries} to fetch user data (timeout: ${timeout}ms)`);
         
         const result = await fetchUserData(user, timeout);
@@ -255,27 +256,19 @@ export function useAuth() {
         console.error(`❌ Attempt ${attempt}/${maxRetries} failed:`, error);
         
         if (attempt < maxRetries) {
-          const delay = Math.pow(2, attempt - 1) * 1000; // 1s, 2s, 4s
+          const delay = Math.pow(2, attempt - 1) * 2000; // 2s, 4s, 8s (más tiempo entre reintentos)
           console.log(`⏳ Waiting ${delay}ms before retry...`);
           await new Promise(resolve => setTimeout(resolve, delay));
         }
       }
     }
     
-    // Si todos los reintentos fallan, devolver datos mínimos para evitar trapping
-    console.error('💥 All retry attempts failed, returning minimal data to prevent trapping user');
+    // Si todos los reintentos fallan, establecer error pero mantener usuario logueado
+    console.error('💥 All retry attempts failed, setting error state but keeping user logged in');
     setRetryCount(prev => prev + 1);
     
-    return {
-      profile: {
-        id: user.id,
-        name: user.email?.split('@')[0] || 'Usuario',
-        current_streak: 0,
-        longest_streak: 0,
-        last_activity_date: null
-      },
-      progress: [{ lesson_id: 1, status: 'available', repetitions_completed: 0, questions_completed: false, last_completed_at: null }]
-    };
+    // En lugar de devolver datos falsos, lanzar error para que se maneje apropiadamente
+    throw new Error('La carga está tardando más de lo esperado. Por favor, intenta recargar la página.');
   };
 
   useEffect(() => {
@@ -285,7 +278,7 @@ export function useAuth() {
       try {
         console.log('🚀 Initializing auth...');
         
-        // Timeout para la inicialización completa
+        // Timeout para la inicialización completa (más tolerante)
         const initTimeout = setTimeout(() => {
           console.error('⏰ Auth initialization timed out, forcing completion');
           setAuthState({
@@ -293,10 +286,10 @@ export function useAuth() {
             profile: null,
             lessonProgress: [],
             isLoading: false,
-            error: 'La inicialización tardó más de lo esperado. Por favor, recarga la página.'
+            error: 'La conexión está tardando más de lo esperado. Por favor, verifica tu conexión e intenta recargar la página.'
           });
           setIsInitialized(true);
-        }, 20000); // 20 segundos máximo para inicialización
+        }, 45000); // 45 segundos máximo para inicialización
         
         const { data: { session } } = await supabase.auth.getSession();
         

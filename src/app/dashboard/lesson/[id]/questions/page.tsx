@@ -34,6 +34,7 @@ export default function QuestionsPage() {
   const [showCompletionModal, setShowCompletionModal] = useState(false);
   const [currentRepetitions, setCurrentRepetitions] = useState(0);
   const [isFirstCompletion, setIsFirstCompletion] = useState(false);
+  const [newStreak, setNewStreak] = useState<number | null>(null);
 
   // Soporte para tecla Enter en el modal
   useEffect(() => {
@@ -176,49 +177,50 @@ export default function QuestionsPage() {
           lessonId
         });
         
-        // Actualizar progreso con manejo mejorado de conflictos
-        const { error: updateError } = await supabase
-          .from('user_lesson_progress')
-          .upsert({
-            user_id: user.id,
-            lesson_id: lessonId,
-            status: 'completed',
-            repetitions_completed: newRepetitions,
-            questions_completed: true,
-            last_completed_at: new Date().toISOString()
-          }, {
-            onConflict: 'user_id,lesson_id',
-            ignoreDuplicates: false
+        // ✅ Usar función RPC que actualiza progreso Y racha automáticamente
+        const { data: result, error: rpcError } = await supabase
+          .rpc('complete_lesson_section', {
+            user_uuid: user.id,
+            lesson_number: lessonId,
+            section_name: 'questions'
           });
         
-        if (updateError) {
-          console.error('❌ Error actualizando progreso:', updateError);
-          console.error('❌ Detalles del error:', {
-            code: updateError.code,
-            message: updateError.message,
-            details: updateError.details,
-            hint: updateError.hint
-          });
+        if (rpcError) {
+          console.error('❌ Error usando RPC complete_lesson_section:', rpcError);
           
-          // Intentar actualización más segura
-          const { error: safeUpdateError } = await supabase
+          // Fallback: actualización directa sin racha
+          const { error: updateError } = await supabase
             .from('user_lesson_progress')
-            .update({
+            .upsert({
+              user_id: user.id,
+              lesson_id: lessonId,
               status: 'completed',
               repetitions_completed: newRepetitions,
               questions_completed: true,
               last_completed_at: new Date().toISOString()
-            })
-            .eq('user_id', user.id)
-            .eq('lesson_id', lessonId);
+            }, {
+              onConflict: 'user_id,lesson_id',
+              ignoreDuplicates: false
+            });
             
-          if (safeUpdateError) {
-            console.error('❌ Error en actualización segura:', safeUpdateError);
+          if (updateError) {
+            console.error('❌ Error en fallback update:', updateError);
           } else {
-            console.log('✅ Progreso actualizado con método seguro! Repeticiones:', newRepetitions);
+            console.log('✅ Progreso actualizado con fallback (sin racha)');
           }
-        } else {
-          console.log('✅ Progreso actualizado! Repeticiones:', newRepetitions);
+        } else if (result?.success) {
+          console.log('✅ Lección completada exitosamente!');
+          console.log('🔥 Nueva racha:', result.new_streak);
+          
+          // Guardar nueva racha para mostrar en el modal y toast
+          if (result.new_streak) {
+            setNewStreak(result.new_streak);
+            // Guardar en localStorage para activar el toast en el layout
+            localStorage.setItem('streak_updated', result.new_streak.toString());
+          }
+          
+          // Actualizar repeticiones para el modal
+          setCurrentRepetitions(newRepetitions - 1); // -1 porque el modal suma +1
         }
         
         // Desbloquear siguiente lección si es la primera vez (con manejo mejorado)
@@ -265,7 +267,7 @@ export default function QuestionsPage() {
     
     // Breve delay para permitir que la sincronización se complete
     setTimeout(() => {
-      router.push('/dashboard');
+    router.push('/dashboard');
     }, 200);
   };
 
@@ -346,12 +348,35 @@ export default function QuestionsPage() {
               </div>
             </div>
 
+            {/* 🔥 Streak Feedback - NEW */}
+            {newStreak && newStreak > 0 && (
+              <div className="bg-orange-50 rounded-lg p-4 mb-4 border border-orange-200">
+                <div className="text-3xl mb-2 animate-pulse">🔥</div>
+                <div className="text-sm font-bold text-orange-700 mb-1">
+                  ¡Racha Actualizada!
+                </div>
+                <div className="text-xs text-orange-600">
+                  {newStreak === 1 ? (
+                    <>
+                      <span className="block font-medium">¡Iniciaste tu racha! 🚀</span>
+                      <span className="text-orange-500">Vuelve mañana para continuarla</span>
+                    </>
+                  ) : (
+                    <>
+                      <span className="block font-medium">{newStreak} días consecutivos</span>
+                      <span className="text-orange-500">¡Sigue así! 💪</span>
+                    </>
+                  )}
+                </div>
+              </div>
+            )}
+
             {/* Unlock Next Lesson */}
             {isFirstCompletion && lessonId < 8 && (
               <div className="bg-green-50 rounded-lg p-3 mb-4 border border-green-200">
                 <div className="text-lg mb-1">🔓</div>
                 <div className="text-sm font-bold text-green-700">
-                  ¡Lección {lessonId + 1} Desbloqueada!
+                      ¡Lección {lessonId + 1} Desbloqueada!
                 </div>
               </div>
             )}

@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import Link from 'next/link';
 import { FireIcon } from '@heroicons/react/24/outline';
 
@@ -16,6 +16,21 @@ export default function DashboardNav({
   onSignOut 
 }: DashboardNavProps) {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [showStreakAnimation, setShowStreakAnimation] = useState(false);
+  const previousStreak = useRef(currentStreak);
+
+  // Detectar cambios en la racha para mostrar animación
+  useEffect(() => {
+    if (currentStreak > previousStreak.current && currentStreak > 0) {
+      setShowStreakAnimation(true);
+      const timer = setTimeout(() => {
+        setShowStreakAnimation(false);
+      }, 3000); // Mostrar animación por 3 segundos
+      
+      return () => clearTimeout(timer);
+    }
+    previousStreak.current = currentStreak;
+  }, [currentStreak]);
   
   // Obtener la primera letra del nombre del usuario
   const getUserInitial = (name: string) => {
@@ -42,11 +57,18 @@ export default function DashboardNav({
           {/* User Menu */}
           <div className="hidden md:flex items-center space-x-4">
             {/* Streak Counter */}
-            <div className="flex items-center space-x-2 bg-orange-50 px-3 py-1 rounded-full">
-              <FireIcon className="h-4 w-4 text-orange-500" />
-              <span className="text-sm font-medium text-orange-700">
-                {currentStreak} día{currentStreak !== 1 ? 's' : ''}
+            <div className={`flex items-center space-x-2 px-3 py-1 rounded-full transition-all duration-500 ${
+              showStreakAnimation 
+                ? 'bg-gradient-to-r from-orange-100 to-red-100 shadow-lg scale-110 border-2 border-orange-300' 
+                : 'bg-orange-50'
+            }`}>
+              <FireIcon className={`h-4 w-4 text-orange-500 ${showStreakAnimation ? 'animate-pulse' : ''}`} />
+              <span className={`text-sm font-medium text-orange-700 ${showStreakAnimation ? 'font-bold' : ''}`}>
+                {showStreakAnimation ? '🔥 ' : ''}{currentStreak} día{currentStreak !== 1 ? 's' : ''}
               </span>
+              {showStreakAnimation && (
+                <span className="text-xs text-orange-600 animate-bounce">+1</span>
+              )}
             </div>
 
             {/* Profile Avatar */}
@@ -85,11 +107,18 @@ export default function DashboardNav({
           {/* Mobile streak and menu */}
           <div className="md:hidden flex items-center space-x-3">
             {/* Mobile Streak Counter */}
-            <div className="flex items-center space-x-1 bg-orange-50 px-2 py-1 rounded-full">
-              <FireIcon className="h-4 w-4 text-orange-500" />
-              <span className="text-xs font-medium text-orange-700">
-                {currentStreak} día{currentStreak !== 1 ? 's' : ''}
+            <div className={`flex items-center space-x-1 px-2 py-1 rounded-full transition-all duration-500 ${
+              showStreakAnimation 
+                ? 'bg-gradient-to-r from-orange-100 to-red-100 shadow-md scale-105 border border-orange-300' 
+                : 'bg-orange-50'
+            }`}>
+              <FireIcon className={`h-3 w-3 text-orange-500 ${showStreakAnimation ? 'animate-pulse' : ''}`} />
+              <span className={`text-xs font-medium text-orange-700 ${showStreakAnimation ? 'font-bold' : ''}`}>
+                {showStreakAnimation ? '🔥' : ''}{currentStreak}
               </span>
+              {showStreakAnimation && (
+                <span className="text-xs text-orange-600 animate-bounce">+1</span>
+              )}
             </div>
 
             {/* Mobile menu button */}
@@ -112,10 +141,13 @@ export default function DashboardNav({
          {isMenuOpen && (
            <div className="md:hidden py-4 border-t border-gray-100">
              <div className="flex flex-col space-y-4">
-               <div className="flex items-center space-x-2">
-                 <FireIcon className="h-4 w-4 text-orange-500" />
-                 <span className="text-sm font-medium text-orange-700">
-                   Racha: {currentStreak} día{currentStreak !== 1 ? 's' : ''}
+               <div className={`flex items-center space-x-2 px-2 py-1 rounded-lg transition-all duration-500 ${
+                 showStreakAnimation ? 'bg-orange-100 border border-orange-300' : ''
+               }`}>
+                 <FireIcon className={`h-4 w-4 text-orange-500 ${showStreakAnimation ? 'animate-pulse' : ''}`} />
+                 <span className={`text-sm font-medium text-orange-700 ${showStreakAnimation ? 'font-bold' : ''}`}>
+                   Racha: {showStreakAnimation ? '🔥 ' : ''}{currentStreak} día{currentStreak !== 1 ? 's' : ''}
+                   {showStreakAnimation && <span className="text-orange-600 animate-bounce ml-1">+1</span>}
                  </span>
                </div>
                <Link
