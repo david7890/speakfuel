@@ -12,52 +12,44 @@
     "vocabulary": {
       "words": [
         {
-          "word": "Chiming",
-          "pronunciation": "/ˈtʃaɪmɪŋ/",
-          "definition": "Making a musical ringing sound, typically that of a bell or clock",
-          "example": "The bell was chiming above her head as she entered the coffee shop.",
-          "translation": "Sonando (como una campana)",
-          "audioUrl": "gs://speakfuel-d832c.firebasestorage.app/lessons/lesson-02/vocabulary/chiming.mp3"
+          "word": "Distinction",
+          "pronunciation": "/ˈdɪs.tɪŋ.ʃən/",
+          "definition": "The quality of being different or unique",
+          "example": "The company's distinctive logo is a key factor in its brand recognition.",
+          "translation": "Distinción",
+          "audioUrl": "gs://speakfuel-d832c.firebasestorage.app/lessons/lesson-02/vocabulary/distinction.mp3"
         },
         {
-          "word": "Rush",
-          "pronunciation": "/rʌʃ/",
-          "definition": "A period of intense activity or high demand; a situation requiring urgency",
-          "example": "The morning rush is in full swing at the coffee shop.",
-          "translation": "Hora pico, prisa",
+          "word": "Vital",
+          "pronunciation": "/ˈvɪt.əl/",
+          "definition": "Of great importance or value",
+          "example": "The vital information was lost in the fire.",
+          "translation": "Vital",
           "audioUrl": "gs://speakfuel-d832c.firebasestorage.app/lessons/lesson6/vocabulary/rush.mp3"
         },
         {
-          "word": "Barista",
-          "pronunciation": "/bəˈrɪstə/",
-          "definition": "A person who prepares and serves coffee drinks, especially espresso-based beverages",
-          "example": "Emma, the barista, has memorized Sarah's order perfectly.",
-          "translation": "Barista (persona que prepara café)",
+          "word": "Imitate",
+          "pronunciation": "/ɪˈmɪt.eɪt/",
+          "definition": "To copy or reproduce the actions or behavior of someone or something",
+          "example": "The child imitated the teacher's actions perfectly.",
+          "translation": "Imitar",
           "audioUrl": "gs://speakfuel-d832c.firebasestorage.app/lessons/lesson-02/vocabulary/barista.mp3"
         },
         {
-          "word": "Cappuccino",
-          "pronunciation": "/ˌkæpəˈtʃiːnoʊ/",
-          "definition": "An Italian coffee drink made with espresso and steamed milk foam",
-          "example": "She ordered a large cappuccino with an extra shot of espresso.",
-          "translation": "Capuchino",
+          "word": "Bullshit",
+          "pronunciation": "/ˈbʌl.ʃɪt/",
+          "definition": "A lie or a false statement",
+          "example": "The politician's speech was full of bullshit.",
+          "translation": "Basura",
           "audioUrl": "gs://speakfuel-d832c.firebasestorage.app/lessons/lesson-02/vocabulary/cappuccino.mp3"
         },
         {
-          "word": "Espresso machine",
-          "pronunciation": "/ɪˈspreso məˈʃiːn/",
-          "definition": "A machine that brews coffee by forcing pressurized hot water through finely ground coffee",
-          "example": "Emma works the espresso machine with expert skill every morning.",
-          "translation": "Máquina de espresso",
-          "audioUrl": "gs://speakfuel-d832c.firebasestorage.app/lessons/lesson-02/vocabulary/espresso-machine.mp3"
-        },
-        {
-          "word": "Settles in",
-          "pronunciation": "/ˈsetəlz ɪn/",
-          "definition": "To make oneself comfortable in a place; to get established in a routine or location",
-          "example": "She settles in for another productive morning at her favorite table.",
-          "translation": "Se acomoda, se instala",
-          "audioUrl": "gs://speakfuel-d832c.firebasestorage.app/lessons/lesson-02/vocabulary/settles-in.mp3"
+          "word": "Acquisition",
+          "pronunciation": "/əˈkweɪʃən/",
+          "definition": "The act of acquiring or obtaining something",
+          "example": "The company acquired a new technology to improve its operations.",
+          "translation": "Adquisición",
+          "audioUrl": "gs://speakfuel-d832c.firebasestorage.app/lessons/lesson-02/vocabulary/acquisition.mp3"
         }
       ]
     },

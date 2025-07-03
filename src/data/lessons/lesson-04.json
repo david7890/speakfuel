@@ -12,52 +12,52 @@
     "vocabulary": {
       "words": [
         {
-          "word": "Chiming",
-          "pronunciation": "/ˈtʃaɪmɪŋ/",
-          "definition": "Making a musical ringing sound, typically that of a bell or clock",
-          "example": "The bell was chiming above her head as she entered the coffee shop.",
-          "translation": "Sonando (como una campana)",
-          "audioUrl": "gs://speakfuel-d832c.firebasestorage.app/lessons/lesson-02/vocabulary/chiming.mp3"
+          "word": "Beliefs",
+          "pronunciation": "/bɪˈliːf/",
+          "definition": "A set of ideas or principles that someone holds to be true",
+          "example": "His beliefs about the future were based on his experiences.",
+          "translation": "Creencias",
+          "audioUrl": "gs://speakfuel-d832c.firebasestorage.app/lessons/lesson-02/vocabulary/beliefs.mp3"
         },
         {
-          "word": "Rush",
-          "pronunciation": "/rʌʃ/",
-          "definition": "A period of intense activity or high demand; a situation requiring urgency",
-          "example": "The morning rush is in full swing at the coffee shop.",
-          "translation": "Hora pico, prisa",
-          "audioUrl": "gs://speakfuel-d832c.firebasestorage.app/lessons/lesson-02/vocabulary/rush.mp3"
+          "word": "Trauma",
+          "pronunciation": "/ˈtrɔɪ.mə/",
+          "definition": "A deeply distressing or disturbing experience",
+          "example": "The accident was a traumatic experience for her.",
+          "translation": "Trauma",
+          "audioUrl": "gs://speakfuel-d832c.firebasestorage.app/lessons/lesson-02/vocabulary/trauma.mp3"
         },
         {
-          "word": "Barista",
-          "pronunciation": "/bəˈrɪstə/",
-          "definition": "A person who prepares and serves coffee drinks, especially espresso-based beverages",
-          "example": "Emma, the barista, has memorized Sarah's order perfectly.",
-          "translation": "Barista (persona que prepara café)",
+          "word": "Hopefully",
+          "pronunciation": "/ˈhæp.li/",
+          "definition": "In a hopeful or optimistic manner",
+          "example": "Hopefully, the weather will be better tomorrow.",
+          "translation": "Espero que",
           "audioUrl": "gs://speakfuel-d832c.firebasestorage.app/lessons/lesson-02/vocabulary/barista.mp3"
         },
         {
-          "word": "Cappuccino",
-          "pronunciation": "/ˌkæpəˈtʃiːnoʊ/",
-          "definition": "An Italian coffee drink made with espresso and steamed milk foam",
-          "example": "She ordered a large cappuccino with an extra shot of espresso.",
-          "translation": "Capuchino",
-          "audioUrl": "gs://speakfuel-d832c.firebasestorage.app/lessons/lesson-02/vocabulary/cappuccino.mp3"
+          "word": "Cognitive",
+          "pronunciation": "/ˈkɑɡ.nɪ.tɪv/",
+          "definition": "Relating to or involving the mind or mental processes",
+          "example": "The cognitive abilities of the child were tested to determine if he had a learning disability.",
+          "translation": "Cognitivo",
+          "audioUrl": "gs://speakfuel-d832c.firebasestorage.app/lessons/lesson-02/vocabulary/cognitive.mp3"
         },
         {
-          "word": "Espresso machine",
-          "pronunciation": "/ɪˈspreso məˈʃiːn/",
-          "definition": "A machine that brews coffee by forcing pressurized hot water through finely ground coffee",
-          "example": "Emma works the espresso machine with expert skill every morning.",
-          "translation": "Máquina de espresso",
+          "word": "Incantation",
+          "pronunciation": "/ɪˈkæn.tə.eɪ.ʃən/",
+          "definition": "A magical or religious utterance or spell",
+          "example": "The priest chanted an incantation to bless the couple.",
+          "translation": "Incantación",
           "audioUrl": "gs://speakfuel-d832c.firebasestorage.app/lessons/lesson-02/vocabulary/espresso-machine.mp3"
         },
         {
-          "word": "Settles in",
-          "pronunciation": "/ˈsetəlz ɪn/",
-          "definition": "To make oneself comfortable in a place; to get established in a routine or location",
-          "example": "She settles in for another productive morning at her favorite table.",
-          "translation": "Se acomoda, se instala",
-          "audioUrl": "gs://speakfuel-d832c.firebasestorage.app/lessons/lesson-02/vocabulary/settles-in.mp3"
+          "word": "Empowering",
+          "pronunciation": "/ɪmˈpɔ.ə.rɪŋ/",
+          "definition": "Giving someone the ability to do something",
+          "example": "The new law empowers the police to arrest suspects without a warrant.",
+          "translation": "Empoderar",
+          "audioUrl": "gs://speakfuel-d832c.firebasestorage.app/lessons/lesson-02/vocabulary/empowering.mp3"
         }
       ]
     },

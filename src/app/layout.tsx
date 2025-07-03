@@ -34,7 +34,7 @@ export const metadata: Metadata = {
   icons: {
     icon: '/favicon.ico',
     shortcut: '/favicon-16x16.png',
-    apple: '/apple-touch-icon.png',
+    apple: '/icon-192x192.svg',
   },
   manifest: '/site.webmanifest',
 
@@ -53,12 +53,19 @@ export const metadata: Metadata = {
     index: true,
     follow: true,
   },
-  themeColor: '#ffffff',
   appleWebApp: {
     capable: true,
     statusBarStyle: 'default',
     title: 'SpeakFuel',
   },
+};
+
+export const viewport = {
+  themeColor: '#ffffff',
+  width: 'device-width',
+  initialScale: 1,
+  maximumScale: 1,
+  userScalable: false,
 };
 
 export default function RootLayout({
@@ -68,13 +75,6 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="es" className="scroll-smooth">
-      <head>
-        {/* iOS Safari status bar styling */}
-        <meta name="theme-color" content="#ffffff" />
-        <meta name="apple-mobile-web-app-status-bar-style" content="default" />
-        <meta name="apple-mobile-web-app-capable" content="yes" />
-        <meta name="format-detection" content="telephone=no" />
-      </head>
       <body className={`${inter.variable} ${nunito.variable} font-nunito antialiased`}>
         {children}
         <Analytics />

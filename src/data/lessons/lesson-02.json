@@ -28,27 +28,27 @@
         "audioUrl": "gs://speakfuel-d832c.firebasestorage.app/lessons/lesson-02/vocabulary/rush.mp3"
       },
       {
-        "word": "Barista",
-        "pronunciation": "/bəˈrɪstə/",
-        "definition": "A person who prepares and serves coffee drinks, especially espresso-based beverages",
-        "example": "Emma, the barista, has memorized Sarah's order perfectly.",
-        "translation": "Barista (persona que prepara café)",
+        "word": "Grin",
+        "pronunciation": "/ɡrɪn/",
+        "definition": "To smile or laugh with a broad, open mouth",
+        "example": "He gave a big grin when he saw his friend.",
+        "translation": "Sonrisa, sonreír",
         "audioUrl": "gs://speakfuel-d832c.firebasestorage.app/lessons/lesson-02/vocabulary/barista.mp3"
       },
       {
-        "word": "Cappuccino",
-        "pronunciation": "/ˌkæpəˈtʃiːnoʊ/",
-        "definition": "An Italian coffee drink made with espresso and steamed milk foam",
-        "example": "She ordered a large cappuccino with an extra shot of espresso.",
-        "translation": "Capuchino",
+        "word": "Tends to be",
+        "pronunciation": "/tɛndz ˈtə bi/",
+        "definition": "To be inclined or likely to do something",
+        "example": "She tends to be late for appointments.",
+        "translation": "Tiene tendencia a ser",
         "audioUrl": "gs://speakfuel-d832c.firebasestorage.app/lessons/lesson-02/vocabulary/cappuccino.mp3"
       },
       {
-        "word": "Espresso machine",
-        "pronunciation": "/ɪˈspreso məˈʃiːn/",
-        "definition": "A machine that brews coffee by forcing pressurized hot water through finely ground coffee",
-        "example": "Emma works the espresso machine with expert skill every morning.",
-        "translation": "Máquina de espresso",
+        "word": "Shifting",
+        "pronunciation": "/ˈʃɪftɪŋ/",
+        "definition": "To move or change position",
+        "example": "The wind shifted direction and the rain stopped.",
+        "translation": "Cambio de dirección",
         "audioUrl": "gs://speakfuel-d832c.firebasestorage.app/lessons/lesson-02/vocabulary/espresso-machine.mp3"
       },
       {

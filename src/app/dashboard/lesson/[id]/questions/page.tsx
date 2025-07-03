@@ -164,8 +164,9 @@ export default function QuestionsPage() {
           console.error('❌ Error obteniendo progreso actual:', fetchError);
         }
         
-        const newRepetitions = (currentProgress?.repetitions_completed || 0) + 1;
-        setIsFirstCompletion(currentProgress?.repetitions_completed === 0 || !currentProgress);
+        const currentReps = currentProgress?.repetitions_completed || 0;
+        const newRepetitions = Math.min(currentReps + 1, 3); // Máximo 3 repeticiones
+        setIsFirstCompletion(currentReps === 0 || !currentProgress);
         
         console.log('📊 Estado actual:', {
           currentProgress,
@@ -328,15 +329,20 @@ export default function QuestionsPage() {
             {/* Progress Info */}
             <div className="bg-yellow-50 rounded-lg p-4 mb-4 border border-yellow-200">
               <div className="text-2xl mb-2">
-                {currentRepetitions + 1 >= 5 ? '⭐⭐⭐' : 
-                 currentRepetitions + 1 >= 3 ? '⭐⭐' : '⭐'}
+                {currentRepetitions + 1 >= 3 ? '⭐⭐⭐' : 
+                 currentRepetitions + 1 >= 2 ? '⭐⭐' : '⭐'}
               </div>
               <div className="text-sm font-bold text-yellow-700 mb-1">
-                {currentRepetitions + 1 >= 5 ? 'Dominada' : 
-                 currentRepetitions + 1 >= 3 ? 'Avanzada' : 'Completada'}
+                {currentRepetitions + 1 >= 3 ? 'Dominada' : 
+                 currentRepetitions + 1 >= 2 ? 'Avanzada' : 'Completada'}
               </div>
               <div className="text-xs text-gray-600">
-                {currentRepetitions + 1}/7 repeticiones
+                {currentRepetitions + 1}/3 repeticiones
+                {currentRepetitions + 1 >= 3 && (
+                  <span className="block mt-1 font-medium text-yellow-800">
+                    ¡Máximo nivel alcanzado! 🏆
+                  </span>
+                )}
               </div>
             </div>
 

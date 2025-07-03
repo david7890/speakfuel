@@ -28,16 +28,16 @@ export default function LessonCard({
   status, 
   progress = 0,
   repetitions = 0,
-  maxRepetitions = 7,
+  maxRepetitions = 3,
   questionsCompleted = false
 }: LessonCardProps) {
   const router = useRouter();
   const [isPressed, setIsPressed] = useState(false);
 
   const getStars = () => {
-    if (repetitions >= 5) return 3; // 3 estrellas doradas
-    if (repetitions >= 3) return 2; // 2 estrellas doradas  
-    if (repetitions >= 1) return 1; // 1 estrella dorada
+    if (repetitions >= 3) return 3; // 3 estrellas doradas - Dominada
+    if (repetitions >= 2) return 2; // 2 estrellas doradas - Avanzada  
+    if (repetitions >= 1) return 1; // 1 estrella dorada - Completada
     return 0;
   };
 
@@ -67,8 +67,8 @@ export default function LessonCard({
   const getMotivationalText = () => {
     if (repetitions === 0) return '';
     if (repetitions === 1) return 'Completada 1 vez – ¡excelente inicio! 🌟';
-    if (repetitions < 5) return `Completada ${repetitions} de ${maxRepetitions} veces – estás entrenando tu fluidez como un pro 🔥`;
-    if (repetitions >= 5) return `¡Maestría alcanzada! Completada ${repetitions} de ${maxRepetitions} veces 🏆`;
+    if (repetitions === 2) return 'Completada 2 veces – ¡avanzando increíble! 🔥';
+    if (repetitions >= 3) return `¡Maestría alcanzada! Lección dominada 🏆`;
     return '';
   };
 

@@ -125,7 +125,7 @@ export default function Dashboard() {
       badges: progressInfo.status === 'completed' ? ['Completista'] : [],
       lastCompleted: undefined,
       repetitions: progressInfo.repetitions,
-      maxRepetitions: 7,
+      maxRepetitions: 3,
       questionsCompleted: progressInfo.questionsCompleted
     };
   });

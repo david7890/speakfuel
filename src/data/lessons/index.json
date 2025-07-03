@@ -50,23 +50,9 @@
   },
   {
     "id": 8,
-    "title": "En el Trabajo",
+    "title": "Unlimited",
     "description": "Vocabulario profesional y de oficina",
     "difficulty": "advanced",
     "estimatedTime": 40
-  },
-  {
-    "id": 9,
-    "title": "Vacaciones y Viajes",
-    "description": "Planifica y habla sobre viajes",
-    "difficulty": "intermediate",
-    "estimatedTime": 35
-  },
-  {
-    "id": 10,
-    "title": "Entrevista de Trabajo",
-    "description": "Prepárate para entrevistas de trabajo",
-    "difficulty": "advanced",
-    "estimatedTime": 45
   }
 ] 

@@ -1,0 +1,68 @@
+{
+    "id": 8,
+    "title": "Unlimited",
+    "description": "Unlimited helps you learn new words and phrases",
+    "mainArticle": {
+      "title": "Unlimited",
+      "content": "Unlimited helps you learn new words and phrases",
+      "audioUrl": "gs://speakfuel-d832c.firebasestorage.app/lessons/lesson8/main.mp3",
+      "duration": 506,
+      "featuredImage": "https://res.cloudinary.com/dhfzcrgtb/image/upload/v1751333403/lesson8_main_j23o7u.png"
+    },
+    "vocabulary": {
+      "words": [
+        {
+          "word": "Roll",
+          "pronunciation": "/ˈrɒl/",
+          "definition": "To move or move around",
+          "example": "The ball rolled across the floor.",
+          "translation": "Rodar",
+          "audioUrl": "gs://speakfuel-d832c.firebasestorage.app/lessons/lesson8/vocabulary/roll-of-the-dice.mp3"
+        },
+        {
+          "word": "Unleash",
+          "pronunciation": "/ˈʌn.lɪʃ/",
+          "definition": "To release or let loose",
+          "example": "The dog unleashed its energy.",
+          "translation": "Desatar",
+          "audioUrl": "gs://speakfuel-d832c.firebasestorage.app/lessons/lesson8/vocabulary/unleash.mp3"
+        },
+        {
+          "word": "Advantage",
+          "pronunciation": "/ˈæd.vən.tɪdʒ/",
+          "definition": "A benefit or benefit gained from a situation",
+          "example": "The advantage of the new technology is that it is more efficient.",
+          "translation": "Ventaja",
+          "audioUrl": "gs://speakfuel-d832c.firebasestorage.app/lessons/lesson8/vocabulary/advantage.mp3"
+        },
+        {
+          "word": "Cultivated",
+          "pronunciation": "/ˈkʌl.tɪ.veɪtɪd/",
+          "definition": "To grow or develop",
+          "example": "The plant was cultivated in the garden.",
+          "translation": "Cultivado",
+          "audioUrl": "gs://speakfuel-d832c.firebasestorage.app/lessons/lesson7/vocabulary/cappuccino.mp3"
+        },
+        {
+          "word": "Breakthrough",
+          "pronunciation": "/ˈbreɪk.θru.ə/",
+          "definition": "A significant advance or discovery",
+          "example": "The breakthrough in the research was a major milestone.",
+          "translation": "Avance",
+          "audioUrl": "gs://speakfuel-d832c.firebasestorage.app/lessons/lesson8/vocabulary/breakthrough.mp3"
+        }
+      ]
+    },
+    "miniStory": {
+        "title": "Unlimited",
+      "audioUrl": "gs://speakfuel-d832c.firebasestorage.app/lessons/lesson8/ministory.mp3",
+      "duration": 169,
+      "featuredImage": "https://res.cloudinary.com/dhfzcrgtb/image/upload/v1751333404/lesson8_ministory_xvc7nw.png"
+    },
+    "questions": {
+      "title": "Unlimited",
+      "audioUrl": "gs://speakfuel-d832c.firebasestorage.app/lessons/lesson8/questions.mp3",
+      "duration": 358,
+        "featuredImage": "https://res.cloudinary.com/dhfzcrgtb/image/upload/v1751333404/lesson8_ministory_xvc7nw.png"
+    }
+} 

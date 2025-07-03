@@ -12,19 +12,19 @@
   "vocabulary": {
     "words": [
       {
-        "word": "Hello",
-        "pronunciation": "/həˈloʊ/",
-        "definition": "A greeting used when meeting someone or answering the phone",
-        "example": "Hello! Nice to meet you.",
-        "translation": "Hola",
+        "word": "Subconscious",
+        "pronunciation": "/ˌsʌbˈkɒnʃəs/",
+        "definition": "The part of your mind that notices and remembers information when you are not actively trying to do so.",
+        "example": "His fear of public speaking is rooted in his subconscious experiences.",
+        "translation": "Subconsciente",
         "audioUrl": "gs://speakfuel-d832c.firebasestorage.app/lessons/lesson1/vocabulary1.mp3"
       },
       {
-        "word": "Introduction",
-        "pronunciation": "/ˌɪntrəˈdʌkʃən/",
-        "definition": "The action of presenting someone or yourself to another person",
-        "example": "Let me make the introductions - this is Sarah.",
-        "translation": "Presentación",
+        "word": "Physiology",
+        "pronunciation": "/ˌfɪziˈɒlədʒi/",
+        "definition": "The branch of biology that deals with the normal functions of living organisms and their parts.",
+        "example": "Regular exercise improves your body’s physiology and overall health.",
+        "translation": "Fisiología",
         "audioUrl": "gs://speakfuel-d832c.firebasestorage.app/lessons/lesson1/vocabulary2.mp3"
       },
       {
@@ -36,19 +36,19 @@
         "audioUrl": "gs://speakfuel-d832c.firebasestorage.app/lessons/lesson1/vocabulary3.mp3"
       },
       {
-        "word": "Formal",
-        "pronunciation": "/ˈfɔːrməl/",
-        "definition": "Following established rules or customs; official",
-        "example": "We use formal greetings in business meetings.",
-        "translation": "Formal",
+        "word": "Peak",
+        "pronunciation": "/piːk/",
+        "definition": "The highest point or level of something",
+        "example": "The peak of the mountain was covered in snow.",
+        "translation": "Pico / Cima / Máximo",
         "audioUrl": "gs://speakfuel-d832c.firebasestorage.app/lessons/lesson1/vocabulary4.mp3"
       },
       {
-        "word": "Casual",
-        "pronunciation": "/ˈkæʒuəl/",
-        "definition": "Relaxed and informal",
-        "example": "This is a casual gathering, so just be yourself.",
-        "translation": "Casual, informal",
+        "word": "Engage",
+        "pronunciation": "/ɪnˈɡeɪdʒ/",
+        "definition": "To involve or involve in an activity or situation",
+        "example": "The company engaged in a new project to improve customer satisfaction.",
+        "translation": "Involucrar, involucrarse",
         "audioUrl": "gs://speakfuel-d832c.firebasestorage.app/lessons/lesson1/vocabulary5.mp3"
       },
       {

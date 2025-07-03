@@ -12,50 +12,50 @@
     "vocabulary": {
       "words": [
         {
-          "word": "Chiming",
-          "pronunciation": "/ˈtʃaɪmɪŋ/",
-          "definition": "Making a musical ringing sound, typically that of a bell or clock",
-          "example": "The bell was chiming above her head as she entered the coffee shop.",
-          "translation": "Sonando (como una campana)",
+          "word": "Acquisition",
+          "pronunciation": "/əˈkweɪʃən/",
+          "definition": "The act of acquiring or obtaining something",
+          "example": "The company acquired a new technology to improve its operations.",
+          "translation": "Adquisición",
           "audioUrl": "gs://speakfuel-d832c.firebasestorage.app/lessons/lesson-02/vocabulary/chiming.mp3"
         },
         {
-          "word": "Rush",
-          "pronunciation": "/rʌʃ/",
-          "definition": "A period of intense activity or high demand; a situation requiring urgency",
-          "example": "The morning rush is in full swing at the coffee shop.",
-          "translation": "Hora pico, prisa",
-          "audioUrl": "gs://speakfuel-d832c.firebasestorage.app/lessons/lesson-02/vocabulary/rush.mp3"
+          "word": "Anxiety",
+          "pronunciation": "/ˈæn.tɪ.zi/",
+          "definition": "A feeling of worry, nervousness, or unease about an imminent event or something with an uncertain outcome",
+          "example": "She felt anxious about the upcoming interview.",
+          "translation": "Ansiedad",
+          "audioUrl": "gs://speakfuel-d832c.firebasestorage.app/lessons/lesson-02/vocabulary/anxiety.mp3"
         },
         {
-          "word": "Barista",
-          "pronunciation": "/bəˈrɪstə/",
-          "definition": "A person who prepares and serves coffee drinks, especially espresso-based beverages",
-          "example": "Emma, the barista, has memorized Sarah's order perfectly.",
-          "translation": "Barista (persona que prepara café)",
+          "word": "Vividly",
+          "pronunciation": "/ˈvɪd.li.di/",
+          "definition": "In a way that is clear and easy to understand",
+          "example": "She described the accident vividly, making it seem like a movie scene.",
+          "translation": "Viviamente",
           "audioUrl": "gs://speakfuel-d832c.firebasestorage.app/lessons/lesson-02/vocabulary/barista.mp3"
         },
         {
-          "word": "Cappuccino",
-          "pronunciation": "/ˌkæpəˈtʃiːnoʊ/",
-          "definition": "An Italian coffee drink made with espresso and steamed milk foam",
-          "example": "She ordered a large cappuccino with an extra shot of espresso.",
-          "translation": "Capuchino",
+          "word": "Visualize",
+          "pronunciation": "/ˈvɪz.ju.ə.laɪz/",
+          "definition": "To form a mental image of something",
+          "example": "She visualized the perfect cup of coffee in her mind.",
+          "translation": "Visualizar",
           "audioUrl": "gs://speakfuel-d832c.firebasestorage.app/lessons/lesson-02/vocabulary/cappuccino.mp3"
         },
         {
-          "word": "Espresso machine",
-          "pronunciation": "/ɪˈspreso məˈʃiːn/",
-          "definition": "A machine that brews coffee by forcing pressurized hot water through finely ground coffee",
-          "example": "Emma works the espresso machine with expert skill every morning.",
-          "translation": "Máquina de espresso",
+          "word": "Ultimately",
+          "pronunciation": "/ˈʌltɪmətli/",
+          "definition": "In the end; at the end of a process or series of events",
+          "example": "Ultimately, the decision was made based on the available information.",
+          "translation": "Finalmente",
           "audioUrl": "gs://speakfuel-d832c.firebasestorage.app/lessons/lesson-02/vocabulary/espresso-machine.mp3"
         },
         {
-          "word": "Settles in",
-          "pronunciation": "/ˈsetəlz ɪn/",
-          "definition": "To make oneself comfortable in a place; to get established in a routine or location",
-          "example": "She settles in for another productive morning at her favorite table.",
+          "word": "Compelling",
+          "pronunciation": "/ˈkɑm.pə.lɪŋ/",
+          "definition": "Strongly attractive or persuasive",
+          "example": "The speaker's compelling argument convinced the audience to vote for him.",
           "translation": "Se acomoda, se instala",
           "audioUrl": "gs://speakfuel-d832c.firebasestorage.app/lessons/lesson-02/vocabulary/settles-in.mp3"
         }

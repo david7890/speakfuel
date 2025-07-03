@@ -12,52 +12,36 @@
     "vocabulary": {
       "words": [
         {
-          "word": "Chiming",
-          "pronunciation": "/ˈtʃaɪmɪŋ/",
-          "definition": "Making a musical ringing sound, typically that of a bell or clock",
-          "example": "The bell was chiming above her head as she entered the coffee shop.",
-          "translation": "Sonando (como una campana)",
-          "audioUrl": "gs://speakfuel-d832c.firebasestorage.app/lessons/lesson7/vocabulary/chiming.mp3"
+          "word": "Reference",
+          "pronunciation": "/ˈrɛf.ər.ən.s/",
+          "definition": "A source or example used to support or justify a statement",
+          "example": "The reference book was a valuable resource for the students.",
+          "translation": "Referencia",
+          "audioUrl": "gs://speakfuel-d832c.firebasestorage.app/lessons/lesson7/vocabulary/reference.mp3"
         },
         {
-          "word": "Rush",
-          "pronunciation": "/rʌʃ/",
-          "definition": "A period of intense activity or high demand; a situation requiring urgency",
-          "example": "The morning rush is in full swing at the coffee shop.",
-          "translation": "Hora pico, prisa",
+          "word": "Global",
+          "pronunciation": "/ˈɡlə.bəl/",
+          "definition": "Of or relating to the entire world or all parts of the world",
+          "example": "The global economy is interconnected and interdependent.",
+          "translation": "Global",
           "audioUrl": "gs://speakfuel-d832c.firebasestorage.app/lessons/lesson7/vocabulary/rush.mp3"
         },
         {
-          "word": "Barista",
-          "pronunciation": "/bəˈrɪstə/",
-          "definition": "A person who prepares and serves coffee drinks, especially espresso-based beverages",
-          "example": "Emma, the barista, has memorized Sarah's order perfectly.",
-          "translation": "Barista (persona que prepara café)",
+          "word": "Filter through",
+          "pronunciation": "/ˈfɪl.tər ˈθru.ə/",
+          "definition": "To pass through a filter or sieve",
+          "example": "The water filtered through the filter to remove impurities.",
+          "translation": "Filtrar",
           "audioUrl": "gs://speakfuel-d832c.firebasestorage.app/lessons/lesson7/vocabulary/barista.mp3"
         },
         {
-          "word": "Cappuccino",
-          "pronunciation": "/ˌkæpəˈtʃiːnoʊ/",
-          "definition": "An Italian coffee drink made with espresso and steamed milk foam",
-          "example": "She ordered a large cappuccino with an extra shot of espresso.",
-          "translation": "Capuchino",
+          "word": "Identity",
+          "pronunciation": "/ˈɪd.ən.tɪ.ti/",
+          "definition": "The quality of being the same as something else",
+          "example": "The identity of the person was verified by the police.",
+          "translation": "Identidad",
           "audioUrl": "gs://speakfuel-d832c.firebasestorage.app/lessons/lesson7/vocabulary/cappuccino.mp3"
-        },
-        {
-          "word": "Espresso machine",
-          "pronunciation": "/ɪˈspreso məˈʃiːn/",
-          "definition": "A machine that brews coffee by forcing pressurized hot water through finely ground coffee",
-          "example": "Emma works the espresso machine with expert skill every morning.",
-          "translation": "Máquina de espresso",
-          "audioUrl": "gs://speakfuel-d832c.firebasestorage.app/lessons/lesson7/vocabulary/espresso-machine.mp3"
-        },
-        {
-          "word": "Settles in",
-          "pronunciation": "/ˈsetəlz ɪn/",
-          "definition": "To make oneself comfortable in a place; to get established in a routine or location",
-          "example": "She settles in for another productive morning at her favorite table.",
-          "translation": "Se acomoda, se instala",
-          "audioUrl": "gs://speakfuel-d832c.firebasestorage.app/lessons/lesson7/vocabulary/settles-in.mp3"
         }
       ]
     },
