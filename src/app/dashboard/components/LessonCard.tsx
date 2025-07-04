@@ -220,7 +220,7 @@ export default function LessonCard({
 
   return (
     <div 
-      className={`group relative bg-white rounded-3xl shadow-sm border transition-all duration-300 hover:shadow-lg transform hover:-translate-y-1 ${
+      className={`group relative bg-white/90 backdrop-blur-sm rounded-3xl shadow-sm border transition-all duration-300 hover:shadow-lg transform hover:-translate-y-1 ${
         status === 'locked' 
           ? 'border-slate-200 opacity-60 cursor-not-allowed' 
           : 'border-slate-100 cursor-pointer hover:border-slate-200'

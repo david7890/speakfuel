@@ -3,7 +3,7 @@
 import { useRouter } from 'next/navigation';
 import { useAuth } from '@/hooks/useAuth';
 import DashboardHeader from './components/DashboardHeader';
-import LessonCard from './components/LessonCard';
+import LessonJourneyMap from './components/LessonJourneyMap';
 import SessionInfo from './components/SessionInfo';
 import StreakCalendar from './components/StreakCalendar';
 import lessonsData from '@/data/lessons/index.json';
@@ -265,37 +265,9 @@ export default function Dashboard() {
       {/* Session Information */}
       <SessionInfo />
 
-      {/* Lessons Grid */}
+      {/* Journey Map */}
       <div className="mt-12">
-        <div className="mb-8">
-          <h2 className="text-2xl font-bold text-gray-900 mb-2">
-            Tus Lecciones
-          </h2>
-          <p className="text-gray-600">
-            Cada lección incluye artículo principal, mini historia, preguntas y vocabulario
-          </p>
-        </div>
-
-        <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-1">
-          {lessons.map((lesson) => (
-            <LessonCard
-              key={lesson.id}
-              id={lesson.id}
-              title={lesson.title}
-              duration={lesson.duration}
-              difficulty={lesson.difficulty}
-              status={lesson.status}
-              progress={lesson.progress}
-              points={lesson.points}
-              streak={lesson.streak}
-              badges={lesson.badges}
-              lastCompleted={lesson.lastCompleted}
-              repetitions={lesson.repetitions}
-              maxRepetitions={lesson.maxRepetitions}
-              questionsCompleted={lesson.questionsCompleted}
-            />
-          ))}
-        </div>
+        <LessonJourneyMap lessons={lessons} />
       </div>
 
       {/* Enhanced Motivational Footer */}
