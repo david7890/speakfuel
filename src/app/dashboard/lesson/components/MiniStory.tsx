@@ -532,7 +532,7 @@ export default function MiniStory({ data, onNext, onPrevious }: MiniStoryProps) 
               {/* Columna izquierda: Imagen y Reproductor */}
               <div className="space-y-6">
                 {/* Imagen destacada */}
-                <div className="relative w-full aspect-square lg:aspect-auto lg:h-80 bg-gradient-to-br from-green-100 to-teal-100 overflow-hidden rounded-2xl">
+                <div className="relative w-full aspect-square lg:w-80 lg:mx-auto bg-gradient-to-br from-green-100 to-teal-100 overflow-hidden rounded-2xl">
                   <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent z-10" />
                   <img 
                     src={featuredImage} 
