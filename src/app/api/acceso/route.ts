@@ -40,7 +40,19 @@ export async function POST(request: NextRequest) {
     }
 
     // Si tiene acceso, enviar Magic Link con configuración de sesión
-    const redirectUrl = new URL('/auth/callback', process.env.NEXT_PUBLIC_SITE_URL!);
+    // **FIX: Usar misma lógica de detección de URL**
+    const getBaseUrl = () => {
+      if (process.env.NEXT_PUBLIC_SITE_URL && !process.env.NEXT_PUBLIC_SITE_URL.includes('localhost')) {
+        return process.env.NEXT_PUBLIC_SITE_URL;
+      }
+      if (process.env.VERCEL_URL) {
+        return `https://${process.env.VERCEL_URL}`;
+      }
+      return 'http://localhost:3000';
+    };
+    
+    const baseUrl = getBaseUrl();
+    const redirectUrl = new URL('/auth/callback', baseUrl);
     
     // Agregar parámetros para configurar la sesión
     if (rememberMe) {

@@ -38,6 +38,25 @@ export async function POST(request: NextRequest) {
 
     console.log('✅ User can proceed with payment');
 
+    // **FIX: Detectar URL base automáticamente**
+    const getBaseUrl = () => {
+      // En producción/preview, usar la variable de entorno
+      if (process.env.NEXT_PUBLIC_SITE_URL && !process.env.NEXT_PUBLIC_SITE_URL.includes('localhost')) {
+        return process.env.NEXT_PUBLIC_SITE_URL;
+      }
+      
+      // Para Vercel, usar VERCEL_URL si está disponible
+      if (process.env.VERCEL_URL) {
+        return `https://${process.env.VERCEL_URL}`;
+      }
+      
+      // Fallback a localhost para desarrollo
+      return 'http://localhost:3000';
+    };
+
+    const baseUrl = getBaseUrl();
+    console.log('🔗 Using base URL:', baseUrl);
+
     // Crear sesión de Stripe
     const session = await stripe.checkout.sessions.create({
       payment_method_types: ['card'],
@@ -56,8 +75,8 @@ export async function POST(request: NextRequest) {
       ],
       mode: 'payment',
       customer_email: email,
-      success_url: `${process.env.NEXT_PUBLIC_SITE_URL}/gracias?session_id={CHECKOUT_SESSION_ID}&remember=${rememberMe}&duration=${sessionDuration}`,
-      cancel_url: `${process.env.NEXT_PUBLIC_SITE_URL}/checkout?canceled=true`,
+      success_url: `${baseUrl}/gracias?session_id={CHECKOUT_SESSION_ID}&remember=${rememberMe}&duration=${sessionDuration}`,
+      cancel_url: `${baseUrl}/checkout?canceled=true`,
       metadata: {
         customer_email: email,
         remember_me: rememberMe.toString(),
