@@ -14,12 +14,25 @@ export default function Footer() {
             <span className="ml-2 text-xl font-bold">SpeakFuel</span>
           </div>
           
-          {/* Contact */}
-          <div className="text-center md:text-right">
-            <p className="text-gray-400 mb-2">¿Necesitas ayuda?</p>
-            <a href="mailto:hola@speakfuel.com" className="text-blue-400 hover:text-blue-300 transition-colors">
-              hola@speakfuel.com
+          {/* Student Access Button */}
+          <div className="flex flex-col md:flex-row items-center gap-4 mb-4 md:mb-0">
+            <a 
+              href="/acceso" 
+              className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-lg font-medium transition-all duration-300 hover:shadow-lg transform hover:scale-105 flex items-center gap-2"
+            >
+              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.746 0 3.332.477 4.5 1.253v13C19.832 18.477 18.246 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
+              </svg>
+              Acceso Estudiantes
             </a>
+            
+            {/* Contact */}
+            <div className="text-center md:text-right">
+              <p className="text-gray-400 mb-2">¿Necesitas ayuda?</p>
+              <a href="mailto:hola@speakfuel.com" className="text-blue-400 hover:text-blue-300 transition-colors">
+                hola@speakfuel.com
+              </a>
+            </div>
           </div>
         </div>
         
@@ -36,9 +49,6 @@ export default function Footer() {
               </a>
               <a href="/privacy" className="hover:text-white transition-colors">
                 Privacidad
-              </a>
-              <a href="/acceso" className="hover:text-white transition-colors">
-                Acceso estudiantes
               </a>
             </div>
           </div>

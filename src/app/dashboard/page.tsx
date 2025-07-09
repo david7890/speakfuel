@@ -79,15 +79,89 @@ export default function Dashboard() {
     };
   };
 
-  // Determinar si una lección está desbloqueada
+  // Calcular total de estrellas acumuladas
+  const getTotalStars = () => {
+    if (!lessonProgress) return 0;
+    
+    return lessonProgress.reduce((total: number, progress: any) => {
+      return total + (progress.repetitions_completed || 0);
+    }, 0);
+  };
+
+  // Determinar si una lección está desbloqueada (sistema de bloques con estrellas)
   const isLessonUnlocked = (lessonId: number) => {
     if (lessonId === 1) return true; // Lección 1 siempre disponible
     
     if (!lessonProgress) return false;
     
-    // Verificar si la lección anterior está completada
-    const previousLesson = lessonProgress.find((p: any) => p.lesson_id === lessonId - 1);
-    return previousLesson?.status === 'completed';
+    const totalStars = getTotalStars();
+    
+    // Requisitos especiales por lección
+    const starRequirements: { [key: number]: number } = {
+      4: 5,   // Lección 4: requiere 5 estrellas mínimas
+      7: 12,  // Lección 7: requiere 12 estrellas acumuladas
+      8: 18   // Lección 8: requiere 18 estrellas acumuladas
+    };
+    
+    // Verificar requisitos de estrellas para lecciones especiales
+    if (starRequirements[lessonId]) {
+      const requiredStars = starRequirements[lessonId];
+      if (totalStars < requiredStars) {
+        return false; // No tiene suficientes estrellas
+      }
+    }
+    
+    // Lógica de desbloqueo secuencial por bloques
+    switch (lessonId) {
+      case 2:
+        // Lección 2: requiere completar lección 1
+        const lesson1 = lessonProgress.find((p: any) => p.lesson_id === 1);
+        return lesson1?.status === 'completed';
+      
+      case 3:
+        // Lección 3: requiere completar lección 2
+        const lesson2 = lessonProgress.find((p: any) => p.lesson_id === 2);
+        return lesson2?.status === 'completed';
+      
+      case 4:
+        // Lección 4: requiere completar lección 3 + 5 estrellas (ya verificado arriba)
+        const lesson3 = lessonProgress.find((p: any) => p.lesson_id === 3);
+        return lesson3?.status === 'completed';
+      
+      case 5:
+        // Lección 5: requiere completar lección 4
+        const lesson4 = lessonProgress.find((p: any) => p.lesson_id === 4);
+        return lesson4?.status === 'completed';
+      
+      case 6:
+        // Lección 6: requiere completar lección 5
+        const lesson5 = lessonProgress.find((p: any) => p.lesson_id === 5);
+        return lesson5?.status === 'completed';
+      
+      case 7:
+        // Lección 7: requiere completar lección 6 + 12 estrellas (ya verificado arriba)
+        const lesson6 = lessonProgress.find((p: any) => p.lesson_id === 6);
+        return lesson6?.status === 'completed';
+      
+      case 8:
+        // Lección 8: requiere completar lección 7 + 18 estrellas (ya verificado arriba)
+        const lesson7 = lessonProgress.find((p: any) => p.lesson_id === 7);
+        return lesson7?.status === 'completed';
+      
+      default:
+        return false;
+    }
+  };
+
+  // Obtener requisitos de estrellas para una lección específica
+  const getStarRequirement = (lessonId: number) => {
+    const starRequirements: { [key: number]: number } = {
+      4: 5,   // Lección 4: requiere 5 estrellas mínimas
+      7: 12,  // Lección 7: requiere 12 estrellas acumuladas
+      8: 18   // Lección 8: requiere 18 estrellas acumuladas
+    };
+    
+    return starRequirements[lessonId] || null;
   };
 
   // Calcular estadísticas del usuario
@@ -110,9 +184,13 @@ export default function Dashboard() {
     };
   };
 
+  // Calcular estrellas totales para mostrar en la UI
+  const totalStars = getTotalStars();
+
   // Usar solo las primeras 8 lecciones del JSON
   const lessons = lessonsData.slice(0, 8).map((lessonData) => {
     const progressInfo = getLessonProgress(lessonData.id);
+    const starRequirement = getStarRequirement(lessonData.id);
     
     return {
       id: lessonData.id,
@@ -127,7 +205,11 @@ export default function Dashboard() {
       lastCompleted: undefined,
       repetitions: progressInfo.repetitions,
       maxRepetitions: 3,
-      questionsCompleted: progressInfo.questionsCompleted
+      questionsCompleted: progressInfo.questionsCompleted,
+      // Información adicional para el sistema de estrellas
+      starRequirement: starRequirement,
+      totalStarsAvailable: totalStars,
+      starsNeeded: starRequirement ? Math.max(0, starRequirement - totalStars) : 0
     };
   });
 
@@ -259,6 +341,7 @@ export default function Dashboard() {
       {/* Header */}
       <DashboardHeader 
         user={userData}
+        totalStars={totalStars}
         onContinueClick={handleContinueClick}
       />
 

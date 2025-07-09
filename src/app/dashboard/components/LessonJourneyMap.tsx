@@ -17,6 +17,10 @@ interface Lesson {
   repetitions: number;
   maxRepetitions: number;
   questionsCompleted: boolean;
+  // Nuevas propiedades para el sistema de estrellas
+  starRequirement?: number | null;
+  totalStarsAvailable?: number;
+  starsNeeded?: number;
 }
 
 interface LessonJourneyMapProps {
@@ -81,21 +85,7 @@ export default function LessonJourneyMap({ lessons }: LessonJourneyMapProps) {
         <div className="space-y-6">
           {lessons.map((lesson) => (
             <div key={lesson.id}>
-              <LessonCard
-                id={lesson.id}
-                title={lesson.title}
-                duration={lesson.duration}
-                difficulty={lesson.difficulty}
-                status={lesson.status}
-                progress={lesson.progress}
-                points={lesson.points}
-                streak={lesson.streak}
-                badges={lesson.badges}
-                lastCompleted={lesson.lastCompleted}
-                repetitions={lesson.repetitions}
-                maxRepetitions={lesson.maxRepetitions}
-                questionsCompleted={lesson.questionsCompleted}
-              />
+              <LessonCard {...lesson} />
             </div>
           ))}
         </div>

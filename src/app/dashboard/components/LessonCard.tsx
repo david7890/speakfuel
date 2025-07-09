@@ -18,6 +18,10 @@ interface LessonCardProps {
   repetitions?: number;
   maxRepetitions?: number;
   questionsCompleted?: boolean;
+  // Nuevas propiedades para el sistema de estrellas
+  starRequirement?: number | null;
+  totalStarsAvailable?: number;
+  starsNeeded?: number;
 }
 
 export default function LessonCard({ 
@@ -29,7 +33,10 @@ export default function LessonCard({
   progress = 0,
   repetitions = 0,
   maxRepetitions = 3,
-  questionsCompleted = false
+  questionsCompleted = false,
+  starRequirement = null,
+  totalStarsAvailable = 0,
+  starsNeeded = 0
 }: LessonCardProps) {
   const router = useRouter();
   const [isPressed, setIsPressed] = useState(false);
@@ -173,7 +180,7 @@ export default function LessonCard({
       case 'locked':
         return (
           <div className="relative w-20 h-20">
-            {/* Locked circle */}
+            {/* Locked circle with different color if it's star-locked */}
             <svg className="w-20 h-20" viewBox="0 0 60 60">
               <circle
                 cx="30"
@@ -182,12 +189,19 @@ export default function LessonCard({
                 stroke="currentColor"
                 strokeWidth="4"
                 fill="currentColor"
-                className="text-slate-300"
+                className={starRequirement && starsNeeded > 0 ? "text-amber-200" : "text-slate-300"}
               />
             </svg>
-            {/* Lock icon */}
+            {/* Lock icon or star requirement */}
             <div className="absolute inset-0 flex items-center justify-center">
-              <LockClosedIcon className="w-8 h-8 text-slate-500" />
+              {starRequirement && starsNeeded > 0 ? (
+                <div className="flex flex-col items-center">
+                  <StarIcon className="w-6 h-6 text-amber-600" />
+                  <span className="text-xs font-bold text-amber-700">{starRequirement}</span>
+                </div>
+              ) : (
+                <LockClosedIcon className="w-8 h-8 text-slate-500" />
+              )}
             </div>
           </div>
         );
@@ -285,6 +299,19 @@ export default function LessonCard({
               </div>
             )}
             
+            {/* Star requirement message for locked lessons */}
+            {status === 'locked' && starRequirement && starsNeeded > 0 && (
+              <div className="mb-3">
+                <div className="inline-flex items-center space-x-2 text-sm font-medium text-amber-700 bg-amber-50 px-3 py-1.5 rounded-full border border-amber-200">
+                  <StarIcon className="w-4 h-4" />
+                  <span>Necesitas {starsNeeded} estrella{starsNeeded !== 1 ? 's' : ''} más</span>
+                </div>
+                <p className="text-xs text-slate-500 mt-2">
+                  Tienes {totalStarsAvailable} de {starRequirement} estrellas requeridas
+                </p>
+              </div>
+            )}
+
             {/* Motivational text */}
             {getMotivationalText() && (
               <p className="text-sm text-slate-600 font-medium leading-relaxed">
