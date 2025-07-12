@@ -8,18 +8,19 @@ import { SessionDurations } from '@/lib/auth-helpers';
 function AccesoContent() {
   const [email, setEmail] = useState('');
   const [loading, setLoading] = useState(false);
-  const [message, setMessage] = useState<{ type: 'success' | 'error'; text: string } | null>(null);
+  const [message, setMessage] = useState<{ type: 'success' | 'error' | 'info'; text: string } | null>(null);
   const searchParams = useSearchParams();
-  const fromCheckout = searchParams.get('from') === 'checkout';
-
+  
+  // Mostrar mensaje de error si viene de redirección
   useEffect(() => {
-    if (fromCheckout) {
-      setMessage({
-        type: 'success',
-        text: '¡Ya tienes acceso al curso! Introduce tu email para acceder.'
+    const error = searchParams.get('error');
+    if (error) {
+      setMessage({ 
+        type: 'info', 
+        text: decodeURIComponent(error) 
       });
     }
-  }, [fromCheckout]);
+  }, [searchParams]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -133,17 +134,19 @@ function AccesoContent() {
 
         {/* Message */}
         {message && (
-          <div className={`p-4 rounded-lg mb-6 ${
+          <div className={`p-4 rounded-xl mb-6 ${
             message.type === 'success' 
-              ? 'bg-green-50 text-green-700 border border-green-200' 
-              : 'bg-red-50 text-red-700 border border-red-200'
+              ? 'bg-green-50 border border-green-200 text-green-800' 
+              : message.type === 'error'
+              ? 'bg-red-50 border border-red-200 text-red-800'
+              : 'bg-blue-50 border border-blue-200 text-blue-800'
           }`}>
-            <p className="text-sm font-medium">{message.text}</p>
-            {message.type === 'error' && (
-              <p className="text-xs mt-2 opacity-80">
-                Si necesitas ayuda, escríbenos a hola@speakfuel.com
-              </p>
-            )}
+            <div className="flex items-center">
+              <span className="mr-2">
+                {message.type === 'success' ? '✅' : message.type === 'error' ? '❌' : '💡'}
+              </span>
+              <span>{message.text}</span>
+            </div>
           </div>
         )}
 

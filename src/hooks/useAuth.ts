@@ -179,6 +179,15 @@ export function useAuth() {
                   .eq('id', user.id)
                   .single();
                 if (existingProfile) {
+                  // **VERIFICAR ACCESO PAGADO**
+                  if (!existingProfile.has_paid_access) {
+                    console.log('🚫 User does not have paid access, redirecting to access page');
+                    setTimeout(() => {
+                      router.push('/acceso?error=' + encodeURIComponent('Tu sesión es válida, pero no tienes acceso pagado al curso. Ingresa tu email para verificar tu compra.'));
+                    }, 100);
+                    throw new Error('Usuario sin acceso pagado');
+                  }
+                  
                   // Continuar con el perfil existente
                   const { data: progress } = await supabase
                     .from('user_lesson_progress')
@@ -190,6 +199,15 @@ export function useAuth() {
               }
               console.error('❌ Error creating profile:', createError);
               return { profile: null, progress: [] };
+            }
+            
+            // **VERIFICAR ACCESO PAGADO EN PERFIL NUEVO**
+            if (!newProfile.has_paid_access) {
+              console.log('🚫 New user does not have paid access, redirecting to access page');
+              setTimeout(() => {
+                router.push('/acceso?error=' + encodeURIComponent('Tu cuenta fue creada exitosamente, pero no tienes acceso pagado al curso. Ingresa tu email para verificar tu compra.'));
+              }, 100);
+              throw new Error('Usuario sin acceso pagado');
             }
             
             // Crear progreso inicial para lección 1 solo si el perfil es nuevo
@@ -209,6 +227,17 @@ export function useAuth() {
           
           return { profile: null, progress: [] };
         }
+
+        // **VERIFICAR ACCESO PAGADO EN PERFIL EXISTENTE**
+        if (!profile.has_paid_access) {
+          console.log('🚫 User does not have paid access, redirecting to access page');
+          setTimeout(() => {
+            router.push('/acceso?error=' + encodeURIComponent('Tu sesión es válida, pero no tienes acceso pagado al curso. Ingresa tu email para verificar tu compra.'));
+          }, 100);
+          throw new Error('Usuario sin acceso pagado');
+        }
+
+        console.log('✅ User has paid access, continuing...');
 
         // Fetch lesson progress
         const { data: progress, error: progressError } = await supabase
@@ -233,6 +262,9 @@ export function useAuth() {
         console.error('⏰ Fetch user data timed out after', timeout, 'ms');
         throw new Error('La carga está tardando más de lo esperado. Por favor, intenta recargar la página.');
       }
+      if (error instanceof Error && error.message.includes('Usuario sin acceso pagado')) {
+        throw error; // Re-throw paid access errors
+      }
       console.error('❌ Unexpected error:', error);
       throw error;
     }
@@ -254,6 +286,12 @@ export function useAuth() {
       } catch (error) {
         lastError = error as Error;
         console.error(`❌ Attempt ${attempt}/${maxRetries} failed:`, error);
+        
+        // **NO REINTENTAR ERRORES DE ACCESO PAGADO**
+        if (lastError.message.includes('Usuario sin acceso pagado')) {
+          console.log('🚫 Paid access error detected, not retrying');
+          throw lastError;
+        }
         
         if (attempt < maxRetries) {
           const delay = Math.pow(2, attempt - 1) * 2000; // 2s, 4s, 8s (más tiempo entre reintentos)
@@ -309,6 +347,22 @@ export function useAuth() {
           } catch (error) {
             console.error('❌ Failed to fetch user data during init:', error);
             clearTimeout(initTimeout);
+            
+            // **MANEJAR ERRORES DE ACCESO PAGADO**
+            if (error instanceof Error && error.message.includes('Usuario sin acceso pagado')) {
+              console.log('🚫 User authentication successful but no paid access, redirecting...');
+              setAuthState({
+                user: null,
+                profile: null,
+                lessonProgress: [],
+                isLoading: false,
+                error: null
+              });
+              // La redirección ya se maneja en fetchUserData
+              setIsInitialized(true);
+              return;
+            }
+            
             setAuthState({
               user: session.user,
               profile: null,
@@ -360,6 +414,21 @@ export function useAuth() {
           });
         } catch (error) {
           console.error('❌ Failed to fetch user data on sign in:', error);
+          
+          // **MANEJAR ERRORES DE ACCESO PAGADO EN AUTH STATE CHANGE**
+          if (error instanceof Error && error.message.includes('Usuario sin acceso pagado')) {
+            console.log('🚫 User signed in but no paid access, redirecting...');
+            setAuthState({
+              user: null,
+              profile: null,
+              lessonProgress: [],
+              isLoading: false,
+              error: null
+            });
+            // La redirección ya se maneja en fetchUserData
+            return;
+          }
+          
           setAuthState(prev => ({
             ...prev,
             user: session.user,
