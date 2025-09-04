@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useRef } from 'react';
 import Link from 'next/link';
-import { FireIcon } from '@heroicons/react/24/outline';
+import { FireIcon } from '@heroicons/react/24/solid';
 
 interface DashboardNavProps {
   userName?: string;
@@ -62,7 +62,7 @@ export default function DashboardNav({
                 ? 'bg-gradient-to-r from-orange-100 to-red-100 shadow-lg scale-110 border-2 border-orange-300' 
                 : 'bg-orange-50'
             }`}>
-              <FireIcon className={`h-4 w-4 text-orange-500 ${showStreakAnimation ? 'animate-pulse' : ''}`} />
+              <FireIcon className={`h-4 w-4 text-orange-600 ${showStreakAnimation ? 'animate-pulse' : ''}`} />
               <span className={`text-sm font-medium text-orange-700 ${showStreakAnimation ? 'font-bold' : ''}`}>
                 {showStreakAnimation ? '🔥 ' : ''}{currentStreak} día{currentStreak !== 1 ? 's' : ''}
               </span>

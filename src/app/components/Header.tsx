@@ -16,10 +16,10 @@ export default function Header() {
           {/* Login discreto */}
           <div>
             <a
-              href="/acceso"
+              href="/auth/login"
               className="text-sm text-gray-600 hover:text-gray-900 transition-colors"
             >
-              Acceder
+              Iniciar sesión
             </a>
           </div>
         </div>

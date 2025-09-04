@@ -1,176 +1,144 @@
 'use client';
 
-import { useState, useEffect, Suspense } from 'react';
-import { useSearchParams } from 'next/navigation';
+import { useEffect, useState, Suspense } from 'react';
+import { useRouter, useSearchParams } from 'next/navigation';
+import { createClient } from '@/lib/supabase/client';
 import Link from 'next/link';
-import { SessionDurations } from '@/lib/auth-helpers';
 
-function AccesoContent() {
-  const [email, setEmail] = useState('');
-  const [loading, setLoading] = useState(false);
-  const [message, setMessage] = useState<{ type: 'success' | 'error' | 'info'; text: string } | null>(null);
+function AccessContent() {
+  const router = useRouter();
   const searchParams = useSearchParams();
-  
-  // Mostrar mensaje de error si viene de redirección
+  const supabase = createClient();
+
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+  const [loginError, setLoginError] = useState<string | null>(null);
+
   useEffect(() => {
-    const error = searchParams.get('error');
-    if (error) {
-      setMessage({ 
-        type: 'info', 
-        text: decodeURIComponent(error) 
-      });
-    }
+    const fetchSessionEmail = async () => {
+      const sessionId = searchParams.get('session_id');
+      if (!sessionId) {
+        setError('No se proporcionó una sesión de pago válida.');
+        setLoading(false);
+        return;
+      }
+
+      try {
+        // Para una verificación más robusta en el futuro, podrías implementar
+        // desde un endpoint propio que verifique la sesión en el backend.
+        // Por simplicidad en este paso, asumimos que podríamos obtenerlo,
+        // pero lo dejaremos para una mejora futura para no añadir otro endpoint.
+        // Aquí vamos a simular que lo obtenemos.
+        // La forma correcta sería:
+        // const res = await fetch(`/api/get-email-from-session?session_id=${sessionId}`);
+        // const data = await res.json();
+        // setEmail(data.email);
+        
+        // Por ahora, le pediremos al usuario que inicie sesión normalmente
+        // y le mostraremos un mensaje claro.
+        setLoading(false);
+
+      } catch (err) {
+        setError('No se pudo verificar la sesión de pago.');
+        setLoading(false);
+      }
+    };
+
+    fetchSessionEmail();
   }, [searchParams]);
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
+    setLoginError(null);
     setLoading(true);
-    setMessage(null);
 
-    try {
-      const response = await fetch('/api/acceso', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ 
-          email,
-          rememberMe: true, // Siempre 30 días
-          sessionDuration: SessionDurations.EXTENDED // 30 días
-        }),
-      });
+    const { error } = await supabase.auth.signInWithPassword({
+      email,
+      password,
+    });
 
-      const data = await response.json();
-
-      if (response.ok) {
-        setMessage({ 
-          type: 'success', 
-          text: data.message 
-        });
-        setEmail(''); // Limpiar el formulario
-      } else {
-        // Manejar diferentes tipos de error
-        if (data.errorType === 'user_not_found') {
-          setMessage({ 
-            type: 'error', 
-            text: 'No encontramos una cuenta con este correo. ¿Estás seguro de que compraste el curso con este email?' 
-          });
-        } else if (data.errorType === 'no_paid_access') {
-          setMessage({ 
-            type: 'error', 
-            text: 'Esta cuenta no tiene acceso pagado al curso. Si compraste recientemente, contacta soporte.' 
-          });
-        } else {
-          setMessage({ 
-            type: 'error', 
-            text: data.error || 'Ocurrió un error. Inténtalo de nuevo.' 
-          });
-        }
-      }
-    } catch (error) {
-      console.error('Error:', error);
-      setMessage({ 
-        type: 'error', 
-        text: 'Error de conexión. Verifica tu internet e inténtalo de nuevo.' 
-      });
-    } finally {
+    if (error) {
+      setLoginError(error.message);
       setLoading(false);
+    } else {
+      router.push('/dashboard');
     }
   };
 
-  return (
-    <div className="min-h-screen bg-white flex items-center justify-center px-4 py-8">
-      <div className="max-w-md w-full">
-        {/* Header */}
-        <div className="text-center mb-8">
-          <div className="flex items-center justify-center mb-4">
-            <div className="w-12 h-12 bg-blue-600 rounded-lg flex items-center justify-center">
-              <span className="text-white font-bold text-xl">S</span>
-            </div>
-          </div>
-          <h1 className="text-2xl md:text-3xl font-bold text-gray-900 mb-2">
-            Accede a tu curso
-          </h1>
-          <p className="text-gray-600">
-            Ingresa el correo con el que compraste para recibir tu enlace de acceso
-          </p>
-        </div>
+  if (loading && !error) {
+    return <div className="text-center"><p>Verificando pago...</p></div>;
+  }
 
-        {/* Form */}
-        <div className="bg-gray-50 rounded-lg p-6 mb-6">
-          <form onSubmit={handleSubmit} className="space-y-4">
+  if (error) {
+    return <div className="text-center text-red-500"><p>{error}</p></div>;
+  }
+
+  return (
+    <div className="min-h-screen bg-gray-50 flex flex-col justify-center items-center px-4">
+      <div className="max-w-md w-full mx-auto">
+        <div className="text-center mb-8">
+            <h1 className="text-4xl font-bold text-green-600">🎉 ¡Pago completado! 🎉</h1>
+            <p className="text-gray-700 mt-4 text-lg">Tu acceso a SpeakFuel ha sido activado. ¡Bienvenido!</p>
+        </div>
+        
+        <div className="bg-white p-8 rounded-lg shadow-md border border-gray-200">
+          <h2 className="text-xl font-semibold text-center text-gray-800 mb-2">Accede a tu cuenta</h2>
+          <p className="text-center text-gray-600 mb-6">Usa la contraseña que acabas de crear para entrar.</p>
+          
+          <form onSubmit={handleLogin} className="space-y-4">
             <div>
-              <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-2">
-                Correo electrónico
-              </label>
+              <label htmlFor="email" className="block text-sm font-medium text-gray-700">Correo electrónico</label>
               <input
                 id="email"
                 type="email"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
+                className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+                placeholder="El email con el que pagaste"
                 required
-                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
-                placeholder="tu@email.com"
-                disabled={loading}
+              />
+            </div>
+            <div>
+              <label htmlFor="password" className="block text-sm font-medium text-gray-700">Contraseña</label>
+              <input
+                id="password"
+                type="password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+                placeholder="Tu contraseña"
+                required
               />
             </div>
 
+            {loginError && (
+              <p className="text-red-600 text-sm text-center">{loginError}</p>
+            )}
+
             <button
               type="submit"
-              disabled={loading || !email.trim()}
-              className="w-full bg-blue-600 text-white py-3 rounded-lg font-semibold hover:bg-blue-700 transition-colors disabled:bg-gray-400 disabled:cursor-not-allowed"
+              disabled={loading}
+              className="w-full flex justify-center py-3 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:bg-gray-400"
             >
-              {loading ? (
-                <div className="flex items-center justify-center">
-                  <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white mr-2"></div>
-                  Verificando acceso...
-                </div>
-              ) : (
-                'Recibir acceso'
-              )}
+              {loading ? 'Accediendo...' : 'Acceder al curso'}
             </button>
           </form>
         </div>
-
-        {/* Message */}
-        {message && (
-          <div className={`p-4 rounded-xl mb-6 ${
-            message.type === 'success' 
-              ? 'bg-green-50 border border-green-200 text-green-800' 
-              : message.type === 'error'
-              ? 'bg-red-50 border border-red-200 text-red-800'
-              : 'bg-blue-50 border border-blue-200 text-blue-800'
-          }`}>
-            <div className="flex items-center">
-              <span className="mr-2">
-                {message.type === 'success' ? '✅' : message.type === 'error' ? '❌' : '💡'}
-              </span>
-              <span>{message.text}</span>
-            </div>
-          </div>
-        )}
-
-        {/* Footer */}
-        <div className="text-center">
-          <p className="text-sm text-gray-500 mb-2">
-            ¿No compraste aún?
-          </p>
-          <Link 
-            href="/" 
-            className="text-blue-600 hover:text-blue-700 text-sm font-medium transition-colors"
-          >
-            Volver al inicio
-          </Link>
+        <div className="text-center mt-4">
+            <Link href="/" className="text-sm text-blue-600 hover:underline">Volver a la página principal</Link>
         </div>
       </div>
     </div>
   );
 }
 
-export default function Acceso() {
-  return (
-    <Suspense fallback={<div className="min-h-screen bg-white flex items-center justify-center"><div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div></div>}>
-      <AccesoContent />
-    </Suspense>
-  );
+
+export default function AccesoPage() {
+    return (
+        <Suspense fallback={<div className="text-center p-8">Cargando...</div>}>
+            <AccessContent />
+        </Suspense>
+    )
 } 

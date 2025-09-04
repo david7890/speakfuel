@@ -239,23 +239,23 @@ export default function DebugReset() {
             <li>2. Haz clic en <strong>&ldquo;🔍 Verificar Estado&rdquo;</strong> para ver el estado actual</li>
             <li>3. Si tiene <code className="bg-green-100 px-1 rounded">has_paid_access: true</code>, haz clic en <strong>&ldquo;🔄 Resetear Acceso&rdquo;</strong></li>
             <li>4. Verifica de nuevo para confirmar que cambió a <code className="bg-red-100 px-1 rounded">false</code></li>
-            <li>5. Ahora el usuario podrá pasar por <code className="bg-green-100 px-1 rounded">/checkout</code> de nuevo</li>
+            <li>5. Ahora el usuario podrá registrarse y pasar por el nuevo flujo de pago autenticado</li>
           </ol>
         </div>
 
         {/* Quick Access */}
         <div className="mt-6 text-center space-x-4">
           <a 
-            href="/checkout" 
+            href="/auth/register" 
             className="inline-block text-blue-600 hover:text-blue-700 text-sm font-medium"
           >
-            → Ir a Checkout
+            → Ir a Registro
           </a>
           <a 
-            href="/acceso" 
+            href="/auth/login" 
             className="inline-block text-blue-600 hover:text-blue-700 text-sm font-medium"
           >
-            → Ir a Acceso
+            → Ir a Login
           </a>
         </div>
       </div>

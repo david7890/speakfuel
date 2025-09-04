@@ -34,10 +34,10 @@ NEXT_PUBLIC_SITE_URL=http://localhost:3000
 └── user_daily_activity (Rachas y actividad)
 
 💰 PAYMENT FLOW
-checkout → verify existing access → stripe → process-payment → grant access → magic link
+checkout → verify existing access → stripe → process-payment → grant access → /auth/signup
 
 🔐 AUTHENTICATION
-magic link → supabase auth → RLS protects data → dashboard access
+Google OAuth + Email/Password → supabase auth → RLS protects data → dashboard access
 ```
 
 ## 🎯 Funciones SQL Clave
@@ -100,10 +100,11 @@ WHERE activity_date >= CURRENT_DATE - INTERVAL '7 days';
 - ✅ Campo `has_paid_access` en user_profiles
 - ✅ Verificación previa en checkout (evita pagos duplicados)
 - ✅ Procesamiento automático post-Stripe
-- ✅ Magic Link automático con acceso inmediato
+- ✅ Autenticación inmediata con Google OAuth + Email/Password
 
 ### **Flujo Sin Webhooks**
-- ✅ Procesamiento directo en página `/gracias`
+- ✅ Procesamiento directo en página `/auth/signup`
+- ✅ Autenticación inmediata post-pago
 - ✅ Manejo robusto de errores
 - ✅ Logs detallados para debugging
 
@@ -135,14 +136,14 @@ WHERE activity_date >= CURRENT_DATE - INTERVAL '7 days';
 - ✅ Verificar `SUPABASE_SERVICE_ROLE_KEY` en `.env.local`
 - ✅ Comprobar que todas las migraciones estén aplicadas
 
-### **"No recibo Magic Link"**
+### **"No puedo autenticarme después del pago"**
 - ✅ Revisar logs del servidor (`npm run dev`)
-- ✅ Verificar que `NEXT_PUBLIC_SITE_URL` sea correcto
-- ✅ Comprobar spam en email
+- ✅ Verificar configuración de Google OAuth en Supabase
+- ✅ Comprobar que `NEXT_PUBLIC_SITE_URL` sea correcto
 
 ### **"Ya tienes acceso" pero no puedo entrar**
 - ✅ Verificar que el email sea exactamente el mismo
-- ✅ Usar `/acceso` en lugar de intentar pagar de nuevo
+- ✅ Usar `/auth/login` en lugar de intentar pagar de nuevo
 
 ---
 

@@ -6,7 +6,7 @@ export async function middleware(req: NextRequest) {
   const res = NextResponse.next();
   const pathname = req.nextUrl.pathname;
 
-  // Permitir callback y signin sin restricciones
+  // Permitir callback y auth sin restricciones
   if (pathname.startsWith('/auth/')) {
     return res;
   }
@@ -17,7 +17,7 @@ export async function middleware(req: NextRequest) {
   }
 
   // Permitir rutas públicas
-  if (pathname === '/' || pathname === '/checkout' || pathname.startsWith('/api/') || pathname.startsWith('/_next/')) {
+  if (pathname === '/' || pathname.startsWith('/api/') || pathname.startsWith('/_next/')) {
     return res;
   }
 
@@ -64,12 +64,9 @@ export async function middleware(req: NextRequest) {
     // Proteger dashboard - requiere autenticación
     if (pathname.startsWith('/dashboard')) {
       if (!session) {
-        console.log('🚫 No session found, redirecting to signin');
-        return NextResponse.redirect(new URL('/auth/signin', req.url));
+        console.log('🚫 No session found, redirecting to login');
+        return NextResponse.redirect(new URL('/auth/login', req.url));
       }
-      
-      // Verificar que el usuario tenga acceso pagado (opcional - ya se verifica en useAuth)
-      // Esta verificación adicional es por seguridad
     }
 
     return res;

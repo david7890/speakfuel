@@ -133,13 +133,13 @@ sequenceDiagram
     participant DB as Supabase
     participant E as Email Service
     
-    U->>C: POST /api/checkout {email}
-    C->>DB: check_user_paid_access(email)
-    
-    alt Usuario ya tiene acceso
-        DB-->>C: {has_access: true}
-        C-->>U: Error: Ya tienes acceso
-        C->>U: Redirige a /acceso
+            U->>C: POST /api/checkout {email}
+        C->>DB: check_user_paid_access(email)
+        
+        alt Usuario ya tiene acceso
+            DB-->>C: {has_access: true}
+            C-->>U: Error: Ya tienes acceso
+            C->>U: Redirige a /auth/login
     else Usuario nuevo
         DB-->>C: {has_access: false}
         C->>S: Crear sesión checkout
@@ -147,18 +147,17 @@ sequenceDiagram
         C-->>U: Redirige a Stripe
         
         U->>S: Completa pago
-        S->>U: Redirige a /gracias?session_id=xxx
+        S->>U: Redirige a /auth/signup?session_id=xxx&email=xxx
         
-        U->>P: GET /gracias (automático)
+        U->>P: GET /auth/signup (automático)
         P->>S: Verificar sesión
         S-->>P: customer_email
         
         P->>DB: Crear/encontrar usuario
         P->>DB: grant_paid_access(email)
-        P->>DB: Generar Magic Link
-        DB-->>P: Magic Link URL
-        P->>E: Enviar email con link
-        P-->>U: Mensaje de éxito
+        P-->>U: Página de signup con opciones auth
+        U->>P: Google OAuth o Email/Password
+        P-->>U: Acceso inmediato al dashboard
     end
 ```
 

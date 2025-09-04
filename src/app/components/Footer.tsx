@@ -17,7 +17,7 @@ export default function Footer() {
           {/* Student Access Button */}
           <div className="flex flex-col md:flex-row items-center gap-4 mb-4 md:mb-0">
             <a 
-              href="/acceso" 
+              href="/auth/login" 
               className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-lg font-medium transition-all duration-300 hover:shadow-lg transform hover:scale-105 flex items-center gap-2"
             >
               <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">

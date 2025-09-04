@@ -34,15 +34,8 @@
   "redirects": [
     {
       "source": "/acceso",
-      "has": [
-        {
-          "type": "query",
-          "key": "error",
-          "value": "access_denied"
-        }
-      ],
-      "destination": "/?error=access_denied",
-      "permanent": false
+      "destination": "/auth/login",
+      "permanent": true
     }
   ]
 } 

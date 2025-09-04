@@ -7,6 +7,8 @@ import LessonJourneyMap from './components/LessonJourneyMap';
 import SessionInfo from './components/SessionInfo';
 import StreakCalendar from './components/StreakCalendar';
 import lessonsData from '@/data/lessons/index.json';
+import { useState, useEffect } from 'react';
+import { createClient } from '@/lib/supabase/client';
 
 // Forzar CSR - Dashboard es privado y dinámico
 export const dynamic = 'force-dynamic';
@@ -14,7 +16,7 @@ export const dynamic = 'force-dynamic';
 export default function Dashboard() {
   const router = useRouter();
   const { user, profile, lessonProgress, isLoading, error, clearError, forceRefresh } = useAuth();
-
+  
   // Mapear difficulty del JSON a los valores esperados por el componente
   const mapDifficulty = (difficulty: string) => {
     switch (difficulty) {
@@ -296,23 +298,27 @@ export default function Dashboard() {
 
   if (isLoading) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50 flex items-center justify-center">
+      <div className="min-h-screen bg-gradient-to-br from-blue-50 to-purple-100 flex items-center justify-center">
         <div className="text-center">
           <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
-          <p className="text-gray-600">Cargando tu progreso...</p>
-          <p className="text-sm text-gray-500 mt-2">
-            Esto no debería tomar más de unos segundos...
-          </p>
+          <p className="text-gray-600">Cargando tu dashboard...</p>
         </div>
       </div>
     );
   }
 
-  if (!user || !profile) {
-    router.push('/auth/signin');
+  // Solo redirigir si NO está cargando Y no hay usuario/perfil
+  if (!isLoading && (!user || !profile)) {
+    console.log('🚫 No user/profile found after loading, redirecting to login');
+    router.push('/auth/login');
     return null;
   }
 
+  // TypeScript safety checks
+  if (!profile) {
+    return null;
+  }
+  
   const userStats = getUserStats();
   
   // Extraer solo la parte antes del @ si es un email
@@ -344,6 +350,9 @@ export default function Dashboard() {
         totalStars={totalStars}
         onContinueClick={handleContinueClick}
       />
+
+      {/* Payment Success Message */}
+      {/* This block is now handled by the new useEffect for session_id */}
 
       {/* Session Information */}
       <SessionInfo />

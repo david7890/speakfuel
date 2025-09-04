@@ -188,8 +188,8 @@ export default function LessonJourneyMap({ lessons }: LessonJourneyMapProps) {
         })}
 
         {/* Indicador de progreso global */}
-        <div className="mt-12 text-center">
-          <div className="inline-block bg-white rounded-full px-6 py-3 shadow-lg border border-gray-200">
+        <div className="mt-12 text-center relative z-30">
+          <div className="inline-block bg-white rounded-full px-6 py-3 shadow-lg border border-gray-200 relative z-30">
             <div className="flex items-center space-x-3">
               <div className="w-4 h-4 bg-green-500 rounded-full"></div>
               <span className="text-lg font-semibold text-gray-700">
@@ -199,29 +199,6 @@ export default function LessonJourneyMap({ lessons }: LessonJourneyMapProps) {
                 {lessons.filter(l => l.status === 'completed').length === lessons.length ? '🎉' : '💪'}
               </div>
             </div>
-          </div>
-        </div>
-      </div>
-
-      {/* Leyenda mejorada */}
-      <div className="bg-gradient-to-r from-gray-50 to-blue-50 rounded-xl p-6">
-        <h3 className="text-lg font-semibold text-gray-900 mb-4 text-center">Leyenda del Mapa</h3>
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-          <div className="flex items-center space-x-3 p-2 bg-white rounded-lg shadow-sm">
-            <div className="w-5 h-5 bg-green-500 rounded-full border-2 border-white shadow"></div>
-            <span className="text-sm font-medium text-gray-700">Completada</span>
-          </div>
-          <div className="flex items-center space-x-3 p-2 bg-white rounded-lg shadow-sm">
-            <div className="w-5 h-5 bg-blue-500 rounded-full border-2 border-white shadow"></div>
-            <span className="text-sm font-medium text-gray-700">En progreso</span>
-          </div>
-          <div className="flex items-center space-x-3 p-2 bg-white rounded-lg shadow-sm">
-            <div className="w-5 h-5 bg-gray-400 rounded-full border-2 border-white shadow"></div>
-            <span className="text-sm font-medium text-gray-700">Disponible</span>
-          </div>
-          <div className="flex items-center space-x-3 p-2 bg-white rounded-lg shadow-sm">
-            <div className="w-5 h-5 bg-gray-300 rounded-full border-2 border-white shadow"></div>
-            <span className="text-sm font-medium text-gray-700">Bloqueada</span>
           </div>
         </div>
       </div>

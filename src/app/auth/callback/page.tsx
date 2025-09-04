@@ -3,6 +3,7 @@
 import { useEffect, Suspense } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { createClient } from '@/lib/supabase/client';
+import type { AuthChangeEvent, Session } from '@supabase/supabase-js';
 
 function AuthCallbackContent() {
   const router = useRouter();
@@ -12,164 +13,87 @@ function AuthCallbackContent() {
   useEffect(() => {
     const handleAuthCallback = async () => {
       try {
-        console.log('🔄 Processing auth callback...');
-        console.log('📍 Full URL:', window.location.href);
-        console.log('📍 Hash:', window.location.hash);
-        console.log('📍 Search:', window.location.search);
+        console.log('🔄 Processing OAuth callback...');
         
-        // Log de información (30 días por defecto para todos)
-        console.log('💾 Using default 30-day session duration');
+        // ✅ NUEVO: Obtener email del pago de los parámetros si existe
+        const paymentEmail = searchParams.get('payment_email');
+        console.log('💳 Payment email from params:', paymentEmail);
         
-        // Método 1: Verificar query parameters (token_hash)
-        const tokenHash = searchParams.get('token_hash');
-        const type = searchParams.get('type');
+        // Verificar si hay un error en los parámetros
+        const error = searchParams.get('error');
+        const errorDescription = searchParams.get('error_description');
         
-        if (tokenHash && type === 'magiclink') {
-          console.log('🎫 Token hash found, verifying...');
-          
-          try {
-            const { data, error } = await supabase.auth.verifyOtp({
-              token_hash: tokenHash,
-              type: 'magiclink'
-            });
-            
-            if (error) {
-              console.error('❌ Verify OTP error:', error);
-              router.push('/auth/signin?error=' + encodeURIComponent('Invalid or expired magic link'));
-              return;
-            }
-            
-            if (data.session) {
-              console.log('✅ Authentication successful via token hash!');
-              console.log('👤 User:', data.session.user.id);
-              router.push('/dashboard');
-              return;
-            }
-          } catch (verifyError) {
-            console.error('❌ Token verification error:', verifyError);
-          }
+        if (error) {
+          console.error('❌ OAuth error:', error, errorDescription);
+          router.push('/auth/signup?error=' + encodeURIComponent(errorDescription || 'Authentication failed'));
+          return;
         }
         
-        // Método 2: Procesar hash fragment manualmente
-        if (window.location.hash) {
-          console.log('🔑 Processing hash fragment...');
-          
-          // Parsear hash fragment
-          const hashParams = new URLSearchParams(window.location.hash.substring(1));
-          const accessToken = hashParams.get('access_token');
-          const refreshToken = hashParams.get('refresh_token');
-          const expiresIn = hashParams.get('expires_in');
-          const tokenType = hashParams.get('token_type');
-          const hashType = hashParams.get('type');
-          
-          console.log('🎫 Tokens found:', {
-            accessToken: accessToken ? `${accessToken.substring(0, 20)}...` : 'null',
-            refreshToken: refreshToken ? `${refreshToken.substring(0, 20)}...` : 'null',
-            expiresIn,
-            tokenType,
-            type: hashType
-          });
-          
-          if (accessToken && hashType === 'magiclink') {
-            try {
-              // Establecer la sesión manualmente
-              console.log('📝 Setting session manually...');
-              
-              const { data, error } = await supabase.auth.setSession({
-                access_token: accessToken,
-                refresh_token: refreshToken || '',
-              });
-              
-              if (error) {
-                console.error('❌ Error setting session:', error);
-                
-                // Intentar método alternativo - usando recovery
-                if (hashType === 'magiclink') {
-                  console.log('🔄 Trying alternative method...');
-                  const { error: verifyError } = await supabase.auth.verifyOtp({
-                    token_hash: accessToken,
-                    type: 'magiclink'
-                  });
-                  
-                  if (verifyError) {
-                    console.error('❌ Verify OTP error:', verifyError);
-                    router.push('/auth/signin?error=' + encodeURIComponent('Invalid magic link'));
-                    return;
-                  }
-                }
-              }
-              
-              // Verificar que la sesión se estableció correctamente
-              const { data: sessionData, error: sessionError } = await supabase.auth.getSession();
-              
-              if (sessionError) {
-                console.error('❌ Session verification error:', sessionError);
-                router.push('/auth/signin?error=' + encodeURIComponent('Session verification failed'));
-                return;
-              }
-              
-              if (sessionData.session) {
-                console.log('✅ Session established successfully!');
-                console.log('👤 User:', sessionData.session.user.id);
-                
-                // Limpiar URL y redirigir
-                window.history.replaceState({}, document.title, window.location.pathname);
-                router.push('/dashboard');
-                return;
-              } else {
-                console.log('❌ No session after setting tokens');
-              }
-              
-            } catch (sessionError) {
-              console.error('❌ Session error:', sessionError);
-            }
-          } else {
-            console.log('❌ Invalid or missing tokens in hash');
-            console.log('Access token present:', !!accessToken);
-            console.log('Type:', hashType);
-          }
-        }
-        
-        // Método 3: Verificar sesión existente
-        console.log('🔍 Checking existing session...');
+        // Obtener sesión actual
         const { data: { session }, error: sessionError } = await supabase.auth.getSession();
         
         if (sessionError) {
-          console.error('❌ Session check error:', sessionError);
-          router.push('/auth/signin?error=' + encodeURIComponent('Session check failed'));
+          console.error('❌ Session error:', sessionError);
+          router.push('/auth/signup?error=' + encodeURIComponent('Session verification failed'));
           return;
         }
 
         if (session) {
-          console.log('✅ Existing session found, redirecting...');
+          console.log('✅ OAuth authentication successful!');
+          console.log('👤 User:', session.user.id);
+          console.log('📧 User email:', session.user.email);
+          
+          // ✅ NUEVO: Validación crítica - Email debe coincidir con el pago (solo si viene de pago)
+          if (paymentEmail && session.user.email) {
+            if (session.user.email.toLowerCase().trim() !== paymentEmail.toLowerCase().trim()) {
+              console.error('❌ Email mismatch!', {
+                userEmail: session.user.email,
+                paymentEmail: paymentEmail
+              });
+              
+              // Cerrar sesión para evitar acceso no autorizado
+              await supabase.auth.signOut();
+              
+              const errorMsg = `Debes autenticarte con el email del pago: ${paymentEmail}. Usaste: ${session.user.email}`;
+              router.push('/auth/signup?error=' + encodeURIComponent(errorMsg));
+              return;
+            } else {
+              console.log('✅ Email validation passed - user authenticated with payment email');
+            }
+          }
+          
+          // Redirigir directamente al dashboard - todos tienen acceso ahora
+          console.log('✅ User authenticated, redirecting to dashboard');
           router.push('/dashboard');
+          
           return;
         }
 
-        // Si llegamos aquí, no hay sesión válida
-        console.log('❌ No valid session found');
-        router.push('/auth/signin?error=' + encodeURIComponent('Authentication failed'));
+        // Si no hay sesión, redirigir a signup
+        console.log('❌ No session found');
+        router.push('/auth/signup?error=' + encodeURIComponent('Authentication failed'));
 
       } catch (error) {
         console.error('❌ Unexpected error in auth callback:', error);
-        router.push('/auth/signin?error=' + encodeURIComponent('Something went wrong'));
+        router.push('/auth/signup?error=' + encodeURIComponent('Something went wrong'));
       }
     };
 
     // Escuchar cambios de auth state
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((event: AuthChangeEvent, session: Session | null) => {
       console.log('🔄 Auth state changed:', event, session?.user?.id);
       
       if (event === 'SIGNED_IN' && session) {
-        console.log('✅ User signed in via state change, redirecting...');
-        // Limpiar URL y redirigir
-        window.history.replaceState({}, document.title, window.location.pathname);
-        router.push('/dashboard');
+        console.log('✅ User signed in via state change');
+        // Dar tiempo a que se procese antes de redirigir
+        setTimeout(() => {
+          handleAuthCallback();
+        }, 100);
       }
     });
 
-    // Dar tiempo a que Supabase procese automáticamente primero
-    setTimeout(handleAuthCallback, 500);
+    // Procesar callback inmediatamente
+    handleAuthCallback();
 
     return () => subscription.unsubscribe();
   }, [router, searchParams, supabase]);
@@ -179,7 +103,7 @@ function AuthCallbackContent() {
       <div className="text-center">
         <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
         <p className="text-gray-600">Completando autenticación...</p>
-        <p className="text-sm text-gray-400 mt-2">Procesando Magic Link...</p>
+        <p className="text-sm text-gray-400 mt-2">Procesando Google OAuth...</p>
         
         {/* Debug info */}
         <div className="mt-4 text-xs text-gray-400">

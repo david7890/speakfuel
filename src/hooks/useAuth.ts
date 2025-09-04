@@ -113,13 +113,12 @@ export function useAuth() {
     return () => clearInterval(interval);
   }, [authState.user, checkAndRefreshSession]);
 
-  const fetchUserData = async (user: any, timeout: number = 10000): Promise<{ profile: UserProfile | null; progress: LessonProgress[] }> => {
+  const fetchUserData = async (user: any, timeout: number = 5000): Promise<{ profile: UserProfile | null; progress: LessonProgress[] }> => {
     try {
-      console.log('🔍 Fetching user data for:', user.id);
       
       // Envolver toda la operación en un timeout
       const result = await withTimeout((async () => {
-        // Fetch user profile
+        // Fetch user profile - ya no verificamos acceso pagado
         const { data: profile, error: profileError } = await supabase
           .from('user_profiles')
           .select('*')
@@ -127,35 +126,25 @@ export function useAuth() {
           .single();
 
         if (profileError) {
-          console.error('❌ Error fetching profile:', profileError);
-          
-          // Si el perfil no existe, crear uno nuevo
           if (profileError.code === 'PGRST116') {
-            console.log('📝 Creating new user profile...');
-            
-            // Intentar obtener el nombre del checkout (localStorage) o metadatos
+            // Profile no existe, crear uno nuevo
             let userName = 'Usuario';
             
-            // 1. Primero intentar desde localStorage (checkout)
+            // Obtener nombre desde diferentes fuentes
             if (typeof window !== 'undefined') {
               const pendingName = localStorage.getItem('pending_user_name');
               if (pendingName) {
                 userName = pendingName;
-                localStorage.removeItem('pending_user_name'); // Limpiar después de usar
-                console.log('📝 Using name from checkout:', userName);
+                localStorage.removeItem('pending_user_name');
               }
             }
             
-            // 2. Si no hay nombre del checkout, usar metadatos del usuario
             if (userName === 'Usuario' && user.user_metadata?.name) {
               userName = user.user_metadata.name;
-              console.log('📝 Using name from user metadata:', userName);
             }
             
-            // 3. Fallback al email
             if (userName === 'Usuario') {
               userName = user.email?.split('@')[0] || 'Usuario';
-              console.log('📝 Using name from email:', userName);
             }
             
             const { data: newProfile, error: createError } = await supabase
@@ -164,53 +153,37 @@ export function useAuth() {
                 id: user.id,
                 name: userName,
                 current_streak: 0,
-                longest_streak: 0
+                longest_streak: 0,
+                has_paid_access: true // ✅ Acceso automático para todos
               })
               .select()
               .single();
               
             if (createError) {
-              // Si ya existe (error de clave duplicada), intentar obtenerlo
               if (createError.code === '23505') {
-                console.log('👤 Profile already exists, fetching...');
-                const { data: existingProfile } = await supabase
+                // Profile ya existe, obtenerlo y actualizar acceso
+                const { data: existingProfile, error: updateError } = await supabase
                   .from('user_profiles')
-                  .select('*')
+                  .update({ has_paid_access: true }) // ✅ Otorgar acceso automático
                   .eq('id', user.id)
+                  .select()
                   .single();
-                if (existingProfile) {
-                  // **VERIFICAR ACCESO PAGADO**
-                  if (!existingProfile.has_paid_access) {
-                    console.log('🚫 User does not have paid access, redirecting to access page');
-                    setTimeout(() => {
-                      router.push('/acceso?error=' + encodeURIComponent('Tu sesión es válida, pero no tienes acceso pagado al curso. Ingresa tu email para verificar tu compra.'));
-                    }, 100);
-                    throw new Error('Usuario sin acceso pagado');
-                  }
-                  
-                  // Continuar con el perfil existente
+                
+                if (existingProfile && !updateError) {
+                  // Fetch progress en paralelo
                   const { data: progress } = await supabase
                     .from('user_lesson_progress')
                     .select('lesson_id, status, repetitions_completed, questions_completed, last_completed_at')
                     .eq('user_id', user.id)
                     .order('lesson_id');
+                  
                   return { profile: existingProfile, progress: progress || [] };
                 }
               }
-              console.error('❌ Error creating profile:', createError);
-              return { profile: null, progress: [] };
+              throw new Error('Error creating profile');
             }
             
-            // **VERIFICAR ACCESO PAGADO EN PERFIL NUEVO**
-            if (!newProfile.has_paid_access) {
-              console.log('🚫 New user does not have paid access, redirecting to access page');
-              setTimeout(() => {
-                router.push('/acceso?error=' + encodeURIComponent('Tu cuenta fue creada exitosamente, pero no tienes acceso pagado al curso. Ingresa tu email para verificar tu compra.'));
-              }, 100);
-              throw new Error('Usuario sin acceso pagado');
-            }
-            
-            // Crear progreso inicial para lección 1 solo si el perfil es nuevo
+            // Crear progreso inicial para lección 1
             await supabase
               .from('user_lesson_progress')
               .upsert({
@@ -221,25 +194,27 @@ export function useAuth() {
                 questions_completed: false
               });
               
-            console.log('✅ Profile created successfully');
             return { profile: newProfile, progress: [{ lesson_id: 1, status: 'available', repetitions_completed: 0, questions_completed: false, last_completed_at: null }] };
           }
           
-          return { profile: null, progress: [] };
+          throw new Error('Error fetching profile');
         }
 
-        // **VERIFICAR ACCESO PAGADO EN PERFIL EXISTENTE**
+        // ✅ Otorgar acceso automático si no lo tiene
         if (!profile.has_paid_access) {
-          console.log('🚫 User does not have paid access, redirecting to access page');
-          setTimeout(() => {
-            router.push('/acceso?error=' + encodeURIComponent('Tu sesión es válida, pero no tienes acceso pagado al curso. Ingresa tu email para verificar tu compra.'));
-          }, 100);
-          throw new Error('Usuario sin acceso pagado');
+          const { data: updatedProfile } = await supabase
+            .from('user_profiles')
+            .update({ has_paid_access: true })
+            .eq('id', user.id)
+            .select()
+            .single();
+          
+          if (updatedProfile) {
+            profile.has_paid_access = true;
+          }
         }
 
-        console.log('✅ User has paid access, continuing...');
-
-        // Fetch lesson progress
+        // Fetch lesson progress en paralelo
         const { data: progress, error: progressError } = await supabase
           .from('user_lesson_progress')
           .select('lesson_id, status, repetitions_completed, questions_completed, last_completed_at')
@@ -247,11 +222,9 @@ export function useAuth() {
           .order('lesson_id');
 
         if (progressError) {
-          console.error('❌ Error fetching progress:', progressError);
           return { profile, progress: [] };
         }
 
-        console.log('✅ User data fetched successfully');
         return { profile, progress: progress || [] };
       })(), timeout);
 
@@ -259,13 +232,8 @@ export function useAuth() {
       
     } catch (error) {
       if (error instanceof Error && error.message.includes('timed out')) {
-        console.error('⏰ Fetch user data timed out after', timeout, 'ms');
-        throw new Error('La carga está tardando más de lo esperado. Por favor, intenta recargar la página.');
+        throw new Error('Conexión lenta. Por favor, intenta recargar la página.');
       }
-      if (error instanceof Error && error.message.includes('Usuario sin acceso pagado')) {
-        throw error; // Re-throw paid access errors
-      }
-      console.error('❌ Unexpected error:', error);
       throw error;
     }
   };
@@ -276,37 +244,27 @@ export function useAuth() {
     
     for (let attempt = 1; attempt <= maxRetries; attempt++) {
       try {
-        // Timeouts más tolerantes: 15s, 25s, 35s
-        const timeout = Math.min(15000 + (attempt - 1) * 10000, 35000);
-        console.log(`🔄 Attempt ${attempt}/${maxRetries} to fetch user data (timeout: ${timeout}ms)`);
+        // Timeouts optimizados: 5s, 8s, 10s
+        const timeout = Math.min(5000 + (attempt - 1) * 2500, 10000);
         
         const result = await fetchUserData(user, timeout);
         setRetryCount(0); // Reset retry count on success
         return result;
       } catch (error) {
         lastError = error as Error;
-        console.error(`❌ Attempt ${attempt}/${maxRetries} failed:`, error);
-        
-        // **NO REINTENTAR ERRORES DE ACCESO PAGADO**
-        if (lastError.message.includes('Usuario sin acceso pagado')) {
-          console.log('🚫 Paid access error detected, not retrying');
-          throw lastError;
-        }
         
         if (attempt < maxRetries) {
-          const delay = Math.pow(2, attempt - 1) * 2000; // 2s, 4s, 8s (más tiempo entre reintentos)
-          console.log(`⏳ Waiting ${delay}ms before retry...`);
+          const delay = Math.pow(2, attempt - 1) * 1000; // 1s, 2s, 4s (más rápido)
           await new Promise(resolve => setTimeout(resolve, delay));
         }
       }
     }
     
     // Si todos los reintentos fallan, establecer error pero mantener usuario logueado
-    console.error('💥 All retry attempts failed, setting error state but keeping user logged in');
     setRetryCount(prev => prev + 1);
     
     // En lugar de devolver datos falsos, lanzar error para que se maneje apropiadamente
-    throw new Error('La carga está tardando más de lo esperado. Por favor, intenta recargar la página.');
+    throw new Error('Error de conexión. Por favor, intenta recargar la página.');
   };
 
   useEffect(() => {
@@ -314,25 +272,21 @@ export function useAuth() {
     
     const initializeAuth = async () => {
       try {
-        console.log('🚀 Initializing auth...');
-        
-        // Timeout para la inicialización completa (más tolerante)
+        // Timeout para la inicialización completa (optimizado)
         const initTimeout = setTimeout(() => {
-          console.error('⏰ Auth initialization timed out, forcing completion');
           setAuthState({
             user: null,
             profile: null,
             lessonProgress: [],
             isLoading: false,
-            error: 'La conexión está tardando más de lo esperado. Por favor, verifica tu conexión e intenta recargar la página.'
+            error: 'Error de conexión. Por favor, verifica tu conexión e intenta recargar la página.'
           });
           setIsInitialized(true);
-        }, 45000); // 45 segundos máximo para inicialización
+        }, 15000); // 15 segundos máximo para inicialización
         
         const { data: { session } } = await supabase.auth.getSession();
         
         if (session?.user) {
-          console.log('👤 User found in session');
           try {
             const { profile, progress } = await fetchUserDataWithRetry(session.user);
             
@@ -348,21 +302,6 @@ export function useAuth() {
             console.error('❌ Failed to fetch user data during init:', error);
             clearTimeout(initTimeout);
             
-            // **MANEJAR ERRORES DE ACCESO PAGADO**
-            if (error instanceof Error && error.message.includes('Usuario sin acceso pagado')) {
-              console.log('🚫 User authentication successful but no paid access, redirecting...');
-              setAuthState({
-                user: null,
-                profile: null,
-                lessonProgress: [],
-                isLoading: false,
-                error: null
-              });
-              // La redirección ya se maneja en fetchUserData
-              setIsInitialized(true);
-              return;
-            }
-            
             setAuthState({
               user: session.user,
               profile: null,
@@ -372,7 +311,6 @@ export function useAuth() {
             });
           }
         } else {
-          console.log('❌ No user session found');
           clearTimeout(initTimeout);
           setAuthState({
             user: null,
@@ -384,7 +322,6 @@ export function useAuth() {
         }
         setIsInitialized(true);
       } catch (error) {
-        console.error('❌ Auth initialization error:', error);
         setAuthState({
           user: null,
           profile: null,
@@ -399,10 +336,7 @@ export function useAuth() {
     initializeAuth();
 
     const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event: AuthChangeEvent, session: Session | null) => {
-      console.log('🔄 Auth state changed:', event, session?.user?.id);
-      
       if (event === 'SIGNED_IN' && session?.user) {
-        console.log('✅ User signed in, fetching user data...');
         try {
           const { profile, progress } = await fetchUserDataWithRetry(session.user);
           setAuthState({
@@ -413,22 +347,6 @@ export function useAuth() {
             error: null
           });
         } catch (error) {
-          console.error('❌ Failed to fetch user data on sign in:', error);
-          
-          // **MANEJAR ERRORES DE ACCESO PAGADO EN AUTH STATE CHANGE**
-          if (error instanceof Error && error.message.includes('Usuario sin acceso pagado')) {
-            console.log('🚫 User signed in but no paid access, redirecting...');
-            setAuthState({
-              user: null,
-              profile: null,
-              lessonProgress: [],
-              isLoading: false,
-              error: null
-            });
-            // La redirección ya se maneja en fetchUserData
-            return;
-          }
-          
           setAuthState(prev => ({
             ...prev,
             user: session.user,
@@ -437,14 +355,12 @@ export function useAuth() {
           }));
         }
       } else if (event === 'TOKEN_REFRESHED' && session?.user) {
-        console.log('🔄 Token refreshed successfully');
         // Mantener datos existentes, solo actualizar sesión
         setAuthState(prev => ({
           ...prev,
           user: session.user
         }));
       } else if (event === 'SIGNED_OUT') {
-        console.log('👋 User signed out');
         clearRememberMePreference();
         setAuthState({
           user: null,
@@ -453,7 +369,7 @@ export function useAuth() {
           isLoading: false,
           error: null
         });
-        router.push('/auth/signin');
+        router.push('/auth/login');
       }
     });
 
@@ -461,27 +377,21 @@ export function useAuth() {
   }, [supabase, router]);
 
   const signOut = async () => {
-    console.log('👋 Signing out user...');
-    
     // Limpiar preferencias de remember me
     clearRememberMePreference();
     
     const { error } = await supabase.auth.signOut();
     if (error) {
       console.error('❌ Sign out error:', error);
-    } else {
-      console.log('✅ User signed out successfully');
     }
   };
 
   const refreshUserData = async (): Promise<boolean> => {
     if (!authState.user) {
-      console.log('⚠️ No user to refresh data for');
       return false;
     }
     
     try {
-      console.log('🔄 Refreshing user data...');
       setAuthState(prev => ({ ...prev, isLoading: true, error: null }));
       
       const { profile, progress } = await fetchUserDataWithRetry(authState.user);
@@ -494,10 +404,8 @@ export function useAuth() {
         error: null
       }));
       
-      console.log('✅ User data refreshed successfully');
       return true;
     } catch (error) {
-      console.error('❌ Failed to refresh user data:', error);
       setAuthState(prev => ({
         ...prev,
         isLoading: false,
@@ -515,7 +423,6 @@ export function useAuth() {
   // Función para forzar re-fetch si el usuario está atrapado
   const forceRefresh = async () => {
     if (authState.user) {
-      console.log('🔄 Forcing data refresh...');
       await refreshUserData();
     } else {
       // Si no hay usuario, intentar re-inicializar

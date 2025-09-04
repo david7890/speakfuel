@@ -55,7 +55,7 @@ export default function StreakCalendar({ userId, currentStreak = 0 }: StreakCale
           date.setDate(today.getDate() - i);
           const dateString = date.toISOString().split('T')[0];
           
-          const activity = activities?.find(a => a.activity_date === dateString);
+          const activity = activities?.find((a: any) => a.activity_date === dateString);
           
           weeklyData.push({
             date: dateString,

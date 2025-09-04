@@ -1,3 +1,5 @@
+import Link from 'next/link';
+
 export default function PricingCTA() {
   return (
     <section className="py-16 px-4 bg-blue-600">
@@ -25,13 +27,16 @@ export default function PricingCTA() {
             href="/checkout"
             className="block w-full bg-blue-600 text-white py-4 rounded-lg font-semibold text-lg hover:bg-blue-700 transition-colors shadow-lg"
           >
-            Comprar ahora y empezar
+            Crear cuenta y comprar
           </a>
+          <p className="text-xs text-gray-500 mt-2">
+            Acceso inmediato después del pago
+          </p>
         </div>
         
         {/* Subtexto */}
         <p className="text-blue-100 text-sm">
-          Acceso inmediato por correo. Sin contraseñas.
+          Acceso inmediato con Google OAuth o Email/Password.
         </p>
         
         {/* Garantía */}

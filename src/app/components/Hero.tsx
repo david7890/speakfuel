@@ -1,3 +1,5 @@
+import Link from "next/link";
+
 export default function Hero() {
   return (
     <section className="pt-24 pb-20 px-4 bg-white">
@@ -16,21 +18,24 @@ export default function Hero() {
         
         {/* CTA Principal */}
         <div className="mb-8">
-          <a
-            href="/checkout"
-            className="inline-block bg-blue-600 text-white px-10 py-5 rounded-lg font-semibold text-xl hover:bg-blue-700 transition-colors duration-300 shadow-xl hover:shadow-2xl transform hover:scale-105"
+          <Link
+            href="/auth/register"
+            className="inline-flex items-center px-8 py-4 border border-transparent text-lg font-semibold rounded-lg text-white bg-blue-600 hover:bg-blue-700 transition-colors shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 transition-all duration-200"
           >
-            Empieza ahora por $29 USD
-          </a>
+            🚀 Empezar ahora - Gratis
+          </Link>
+          <p className="text-sm text-gray-500 mt-3">
+            Crea tu cuenta y obtén acceso inmediato
+          </p>
         </div>
         
         {/* Link discreto */}
         <div>
           <a
-            href="/acceso"
+            href="/auth/login"
             className="text-sm text-gray-500 hover:text-gray-700 transition-colors"
           >
-            ¿Ya compraste? Accede aquí.
+            ¿Ya compraste? Inicia sesión aquí.
           </a>
         </div>
       </div>

@@ -225,9 +225,10 @@ INSERT INTO user_profiles (id, name) VALUES (NEW.id, ...);
 INSERT INTO user_lesson_progress (user_id, lesson_id, status) VALUES (NEW.id, 1, 'available');
 ```
 
-### **2. Magic Link Login**
+### **2. Google OAuth + Email/Password Login**
 ```sql
 -- Supabase Auth maneja automáticamente
+-- Soporte para Google OAuth y email/password
 -- RLS permite acceso basado en auth.uid()
 ```
 
@@ -258,8 +259,8 @@ supabase.auth.admin.createUser({email, email_confirm: true})
 -- b) Otorgar acceso pagado
 SELECT grant_paid_access(email);
 
--- c) Enviar Magic Link
-supabase.auth.admin.generateLink({type: 'magiclink', email})
+-- c) Redirigir a /auth/signup con session_id y email
+-- Para autenticación inmediata con Google OAuth o email/password
 ```
 
 ### **3. Dashboard Access**
@@ -309,13 +310,14 @@ graph TD
 ```mermaid
 graph TD
     A[Usuario en /checkout] --> B[Verificar acceso existente]
-    B -->|Ya tiene acceso| C[Redirigir a /acceso]
+    B -->|Ya tiene acceso| C[Redirigir a /auth/login]
     B -->|No tiene acceso| D[Crear sesión Stripe]
     D --> E[Pago exitoso]
     E --> F[Crear/encontrar usuario en auth]
     F --> G[grant_paid_access()]
-    G --> H[Enviar Magic Link]
-    H --> I[Usuario accede al dashboard]
+    G --> H[Redirigir a /auth/signup]
+    H --> I[Google OAuth o Email/Password]
+    I --> J[Usuario accede al dashboard]
 ```
 
 ---

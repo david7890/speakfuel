@@ -21,15 +21,15 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    const supabase = createClient();
+    const supabase = await createClient();
     const logs: string[] = [];
 
     try {
-      // 1. Crear usuario en auth si no existe
+      // 1. Crear usuario en auth si no existe (sin confirmar automáticamente)
       logs.push(`🔍 Intentando crear usuario: ${email}`);
       const { data: authData, error: authError } = await supabase.auth.admin.createUser({
         email: email,
-        email_confirm: true,
+        email_confirm: false, // Usuario debe confirmar en proceso de signup
       });
 
       let userId = authData.user?.id;
@@ -98,21 +98,8 @@ export async function POST(request: NextRequest) {
         logs.push(`✅ Verificación de acceso: ${JSON.stringify(checkData)}`);
       }
 
-      // 5. Enviar Magic Link
-      logs.push('📨 Enviando Magic Link...');
-      const { error: magicLinkError } = await supabase.auth.signInWithOtp({
-        email: email,
-        options: {
-          emailRedirectTo: `${process.env.NEXT_PUBLIC_SITE_URL}/auth/callback`,
-          shouldCreateUser: false,
-        },
-      });
-
-      if (magicLinkError) {
-        logs.push(`❌ Error enviando Magic Link: ${magicLinkError.message}`);
-      } else {
-        logs.push('✅ Magic Link enviado exitosamente');
-      }
+      // 5. Proceso completado - usuario debe autenticarse en página de signup
+      logs.push('✅ Proceso completado - usuario listo para signup con Google OAuth o Email/Password');
 
       return NextResponse.json({
         success: true,
