@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation';
 import { useEffect, useState, useCallback } from 'react';
 import type { AuthChangeEvent, Session } from '@supabase/supabase-js';
 import { getRememberMePreference, clearRememberMePreference } from '@/lib/auth-helpers';
+import { userDataCache } from '@/lib/userDataCache';
 
 export interface UserProfile {
   id: string;
@@ -28,6 +29,7 @@ interface AuthState {
   lessonProgress: LessonProgress[];
   isLoading: boolean;
   error: string | null;
+  isStale?: boolean; // Indica si los datos pueden estar desactualizados
 }
 
 // Función para crear timeout con promesas
@@ -41,77 +43,35 @@ const withTimeout = <T>(promise: Promise<T>, timeoutMs: number): Promise<T> => {
 };
 
 export function useAuth() {
-  const [authState, setAuthState] = useState<AuthState>({
-    user: null,
-    profile: null,
-    lessonProgress: [],
-    isLoading: true,
-    error: null
+  // Intentar cargar datos del cache al inicializar
+  const getCachedDataForInit = () => {
+    const cached = userDataCache.get();
+    if (cached) {
+      return {
+        profile: cached.profile,
+        lessonProgress: cached.lessonProgress,
+        isStale: cached.isStale
+      };
+    }
+    return { profile: null, lessonProgress: [], isStale: false };
+  };
+
+  const [authState, setAuthState] = useState<AuthState>(() => {
+    const cachedData = getCachedDataForInit();
+    return {
+      user: null,
+      profile: cachedData.profile,
+      lessonProgress: cachedData.lessonProgress,
+      isLoading: true,
+      error: null,
+      isStale: cachedData.isStale
+    };
   });
   const [isInitialized, setIsInitialized] = useState(false);
   const [retryCount, setRetryCount] = useState(0);
 
   const router = useRouter();
   const supabase = createClient();
-
-  // Función para verificar y renovar sesión si es necesario
-  const checkAndRefreshSession = useCallback(async () => {
-    try {
-      const { data: { session }, error } = await supabase.auth.getSession();
-      
-      if (error) {
-        console.error('❌ Error checking session:', error);
-        return null;
-      }
-      
-      if (session) {
-        const expiresAt = new Date(session.expires_at! * 1000);
-        const now = new Date();
-        const timeUntilExpiry = expiresAt.getTime() - now.getTime();
-        
-        // Si el token expira en menos de 10 minutos, intentar renovar
-        if (timeUntilExpiry < 10 * 60 * 1000) {
-          console.log('🔄 Token expires soon, attempting refresh...');
-          
-          const { data: refreshData, error: refreshError } = await supabase.auth.refreshSession();
-          
-          if (refreshError) {
-            console.error('❌ Error refreshing session:', refreshError);
-            // Si no se puede renovar, limpiar preferencias y sesión
-            clearRememberMePreference();
-            return null;
-          }
-          
-          if (refreshData.session) {
-            console.log('✅ Session refreshed successfully');
-            return refreshData.session;
-          }
-        }
-        
-        return session;
-      }
-      
-      return null;
-    } catch (error) {
-      console.error('❌ Unexpected error checking session:', error);
-      return null;
-    }
-  }, [supabase]);
-
-  // Función para verificar sesión periódicamente
-  useEffect(() => {
-    if (!authState.user) return;
-
-    const preferences = getRememberMePreference();
-    if (!preferences.rememberMe) return; // Solo para sesiones extendidas
-    
-    // Verificar sesión cada 30 minutos
-    const interval = setInterval(() => {
-      checkAndRefreshSession();
-    }, 30 * 60 * 1000);
-
-    return () => clearInterval(interval);
-  }, [authState.user, checkAndRefreshSession]);
 
   const fetchUserData = async (user: any, timeout: number = 5000): Promise<{ profile: UserProfile | null; progress: LessonProgress[] }> => {
     try {
@@ -260,58 +220,57 @@ export function useAuth() {
       }
     }
     
-    // Si todos los reintentos fallan, establecer error pero mantener usuario logueado
+    // Si todos los reintentos fallan, devolver datos por defecto en lugar de error
     setRetryCount(prev => prev + 1);
+    console.warn('⚠️ Failed to fetch user data after retries, using defaults');
     
-    // En lugar de devolver datos falsos, lanzar error para que se maneje apropiadamente
-    throw new Error('Error de conexión. Por favor, intenta recargar la página.');
+    // Devolver datos por defecto para que la app funcione
+    return {
+      profile: null, // Se creará automáticamente si es necesario
+      progress: [] // Sin progreso inicial
+    };
   };
 
   useEffect(() => {
     if (isInitialized) return;
     
+    console.log('🔧 Initializing auth hook...');
+    
     const initializeAuth = async () => {
       try {
-        // Timeout para la inicialización completa (optimizado)
-        const initTimeout = setTimeout(() => {
-          setAuthState({
-            user: null,
-            profile: null,
-            lessonProgress: [],
-            isLoading: false,
-            error: 'Error de conexión. Por favor, verifica tu conexión e intenta recargar la página.'
-          });
-          setIsInitialized(true);
-        }, 15000); // 15 segundos máximo para inicialización
-        
         const { data: { session } } = await supabase.auth.getSession();
         
         if (session?.user) {
           try {
             const { profile, progress } = await fetchUserDataWithRetry(session.user);
             
-            clearTimeout(initTimeout);
+            // ✅ Guardar datos exitosos en cache
+            userDataCache.set(profile, progress);
+            
             setAuthState({
               user: session.user,
               profile,
               lessonProgress: progress,
               isLoading: false,
-              error: null
+              error: null,
+              isStale: false // Datos frescos
             });
           } catch (error) {
             console.error('❌ Failed to fetch user data during init:', error);
-            clearTimeout(initTimeout);
+            
+            // ✅ Usar cache como fallback en lugar de datos vacíos
+            const cached = userDataCache.get();
             
             setAuthState({
               user: session.user,
-              profile: null,
-              lessonProgress: [],
+              profile: cached?.profile || null,
+              lessonProgress: cached?.lessonProgress || [],
               isLoading: false,
-              error: error instanceof Error ? error.message : 'Error cargando datos de usuario'
+              error: null,
+              isStale: !!cached?.isStale // Marcar como stale si viene del cache
             });
           }
         } else {
-          clearTimeout(initTimeout);
           setAuthState({
             user: null,
             profile: null,
@@ -322,12 +281,14 @@ export function useAuth() {
         }
         setIsInitialized(true);
       } catch (error) {
+        console.error('❌ Error during auth initialization:', error);
+        // No establecer error por problemas de inicialización
         setAuthState({
           user: null,
           profile: null,
           lessonProgress: [],
           isLoading: false,
-          error: error instanceof Error ? error.message : 'Error de inicialización'
+          error: null
         });
         setIsInitialized(true);
       }
@@ -337,44 +298,80 @@ export function useAuth() {
 
     const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event: AuthChangeEvent, session: Session | null) => {
       if (event === 'SIGNED_IN' && session?.user) {
-        try {
-          const { profile, progress } = await fetchUserDataWithRetry(session.user);
-          setAuthState({
-            user: session.user,
-            profile,
-            lessonProgress: progress,
-            isLoading: false,
-            error: null
-          });
-        } catch (error) {
+        console.log('🔄 SIGNED_IN event detected for user:', session.user.id);
+        
+        // ✅ Solo fetch datos si no tenemos usuario o es diferente usuario
+        const shouldFetchData = !authState.user || authState.user.id !== session.user.id;
+        
+        console.log('🔍 Should fetch data?', shouldFetchData, {
+          hasAuthUser: !!authState.user,
+          authUserId: authState.user?.id,
+          sessionUserId: session.user.id
+        });
+        
+        if (shouldFetchData) {
+          console.log('📥 Fetching user data for new/different user');
+          try {
+            const { profile, progress } = await fetchUserDataWithRetry(session.user);
+            
+            // ✅ Guardar datos exitosos en cache
+            userDataCache.set(profile, progress);
+            
+            setAuthState({
+              user: session.user,
+              profile,
+              lessonProgress: progress,
+              isLoading: false,
+              error: null,
+              isStale: false // Datos frescos
+            });
+          } catch (error) {
+            console.error('❌ Failed to fetch user data on sign in:', error);
+            
+            // ✅ Usar cache como fallback
+            const cached = userDataCache.get();
+            
+            setAuthState({
+              user: session.user,
+              profile: cached?.profile || null,
+              lessonProgress: cached?.lessonProgress || [],
+              isLoading: false,
+              error: null,
+              isStale: !!cached?.isStale
+            });
+          }
+        } else {
+          console.log('✅ Same user, updating session only (no data fetch)');
+          // ✅ Solo actualizar la session, mantener datos existentes
           setAuthState(prev => ({
             ...prev,
             user: session.user,
             isLoading: false,
-            error: error instanceof Error ? error.message : 'Error cargando datos'
+            error: null
           }));
         }
-      } else if (event === 'TOKEN_REFRESHED' && session?.user) {
-        // Mantener datos existentes, solo actualizar sesión
-        setAuthState(prev => ({
-          ...prev,
-          user: session.user
-        }));
       } else if (event === 'SIGNED_OUT') {
         clearRememberMePreference();
+        // ✅ Limpiar cache al cerrar sesión
+        userDataCache.clear();
+        
         setAuthState({
           user: null,
           profile: null,
           lessonProgress: [],
           isLoading: false,
-          error: null
+          error: null,
+          isStale: false
         });
         router.push('/auth/login');
       }
     });
 
-    return () => subscription.unsubscribe();
-  }, [supabase, router]);
+    return () => {
+      console.log('🧹 Cleaning up auth subscription...');
+      subscription.unsubscribe();
+    };
+  }, [supabase, router, isInitialized]);
 
   const signOut = async () => {
     // Limpiar preferencias de remember me
@@ -396,20 +393,29 @@ export function useAuth() {
       
       const { profile, progress } = await fetchUserDataWithRetry(authState.user);
       
+      // ✅ Guardar datos exitosos en cache
+      userDataCache.set(profile, progress);
+      
       setAuthState(prev => ({
         ...prev,
         profile,
         lessonProgress: progress,
         isLoading: false,
-        error: null
+        error: null,
+        isStale: false // Datos frescos
       }));
       
       return true;
     } catch (error) {
+      console.error('❌ Error refreshing user data:', error);
+      
+      // ✅ Marcar cache como stale pero mantener datos existentes
+      userDataCache.markStale();
+      
       setAuthState(prev => ({
         ...prev,
         isLoading: false,
-        error: error instanceof Error ? error.message : 'Error actualizando datos'
+        isStale: true // Marcar como desactualizado
       }));
       return false;
     }

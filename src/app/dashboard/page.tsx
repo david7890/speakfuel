@@ -6,6 +6,8 @@ import DashboardHeader from './components/DashboardHeader';
 import LessonJourneyMap from './components/LessonJourneyMap';
 import SessionInfo from './components/SessionInfo';
 import StreakCalendar from './components/StreakCalendar';
+import ConnectionStatus from './components/ConnectionStatus';
+import StaleDataIndicator from './components/StaleDataIndicator';
 import lessonsData from '@/data/lessons/index.json';
 import { useState, useEffect } from 'react';
 import { createClient } from '@/lib/supabase/client';
@@ -15,7 +17,7 @@ export const dynamic = 'force-dynamic';
 
 export default function Dashboard() {
   const router = useRouter();
-  const { user, profile, lessonProgress, isLoading, error, clearError, forceRefresh } = useAuth();
+  const { user, profile, lessonProgress, isLoading, error, isStale, clearError, forceRefresh } = useAuth();
   
   // Mapear difficulty del JSON a los valores esperados por el componente
   const mapDifficulty = (difficulty: string) => {
@@ -251,50 +253,7 @@ export default function Dashboard() {
     router.push('/dashboard/lesson/1/main');
   };
 
-  // Estado de error con opciones de recuperación
-  if (error && !isLoading) {
-    return (
-      <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50 flex items-center justify-center p-4">
-        <div className="text-center max-w-md w-full">
-          <div className="bg-white rounded-2xl p-8 shadow-lg border border-red-200">
-            <div className="text-4xl mb-4">⚠️</div>
-            <h3 className="text-xl font-bold text-gray-900 mb-4">
-              Problema de Conexión
-            </h3>
-            <p className="text-gray-600 mb-6 leading-relaxed">
-              {error}
-            </p>
-            
-            <div className="space-y-3">
-              <button
-                onClick={() => {
-                  clearError();
-                  forceRefresh();
-                }}
-                className="w-full bg-blue-600 text-white py-3 px-6 rounded-xl font-medium hover:bg-blue-700 transition-colors"
-              >
-                🔄 Reintentar
-              </button>
-              
-              <button
-                onClick={() => {
-                  clearError();
-                  window.location.reload();
-                }}
-                className="w-full bg-gray-100 text-gray-700 py-3 px-6 rounded-xl font-medium hover:bg-gray-200 transition-colors"
-              >
-                🔄 Recargar Página
-              </button>
-            </div>
-            
-            <p className="text-sm text-gray-500 mt-4">
-              Si el problema persiste, verifica tu conexión a internet
-            </p>
-          </div>
-        </div>
-      </div>
-    );
-  }
+  // Remover pantalla de error - la app debe funcionar incluso sin datos completos
 
   if (isLoading) {
     return (
@@ -307,9 +266,9 @@ export default function Dashboard() {
     );
   }
 
-  // Solo redirigir si NO está cargando Y no hay usuario/perfil
-  if (!isLoading && (!user || !profile)) {
-    console.log('🚫 No user/profile found after loading, redirecting to login');
+  // Solo redirigir si NO está cargando Y no hay usuario autenticado
+  if (!isLoading && !user) {
+    console.log('🚫 No authenticated user found, redirecting to login');
     router.push('/auth/login');
     return null;
   }
@@ -338,6 +297,12 @@ export default function Dashboard() {
 
   return (
     <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+      {/* Connection Status Notification */}
+      <ConnectionStatus />
+      
+      {/* Stale Data Indicator */}
+      <StaleDataIndicator isStale={!!isStale} onRefresh={forceRefresh} />
+      
       {/* Streak Calendar */}
       <StreakCalendar 
         userId={user?.id}
