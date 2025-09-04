@@ -77,7 +77,7 @@ export default function LessonJourneyMap({ lessons }: LessonJourneyMapProps) {
             Tus Lecciones
           </h2>
           <p className="text-gray-600">
-            Cada lección incluye artículo principal, mini historia, preguntas y vocabulario
+            Cada lección completada te acerca más a la fluidez en inglés
           </p>
         </div>
 
@@ -115,13 +115,13 @@ export default function LessonJourneyMap({ lessons }: LessonJourneyMapProps) {
           Tu Ruta de Aprendizaje
         </h2>
         <p className="text-gray-600">
-          Cada estación te acerca más a la fluidez en inglés
+          Cada lección completada te acerca más a la fluidez en inglés
         </p>
       </div>
 
       <div className="relative max-w-6xl mx-auto px-4">
         {/* Línea central serpenteante */}
-        <div className="absolute left-1/2 top-0 bottom-0 w-1 transform -translate-x-1/2 z-25">
+        <div className="absolute left-1/2 top-0 bottom-0 w-1 transform -translate-x-1/2 z-10">
           <div className="w-full h-full bg-gradient-to-b from-green-400 via-blue-400 to-purple-400"></div>
         </div>
 
@@ -157,25 +157,25 @@ export default function LessonJourneyMap({ lessons }: LessonJourneyMapProps) {
               </div>
 
               {/* Línea conectora hacia la tarjeta */}
-              <div className={`absolute top-20 w-32 h-0.5 z-5 ${
+              <div className={`absolute top-20 w-32 h-0.5 -z-10 ${
                 isLeft ? 'left-1/2 -ml-32' : 'left-1/2'
               }`}>
-                <div className={`w-full h-full bg-gradient-to-${isLeft ? 'l' : 'r'} ${getConnectionColor(lesson)} rounded-full shadow-sm`}></div>
+                <div className={`w-full h-full bg-gradient-to-${isLeft ? 'l' : 'r'} ${getConnectionColor(lesson)} rounded-full`}></div>
               </div>
 
               {/* Lesson card */}
               <div 
                 id={`lesson-${lesson.id}`}
-                className={`relative z-10 ${
+                className={`relative z-30 ${
                   isLeft ? 'mr-auto pr-8' : 'ml-auto pl-8'
                 } w-1/2 transition-all duration-300 cursor-pointer ${
                   selectedLesson === lesson.id 
-                    ? 'scale-105 shadow-2xl' 
-                    : 'hover:scale-102 hover:shadow-xl'
+                    ? 'scale-105' 
+                    : 'hover:scale-102'
                 }`}
                 onClick={() => handleLessonClick(lesson.id)}
               >
-                <div className="relative z-10">
+                <div className="relative z-30">
                   {lesson.status === 'in-progress' && (
                     <div className="absolute inset-0 bg-blue-400 rounded-2xl blur-xl opacity-20 animate-pulse"></div>
                   )}

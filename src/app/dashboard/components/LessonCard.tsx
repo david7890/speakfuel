@@ -234,10 +234,10 @@ export default function LessonCard({
 
   return (
     <div 
-      className={`group relative bg-white/90 backdrop-blur-sm rounded-3xl shadow-sm border transition-all duration-300 hover:shadow-lg transform hover:-translate-y-1 ${
+      className={`group relative bg-white rounded-3xl shadow-sm border transition-all duration-300 transform ${
         status === 'locked' 
-          ? 'border-slate-200 opacity-60 cursor-not-allowed' 
-          : 'border-slate-100 cursor-pointer hover:border-slate-200'
+          ? 'border-slate-200 cursor-not-allowed' 
+          : 'border-slate-100 cursor-pointer hover:border-slate-200 hover:shadow-lg hover:-translate-y-1'
       } ${
         isPressed && status !== 'locked' 
           ? 'scale-95 shadow-sm' 
@@ -254,7 +254,7 @@ export default function LessonCard({
         <div className="absolute inset-0 bg-gradient-to-br from-emerald-50/50 to-green-50/30 rounded-3xl"></div>
       )}
 
-      <div className="relative p-6">
+      <div className={`relative p-6 ${status === 'locked' ? 'opacity-60' : ''}`}>
         {/* Header with circular progress */}
         <div className="flex items-start space-x-6 mb-6">
           {getStatusContent()}
@@ -306,9 +306,6 @@ export default function LessonCard({
                   <StarIcon className="w-4 h-4" />
                   <span>Necesitas {starsNeeded} estrella{starsNeeded !== 1 ? 's' : ''} más</span>
                 </div>
-                <p className="text-xs text-slate-500 mt-2">
-                  Tienes {totalStarsAvailable} de {starRequirement} estrellas requeridas
-                </p>
               </div>
             )}
 
