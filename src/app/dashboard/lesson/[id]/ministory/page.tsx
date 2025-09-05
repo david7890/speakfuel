@@ -88,7 +88,7 @@ export default function MiniStoryPage() {
       {/* Lesson Header - Only visible on desktop */}
       <LessonHeader 
         title={lessonData.miniStory.title}
-        currentSection={1}
+        currentSection={2}
         totalSections={4}
         sectionName="Mini Historia"
       />

@@ -287,7 +287,7 @@ export default function QuestionsPage() {
       {/* Lesson Header - Only visible on desktop */}
       <LessonHeader 
         title={lessonData.title}
-        currentSection={2}
+        currentSection={3}
         totalSections={4}
         sectionName="Preguntas"
       />
