@@ -17,7 +17,7 @@
           "definition": "A source or example used to support or justify a statement",
           "example": "The reference book was a valuable resource for the students.",
           "translation": "Referencia",
-          "audioUrl": "gs://speakfuel-d832c.firebasestorage.app/lessons/lesson7/vocabulary/reference.mp3"
+          "audioUrl": "gs://speakfuel-d832c.firebasestorage.app/lessons/lesson7/Reference.mp3"
         },
         {
           "word": "Global",
@@ -25,7 +25,7 @@
           "definition": "Of or relating to the entire world or all parts of the world",
           "example": "The global economy is interconnected and interdependent.",
           "translation": "Global",
-          "audioUrl": "gs://speakfuel-d832c.firebasestorage.app/lessons/lesson7/vocabulary/rush.mp3"
+          "audioUrl": "gs://speakfuel-d832c.firebasestorage.app/lessons/lesson7/Global.mp3"
         },
         {
           "word": "Filter through",
@@ -33,7 +33,7 @@
           "definition": "To pass through a filter or sieve",
           "example": "The water filtered through the filter to remove impurities.",
           "translation": "Filtrar",
-          "audioUrl": "gs://speakfuel-d832c.firebasestorage.app/lessons/lesson7/vocabulary/barista.mp3"
+          "audioUrl": "gs://speakfuel-d832c.firebasestorage.app/lessons/lesson7/Filter.mp3"
         },
         {
           "word": "Identity",
@@ -41,7 +41,7 @@
           "definition": "The quality of being the same as something else",
           "example": "The identity of the person was verified by the police.",
           "translation": "Identidad",
-          "audioUrl": "gs://speakfuel-d832c.firebasestorage.app/lessons/lesson7/vocabulary/cappuccino.mp3"
+          "audioUrl": "gs://speakfuel-d832c.firebasestorage.app/lessons/lesson7/Identity.mp3"
         }
       ]
     },

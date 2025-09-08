@@ -21,7 +21,7 @@ export interface VocabWord {
   definition: string;
   example: string;
   translation: string;
-  audioUrl?: string;
+  audioUrl: string;
 }
 
 // Tipo para la sección de vocabulario

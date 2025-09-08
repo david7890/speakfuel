@@ -17,7 +17,7 @@
         "definition": "The part of your mind that notices and remembers information when you are not actively trying to do so.",
         "example": "His fear of public speaking is rooted in his subconscious experiences.",
         "translation": "Subconsciente",
-        "audioUrl": "gs://speakfuel-d832c.firebasestorage.app/lessons/lesson1/vocabulary1.mp3"
+        "audioUrl": "gs://speakfuel-d832c.firebasestorage.app/lessons/lesson1/Subconscious.mp3"
       },
       {
         "word": "Physiology",
@@ -25,7 +25,7 @@
         "definition": "The branch of biology that deals with the normal functions of living organisms and their parts.",
         "example": "Regular exercise improves your body’s physiology and overall health.",
         "translation": "Fisiología",
-        "audioUrl": "gs://speakfuel-d832c.firebasestorage.app/lessons/lesson1/vocabulary2.mp3"
+        "audioUrl": "gs://speakfuel-d832c.firebasestorage.app/lessons/lesson1/Physiology.mp3"
       },
       {
         "word": "Pleased",
@@ -33,7 +33,7 @@
         "definition": "Feeling happy and satisfied",
         "example": "I'm pleased to meet you.",
         "translation": "Encantado, complacido",
-        "audioUrl": "gs://speakfuel-d832c.firebasestorage.app/lessons/lesson1/vocabulary3.mp3"
+        "audioUrl": "gs://speakfuel-d832c.firebasestorage.app/lessons/lesson1/Pleased.mp3"
       },
       {
         "word": "Peak",
@@ -41,7 +41,7 @@
         "definition": "The highest point or level of something",
         "example": "The peak of the mountain was covered in snow.",
         "translation": "Pico / Cima / Máximo",
-        "audioUrl": "gs://speakfuel-d832c.firebasestorage.app/lessons/lesson1/vocabulary4.mp3"
+        "audioUrl": "gs://speakfuel-d832c.firebasestorage.app/lessons/lesson1/Peak.mp3"
       },
       {
         "word": "Engage",
@@ -49,7 +49,7 @@
         "definition": "To involve or involve in an activity or situation",
         "example": "The company engaged in a new project to improve customer satisfaction.",
         "translation": "Involucrar, involucrarse",
-        "audioUrl": "gs://speakfuel-d832c.firebasestorage.app/lessons/lesson1/vocabulary5.mp3"
+        "audioUrl": "gs://speakfuel-d832c.firebasestorage.app/lessons/lesson1/Engage.mp3"
       },
       {
         "word": "Acquaintance",
@@ -57,7 +57,7 @@
         "definition": "A person you know slightly but not very well",
         "example": "He's just an acquaintance from work.",
         "translation": "Conocido",
-        "audioUrl": "gs://speakfuel-d832c.firebasestorage.app/lessons/lesson1/vocabulary6.mp3"
+        "audioUrl": "gs://speakfuel-d832c.firebasestorage.app/lessons/lesson1/Acquaintance.mp3"
       }
     ]
   },

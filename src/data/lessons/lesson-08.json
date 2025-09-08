@@ -17,7 +17,7 @@
           "definition": "To move or move around",
           "example": "The ball rolled across the floor.",
           "translation": "Rodar",
-          "audioUrl": "gs://speakfuel-d832c.firebasestorage.app/lessons/lesson8/vocabulary/roll-of-the-dice.mp3"
+          "audioUrl": "gs://speakfuel-d832c.firebasestorage.app/lessons/lesson8/Roll.mp3"
         },
         {
           "word": "Unleash",
@@ -25,7 +25,7 @@
           "definition": "To release or let loose",
           "example": "The dog unleashed its energy.",
           "translation": "Desatar",
-          "audioUrl": "gs://speakfuel-d832c.firebasestorage.app/lessons/lesson8/vocabulary/unleash.mp3"
+          "audioUrl": "gs://speakfuel-d832c.firebasestorage.app/lessons/lesson8/Unleash.mp3"
         },
         {
           "word": "Advantage",
@@ -33,7 +33,7 @@
           "definition": "A benefit or benefit gained from a situation",
           "example": "The advantage of the new technology is that it is more efficient.",
           "translation": "Ventaja",
-          "audioUrl": "gs://speakfuel-d832c.firebasestorage.app/lessons/lesson8/vocabulary/advantage.mp3"
+          "audioUrl": "gs://speakfuel-d832c.firebasestorage.app/lessons/lesson8/Advantage.mp3"
         },
         {
           "word": "Cultivated",
@@ -41,7 +41,7 @@
           "definition": "To grow or develop",
           "example": "The plant was cultivated in the garden.",
           "translation": "Cultivado",
-          "audioUrl": "gs://speakfuel-d832c.firebasestorage.app/lessons/lesson7/vocabulary/cappuccino.mp3"
+          "audioUrl": "gs://speakfuel-d832c.firebasestorage.app/lessons/lesson8/Cultivated.mp3"
         },
         {
           "word": "Breakthrough",
@@ -49,7 +49,7 @@
           "definition": "A significant advance or discovery",
           "example": "The breakthrough in the research was a major milestone.",
           "translation": "Avance",
-          "audioUrl": "gs://speakfuel-d832c.firebasestorage.app/lessons/lesson8/vocabulary/breakthrough.mp3"
+          "audioUrl": "gs://speakfuel-d832c.firebasestorage.app/lessons/lesson8/Breakthrough.mp3"
         }
       ]
     },

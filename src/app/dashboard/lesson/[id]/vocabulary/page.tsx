@@ -5,7 +5,8 @@ import { useParams, useRouter } from 'next/navigation';
 import LessonHeader from '../../components/LessonHeader';
 import VocabularyCard from '../components/VocabularyCard';
 import LessonSectionNavigation from '../components/LessonSectionNavigation';
-import { getVocabulary, getLessonInfo, type VocabWord, type VocabularyData } from '@/data/lessons';
+import { getVocabulary, getLessonInfo, type VocabularyData } from '@/data/lessons';
+import { type VocabWord } from '@/data/lessons/types';
 
 interface VocabularyDataWithTitle {
   lessonTitle: string;

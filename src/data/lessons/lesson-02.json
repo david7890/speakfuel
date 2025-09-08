@@ -17,7 +17,7 @@
         "definition": "Making a musical ringing sound, typically that of a bell or clock",
         "example": "The bell was chiming above her head as she entered the coffee shop.",
         "translation": "Sonando (como una campana)",
-        "audioUrl": "gs://speakfuel-d832c.firebasestorage.app/lessons/lesson-02/vocabulary/chiming.mp3"
+        "audioUrl": "gs://speakfuel-d832c.firebasestorage.app/lessons/lesson-02/Chiming.mp3"
       },
       {
         "word": "Rush",
@@ -25,7 +25,7 @@
         "definition": "A period of intense activity or high demand; a situation requiring urgency",
         "example": "The morning rush is in full swing at the coffee shop.",
         "translation": "Hora pico, prisa",
-        "audioUrl": "gs://speakfuel-d832c.firebasestorage.app/lessons/lesson-02/vocabulary/rush.mp3"
+        "audioUrl": "gs://speakfuel-d832c.firebasestorage.app/lessons/lesson2/Rush.mp3"
       },
       {
         "word": "Grin",
@@ -33,7 +33,7 @@
         "definition": "To smile or laugh with a broad, open mouth",
         "example": "He gave a big grin when he saw his friend.",
         "translation": "Sonrisa, sonreír",
-        "audioUrl": "gs://speakfuel-d832c.firebasestorage.app/lessons/lesson-02/vocabulary/barista.mp3"
+        "audioUrl": "gs://speakfuel-d832c.firebasestorage.app/lessons/lesson2/Grin.mp3"
       },
       {
         "word": "Tends to be",
@@ -41,7 +41,7 @@
         "definition": "To be inclined or likely to do something",
         "example": "She tends to be late for appointments.",
         "translation": "Tiene tendencia a ser",
-        "audioUrl": "gs://speakfuel-d832c.firebasestorage.app/lessons/lesson-02/vocabulary/cappuccino.mp3"
+        "audioUrl": "gs://speakfuel-d832c.firebasestorage.app/lessons/lesson2/Tends.mp3"
       },
       {
         "word": "Shifting",
@@ -49,7 +49,7 @@
         "definition": "To move or change position",
         "example": "The wind shifted direction and the rain stopped.",
         "translation": "Cambio de dirección",
-        "audioUrl": "gs://speakfuel-d832c.firebasestorage.app/lessons/lesson-02/vocabulary/espresso-machine.mp3"
+        "audioUrl": "gs://speakfuel-d832c.firebasestorage.app/lessons/lesson2/Shifting.mp3"
       },
       {
         "word": "Settles in",
@@ -57,7 +57,7 @@
         "definition": "To make oneself comfortable in a place; to get established in a routine or location",
         "example": "She settles in for another productive morning at her favorite table.",
         "translation": "Se acomoda, se instala",
-        "audioUrl": "gs://speakfuel-d832c.firebasestorage.app/lessons/lesson-02/vocabulary/settles-in.mp3"
+        "audioUrl": "gs://speakfuel-d832c.firebasestorage.app/lessons/lesson2/Settles.mp3"
       }
     ]
   },

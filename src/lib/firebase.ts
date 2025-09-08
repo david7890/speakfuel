@@ -29,23 +29,34 @@ const audioUrlCache = new Map<string, string>();
  */
 export const getAudioUrl = async (path: string): Promise<string> => {
   try {
+    console.log(`Getting audio URL for path: ${path}`);
+    
     // Check cache first
     if (audioUrlCache.has(path)) {
+      console.log(`Found cached URL for: ${path}`);
       return audioUrlCache.get(path)!;
     }
 
     // Get reference to the file
     const audioRef = ref(storage, path);
+    console.log(`Created storage reference for: ${path}`);
     
     // Get the download URL
     const url = await getDownloadURL(audioRef);
+    console.log(`Got download URL: ${url}`);
     
     // Cache the URL
     audioUrlCache.set(path, url);
+    console.log(`Cached URL for: ${path}`);
     
     return url;
   } catch (error) {
     console.error(`Error getting audio URL for path: ${path}`, error);
+    console.error('Error details:', {
+      code: (error as any)?.code,
+      message: (error as any)?.message,
+      serverResponse: (error as any)?.serverResponse
+    });
     throw error;
   }
 };

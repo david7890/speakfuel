@@ -1,15 +1,9 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import { SpeakerWaveIcon } from '@heroicons/react/24/outline';
-
-interface VocabWord {
-  word: string;
-  pronunciation: string;
-  definition: string;
-  example: string;
-  translation: string;
-}
+import { getAudioUrl } from '@/lib/firebase';
+import { type VocabWord } from '@/data/lessons/types';
 
 interface VocabularyCardProps {
   word: VocabWord;
@@ -20,11 +14,72 @@ interface VocabularyCardProps {
 export default function VocabularyCard({ word, wordIndex, totalWords }: VocabularyCardProps) {
   const [isFlipped, setIsFlipped] = useState(false);
   const [playingAudio, setPlayingAudio] = useState(false);
+  const [audioError, setAudioError] = useState(false);
+  const [audioUrl, setAudioUrl] = useState<string | null>(null);
+  const audioRef = useRef<HTMLAudioElement | null>(null);
 
-  const handlePlayPronunciation = () => {
-    setPlayingAudio(true);
-    // Aquí iría la lógica de Text-to-Speech
-    setTimeout(() => setPlayingAudio(false), 2000);
+  // Verificar y pre-cargar la URL del audio
+  useEffect(() => {
+    const loadAudioUrl = async () => {
+      try {
+        console.log('Pre-loading audio URL for word:', word.word);
+        const audioPath = word.audioUrl.replace('gs://speakfuel-d832c.firebasestorage.app/', '');
+        const url = await getAudioUrl(audioPath);
+        setAudioUrl(url);
+        console.log('Audio URL pre-loaded successfully for word:', word.word);
+      } catch (error) {
+        console.error('Error pre-loading audio URL for word:', word.word, error);
+        setAudioError(true);
+      }
+    };
+
+    loadAudioUrl();
+  }, [word.audioUrl, word.word]);
+
+  const handlePlayPronunciation = async () => {
+    if (playingAudio || !audioUrl) {
+      console.log('Cannot play audio:', { playingAudio, audioUrl });
+      return;
+    }
+    
+    try {
+      setPlayingAudio(true);
+      setAudioError(false);
+
+      console.log('Playing audio from URL:', audioUrl);
+
+      // Crear y reproducir el audio
+      if (audioRef.current) {
+        audioRef.current.pause();
+        audioRef.current = null;
+      }
+
+      const audio = new Audio(audioUrl);
+      audioRef.current = audio;
+
+      // Configurar eventos
+      audio.onended = () => {
+        console.log('Audio playback ended');
+        setPlayingAudio(false);
+      };
+
+      audio.onerror = (error) => {
+        console.error('Audio element error:', error);
+        console.error('Audio error details:', {
+          code: audio.error?.code,
+          message: audio.error?.message
+        });
+        setAudioError(true);
+        setPlayingAudio(false);
+      };
+
+      await audio.play();
+      console.log('Audio playback started successfully');
+    } catch (error) {
+      console.error('Error in handlePlayPronunciation:', error);
+      setAudioError(true);
+      setPlayingAudio(false);
+    }
   };
 
   const handleCardFlip = () => {
@@ -60,11 +115,23 @@ export default function VocabularyCard({ word, wordIndex, totalWords }: Vocabula
                       e.stopPropagation();
                       handlePlayPronunciation();
                     }}
+                    disabled={!audioUrl && !audioError}
                     className={`w-12 h-12 rounded-full flex items-center justify-center transition-all duration-300 transform ${
                       playingAudio
                         ? 'bg-orange-600 text-white scale-110 shadow-lg'
+                        : audioError
+                        ? 'bg-red-100 text-red-600 hover:bg-red-200 hover:scale-105 shadow-md hover:shadow-lg'
+                        : !audioUrl
+                        ? 'bg-gray-100 text-gray-400 cursor-not-allowed'
                         : 'bg-orange-100 text-orange-600 hover:bg-orange-200 hover:scale-105 shadow-md hover:shadow-lg'
                     }`}
+                    title={
+                      audioError 
+                        ? 'Error reproduciendo audio' 
+                        : !audioUrl 
+                        ? 'Cargando audio...' 
+                        : 'Reproducir pronunciación'
+                    }
                   >
                     {playingAudio ? (
                       <div className="flex space-x-1">
