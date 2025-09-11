@@ -1,0 +1,403 @@
+{
+  "category": "adjectives",
+  "name": "Adjetivos",
+  "description": "Los adjetivos más frecuentes en inglés",
+  "words": [
+    {
+      "english": "afraid",
+      "ipa": "/əˈfreɪd/",
+      "spanish": "asustado",
+      "audioUrl": null
+    },
+    {
+      "english": "alive",
+      "ipa": "/əˈlaɪv/",
+      "spanish": "vivo",
+      "audioUrl": null
+    },
+    {
+      "english": "angry",
+      "ipa": "/ˈæŋɡri/",
+      "spanish": "enojado",
+      "audioUrl": null
+    },
+    {
+      "english": "annoyed",
+      "ipa": "/əˈnɔɪd/",
+      "spanish": "irritado",
+      "audioUrl": null
+    },
+    {
+      "english": "annoying",
+      "ipa": "/əˈnɔɪɪŋ/",
+      "spanish": "fastidioso",
+      "audioUrl": null
+    },
+    {
+      "english": "arrogant",
+      "ipa": "/ˈærəɡənt/",
+      "spanish": "arrogante",
+      "audioUrl": null
+    },
+    {
+      "english": "adorable",
+      "ipa": "/əˈdɔːrəbəl/",
+      "spanish": "adorable",
+      "audioUrl": null
+    },
+    {
+      "english": "abrupt",
+      "ipa": "/əˈbrʌpt/",
+      "spanish": "abrupto",
+      "audioUrl": null
+    },
+    {
+      "english": "acidic",
+      "ipa": "/əˈsɪdɪk/",
+      "spanish": "ácido",
+      "audioUrl": null
+    },
+    {
+      "english": "apprehensive",
+      "ipa": "/ˌæprɪˈhensɪv/",
+      "spanish": "aprensivo",
+      "audioUrl": null
+    },
+    {
+      "english": "ashamed",
+      "ipa": "/əˈʃeɪmd/",
+      "spanish": "avergonzado",
+      "audioUrl": null
+    },
+    {
+      "english": "aggressive",
+      "ipa": "/əˈɡresɪv/",
+      "spanish": "agresivo",
+      "audioUrl": null
+    },
+    {
+      "english": "attractive",
+      "ipa": "/əˈtræktɪv/",
+      "spanish": "atractivo",
+      "audioUrl": null
+    },
+    {
+      "english": "adventurous",
+      "ipa": "/ədˈventʃərəs/",
+      "spanish": "aventurero",
+      "audioUrl": null
+    },
+    {
+      "english": "astonishing",
+      "ipa": "/əˈstɑːnɪʃɪŋ/",
+      "spanish": "asombroso",
+      "audioUrl": null
+    },
+    {
+      "english": "astonished",
+      "ipa": "/əˈstɑːnɪʃt/",
+      "spanish": "asombrado",
+      "audioUrl": null
+    },
+    {
+      "english": "anxious",
+      "ipa": "/ˈæŋkʃəs/",
+      "spanish": "ansioso",
+      "audioUrl": null
+    },
+    {
+      "english": "alert",
+      "ipa": "/əˈlɜːrt/",
+      "spanish": "atento",
+      "audioUrl": null
+    },
+    {
+      "english": "amused",
+      "ipa": "/əˈmjuːzd/",
+      "spanish": "divertido",
+      "audioUrl": null
+    },
+    {
+      "english": "bad",
+      "ipa": "/bæd/",
+      "spanish": "malo",
+      "audioUrl": null
+    },
+    {
+      "english": "beautiful",
+      "ipa": "/ˈbjuːtɪfəl/",
+      "spanish": "lindo(a)",
+      "audioUrl": null
+    },
+    {
+      "english": "big",
+      "ipa": "/bɪɡ/",
+      "spanish": "grande",
+      "audioUrl": null
+    },
+    {
+      "english": "busy",
+      "ipa": "/ˈbɪzi/",
+      "spanish": "ocupado",
+      "audioUrl": null
+    },
+    {
+      "english": "blurry",
+      "ipa": "/ˈblɜːri/",
+      "spanish": "borroso",
+      "audioUrl": null
+    },
+    {
+      "english": "breezy",
+      "ipa": "/ˈbriːzi/",
+      "spanish": "ventoso",
+      "audioUrl": null
+    },
+    {
+      "english": "bent",
+      "ipa": "/bent/",
+      "spanish": "doblado",
+      "audioUrl": null
+    },
+    {
+      "english": "blush",
+      "ipa": "/blʌʃ/",
+      "spanish": "sonrojo",
+      "audioUrl": null
+    },
+    {
+      "english": "brave",
+      "ipa": "/breɪv/",
+      "spanish": "valiente",
+      "audioUrl": null
+    },
+    {
+      "english": "bitter",
+      "ipa": "/ˈbɪtər/",
+      "spanish": "amargo",
+      "audioUrl": null
+    },
+    {
+      "english": "brilliant",
+      "ipa": "/ˈbrɪljənt/",
+      "spanish": "brillante",
+      "audioUrl": null
+    },
+    {
+      "english": "cheap",
+      "ipa": "/tʃiːp/",
+      "spanish": "barato",
+      "audioUrl": null
+    },
+    {
+      "english": "colorful",
+      "ipa": "/ˈkʌlərfəl/",
+      "spanish": "vistoso",
+      "audioUrl": null
+    },
+    {
+      "english": "charming",
+      "ipa": "/ˈtʃɑːrmɪŋ/",
+      "spanish": "encantador",
+      "audioUrl": null
+    },
+    {
+      "english": "chubby",
+      "ipa": "/ˈtʃʌbi/",
+      "spanish": "rechoncho",
+      "audioUrl": null
+    },
+    {
+      "english": "creepy",
+      "ipa": "/ˈkriːpi/",
+      "spanish": "horripilante",
+      "audioUrl": null
+    },
+    {
+      "english": "clear",
+      "ipa": "/klɪr/",
+      "spanish": "claro",
+      "audioUrl": null
+    },
+    {
+      "english": "clumsy",
+      "ipa": "/ˈklʌmzi/",
+      "spanish": "torpe",
+      "audioUrl": null
+    },
+    {
+      "english": "cruel",
+      "ipa": "/ˈkruːəl/",
+      "spanish": "cruel",
+      "audioUrl": null
+    },
+    {
+      "english": "clean",
+      "ipa": "/kliːn/",
+      "spanish": "limpio",
+      "audioUrl": null
+    },
+    {
+      "english": "creative",
+      "ipa": "/kriˈeɪtɪv/",
+      "spanish": "creativo",
+      "audioUrl": null
+    },
+    {
+      "english": "calm",
+      "ipa": "/kɑːm/",
+      "spanish": "calmado",
+      "audioUrl": null
+    },
+    {
+      "english": "cheerful",
+      "ipa": "/ˈtʃɪrfəl/",
+      "spanish": "alegre",
+      "audioUrl": null
+    },
+    {
+      "english": "comfortable",
+      "ipa": "/ˈkʌmfərtəbəl/",
+      "spanish": "cómodo",
+      "audioUrl": null
+    },
+    {
+      "english": "cold",
+      "ipa": "/koʊld/",
+      "spanish": "frío",
+      "audioUrl": null
+    },
+    {
+      "english": "confused",
+      "ipa": "/kənˈfjuːzd/",
+      "spanish": "confundido",
+      "audioUrl": null
+    },
+    {
+      "english": "cloudy",
+      "ipa": "/ˈklaʊdi/",
+      "spanish": "nublado",
+      "audioUrl": null
+    },
+    {
+      "english": "careful",
+      "ipa": "/ˈkerfəl/",
+      "spanish": "cuidadoso",
+      "audioUrl": null
+    },
+    {
+      "english": "cool",
+      "ipa": "/kuːl/",
+      "spanish": "fresco",
+      "audioUrl": null
+    },
+    {
+      "english": "cooked",
+      "ipa": "/kʊkt/",
+      "spanish": "cocido",
+      "audioUrl": null
+    },
+    {
+      "english": "dangerous",
+      "ipa": "/ˈdeɪndʒərəs/",
+      "spanish": "peligroso",
+      "audioUrl": null
+    },
+    {
+      "english": "dark",
+      "ipa": "/dɑːrk/",
+      "spanish": "oscuro",
+      "audioUrl": null
+    },
+    {
+      "english": "dead",
+      "ipa": "/ded/",
+      "spanish": "muerto",
+      "audioUrl": null
+    },
+    {
+      "english": "distinct",
+      "ipa": "/dɪˈstɪŋkt/",
+      "spanish": "distinto",
+      "audioUrl": null
+    },
+    {
+      "english": "depressed",
+      "ipa": "/dɪˈprest/",
+      "spanish": "deprimido",
+      "audioUrl": null
+    },
+    {
+      "english": "deep",
+      "ipa": "/diːp/",
+      "spanish": "profundo",
+      "audioUrl": null
+    },
+    {
+      "english": "different",
+      "ipa": "/ˈdɪfərənt/",
+      "spanish": "diferente",
+      "audioUrl": null
+    },
+    {
+      "english": "difficult",
+      "ipa": "/ˈdɪfɪkəlt/",
+      "spanish": "difícil",
+      "audioUrl": null
+    },
+    {
+      "english": "delicious",
+      "ipa": "/dɪˈlɪʃəs/",
+      "spanish": "delicioso",
+      "audioUrl": null
+    },
+    {
+      "english": "done",
+      "ipa": "/dʌn/",
+      "spanish": "hecho",
+      "audioUrl": null
+    },
+    {
+      "english": "delightful",
+      "ipa": "/dɪˈlaɪtfəl/",
+      "spanish": "encantador",
+      "audioUrl": null
+    },
+    {
+      "english": "dry",
+      "ipa": "/draɪ/",
+      "spanish": "seco",
+      "audioUrl": null
+    },
+    {
+      "english": "dirty",
+      "ipa": "/ˈdɜːrti/",
+      "spanish": "sucio",
+      "audioUrl": null
+    },
+    {
+      "english": "dizzy",
+      "ipa": "/ˈdɪzi/",
+      "spanish": "mareado",
+      "audioUrl": null
+    },
+    {
+      "english": "early",
+      "ipa": "/ˈɜːrli/",
+      "spanish": "temprano",
+      "audioUrl": null
+    },
+    {
+      "english": "easy",
+      "ipa": "/ˈiːzi/",
+      "spanish": "fácil",
+      "audioUrl": null
+    },
+    {
+      "english": "empty",
+      "ipa": "/ˈempti/",
+      "spanish": "vacío",
+      "audioUrl": null
+    }
+  ]
+}

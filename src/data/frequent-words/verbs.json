@@ -1,0 +1,121 @@
+{
+  "category": "verbs",
+  "name": "Verbos",
+  "description": "Los verbos más frecuentes en inglés",
+  "words": [
+    {
+      "english": "know",
+      "ipa": "/noʊ/",
+      "spanish": "saber, conocer",
+      "audioUrl": null
+    },
+    {
+      "english": "come",
+      "ipa": "/kʌm/",
+      "spanish": "venir",
+      "audioUrl": null
+    },
+    {
+      "english": "think",
+      "ipa": "/θɪŋk/",
+      "spanish": "pensar",
+      "audioUrl": null
+    },
+    {
+      "english": "give",
+      "ipa": "/ɡɪv/",
+      "spanish": "dar",
+      "audioUrl": null
+    },
+    {
+      "english": "use",
+      "ipa": "/juːz/",
+      "spanish": "usar",
+      "audioUrl": null
+    },
+    {
+      "english": "find",
+      "ipa": "/faɪnd/",
+      "spanish": "encontrar",
+      "audioUrl": null
+    },
+    {
+      "english": "tell",
+      "ipa": "/tɛl/",
+      "spanish": "decir, contar",
+      "audioUrl": null
+    },
+    {
+      "english": "ask",
+      "ipa": "/æsk/",
+      "spanish": "preguntar",
+      "audioUrl": null
+    },
+    {
+      "english": "try",
+      "ipa": "/traɪ/",
+      "spanish": "intentar, probar",
+      "audioUrl": null
+    },
+    {
+      "english": "said",
+      "ipa": "/sɛd/",
+      "spanish": "dijo (pasado de say)",
+      "audioUrl": null
+    },
+    {
+      "english": "write",
+      "ipa": "/raɪt/",
+      "spanish": "escribir",
+      "audioUrl": null
+    },
+    {
+      "english": "found",
+      "ipa": "/faʊnd/",
+      "spanish": "encontró (pasado de find)",
+      "audioUrl": null
+    },
+    {
+      "english": "keep",
+      "ipa": "/kiːp/",
+      "spanish": "mantener, guardar",
+      "audioUrl": null
+    },
+    {
+      "english": "grow",
+      "ipa": "/ɡroʊ/",
+      "spanish": "crecer",
+      "audioUrl": null
+    },
+    {
+      "english": "cut",
+      "ipa": "/kʌt/",
+      "spanish": "cortar",
+      "audioUrl": null
+    },
+    {
+      "english": "leave",
+      "ipa": "/liːv/",
+      "spanish": "dejar, partir",
+      "audioUrl": null
+    },
+    {
+      "english": "took",
+      "ipa": "/tʊk/",
+      "spanish": "tomó (pasado de take)",
+      "audioUrl": null
+    },
+    {
+      "english": "carry",
+      "ipa": "/ˈkæri/",
+      "spanish": "llevar, cargar",
+      "audioUrl": null
+    },
+    {
+      "english": "show",
+      "ipa": "/ʃoʊ/",
+      "spanish": "mostrar",
+      "audioUrl": null
+    }
+  ]
+}

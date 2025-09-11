@@ -1,0 +1,619 @@
+{
+  "category": "nouns",
+  "name": "Sustantivos",
+  "description": "Los sustantivos más frecuentes en inglés",
+  "words": [
+    {
+      "english": "action",
+      "ipa": "/ˈækʃən/",
+      "spanish": "acción",
+      "audioUrl": null
+    },
+    {
+      "english": "age",
+      "ipa": "/eɪdʒ/",
+      "spanish": "edad",
+      "audioUrl": null
+    },
+    {
+      "english": "air",
+      "ipa": "/ɛr/",
+      "spanish": "aire",
+      "audioUrl": null
+    },
+    {
+      "english": "answer",
+      "ipa": "/ˈænsər/",
+      "spanish": "respuesta",
+      "audioUrl": null
+    },
+    {
+      "english": "back",
+      "ipa": "/bæk/",
+      "spanish": "espalda",
+      "audioUrl": null
+    },
+    {
+      "english": "bed",
+      "ipa": "/bed/",
+      "spanish": "cama",
+      "audioUrl": null
+    },
+    {
+      "english": "bill",
+      "ipa": "/bɪl/",
+      "spanish": "factura",
+      "audioUrl": null
+    },
+    {
+      "english": "bird",
+      "ipa": "/bɜrd/",
+      "spanish": "pájaro",
+      "audioUrl": null
+    },
+    {
+      "english": "blood",
+      "ipa": "/blʌd/",
+      "spanish": "sangre",
+      "audioUrl": null
+    },
+    {
+      "english": "boat",
+      "ipa": "/boʊt/",
+      "spanish": "barco",
+      "audioUrl": null
+    },
+    {
+      "english": "body",
+      "ipa": "/ˈbɑdi/",
+      "spanish": "cuerpo",
+      "audioUrl": null
+    },
+    {
+      "english": "bone",
+      "ipa": "/boʊn/",
+      "spanish": "hueso",
+      "audioUrl": null
+    },
+    {
+      "english": "book",
+      "ipa": "/bʊk/",
+      "spanish": "libro",
+      "audioUrl": null
+    },
+    {
+      "english": "bottom",
+      "ipa": "/ˈbɑtəm/",
+      "spanish": "fondo, parte bajo",
+      "audioUrl": null
+    },
+    {
+      "english": "box",
+      "ipa": "/bɑks/",
+      "spanish": "caja",
+      "audioUrl": null
+    },
+    {
+      "english": "boy",
+      "ipa": "/bɔɪ/",
+      "spanish": "niño (masculino)",
+      "audioUrl": null
+    },
+    {
+      "english": "brother",
+      "ipa": "/ˈbrʌðər/",
+      "spanish": "hermano",
+      "audioUrl": null
+    },
+    {
+      "english": "building",
+      "ipa": "/ˈbɪldɪŋ/",
+      "spanish": "edificio",
+      "audioUrl": null
+    },
+    {
+      "english": "business",
+      "ipa": "/ˈbɪznəs/",
+      "spanish": "negocio",
+      "audioUrl": null
+    },
+    {
+      "english": "capital",
+      "ipa": "/ˈkæpɪtəl/",
+      "spanish": "capital",
+      "audioUrl": null
+    },
+    {
+      "english": "case",
+      "ipa": "/keɪs/",
+      "spanish": "caso, estuche",
+      "audioUrl": null
+    },
+    {
+      "english": "cat",
+      "ipa": "/kæt/",
+      "spanish": "gato",
+      "audioUrl": null
+    },
+    {
+      "english": "cause",
+      "ipa": "/kɔz/",
+      "spanish": "causa",
+      "audioUrl": null
+    },
+    {
+      "english": "cent",
+      "ipa": "/sent/",
+      "spanish": "céntimo",
+      "audioUrl": null
+    },
+    {
+      "english": "center",
+      "ipa": "/ˈsentər/",
+      "spanish": "centro",
+      "audioUrl": null
+    },
+    {
+      "english": "century",
+      "ipa": "/ˈsentʃəri/",
+      "spanish": "siglo",
+      "audioUrl": null
+    },
+    {
+      "english": "chance",
+      "ipa": "/tʃæns/",
+      "spanish": "oportunidad",
+      "audioUrl": null
+    },
+    {
+      "english": "change",
+      "ipa": "/tʃeɪndʒ/",
+      "spanish": "cambio",
+      "audioUrl": null
+    },
+    {
+      "english": "child",
+      "ipa": "/tʃaɪld/",
+      "spanish": "niño",
+      "audioUrl": null
+    },
+    {
+      "english": "church",
+      "ipa": "/tʃɜrtʃ/",
+      "spanish": "iglesia",
+      "audioUrl": null
+    },
+    {
+      "english": "circle",
+      "ipa": "/ˈsɜrkəl/",
+      "spanish": "círculo",
+      "audioUrl": null
+    },
+    {
+      "english": "city",
+      "ipa": "/ˈsɪti/",
+      "spanish": "ciudad",
+      "audioUrl": null
+    },
+    {
+      "english": "class",
+      "ipa": "/klæs/",
+      "spanish": "clase, curso",
+      "audioUrl": null
+    },
+    {
+      "english": "clothes",
+      "ipa": "/kloʊðz/",
+      "spanish": "ropa",
+      "audioUrl": null
+    },
+    {
+      "english": "cloud",
+      "ipa": "/klaʊd/",
+      "spanish": "nube",
+      "audioUrl": null
+    },
+    {
+      "english": "coast",
+      "ipa": "/koʊst/",
+      "spanish": "costa",
+      "audioUrl": null
+    },
+    {
+      "english": "company",
+      "ipa": "/ˈkʌmpəni/",
+      "spanish": "empresa",
+      "audioUrl": null
+    },
+    {
+      "english": "copy",
+      "ipa": "/ˈkɑpi/",
+      "spanish": "copia",
+      "audioUrl": null
+    },
+    {
+      "english": "corn",
+      "ipa": "/kɔrn/",
+      "spanish": "maíz",
+      "audioUrl": null
+    },
+    {
+      "english": "cotton",
+      "ipa": "/ˈkɑtən/",
+      "spanish": "algodón",
+      "audioUrl": null
+    },
+    {
+      "english": "country",
+      "ipa": "/ˈkʌntri/",
+      "spanish": "país, campo",
+      "audioUrl": null
+    },
+    {
+      "english": "crowd",
+      "ipa": "/kraʊd/",
+      "spanish": "multitud",
+      "audioUrl": null
+    },
+    {
+      "english": "day",
+      "ipa": "/deɪ/",
+      "spanish": "día",
+      "audioUrl": null
+    },
+    {
+      "english": "dictionary",
+      "ipa": "/ˈdɪkʃəˌnɛri/",
+      "spanish": "diccionario",
+      "audioUrl": null
+    },
+    {
+      "english": "direction",
+      "ipa": "/dɪˈrekʃən/",
+      "spanish": "dirección",
+      "audioUrl": null
+    },
+    {
+      "english": "distance",
+      "ipa": "/ˈdɪstəns/",
+      "spanish": "distancia",
+      "audioUrl": null
+    },
+    {
+      "english": "doctor",
+      "ipa": "/ˈdɑktər/",
+      "spanish": "médico",
+      "audioUrl": null
+    },
+    {
+      "english": "dollar",
+      "ipa": "/ˈdɑlər/",
+      "spanish": "dólar",
+      "audioUrl": null
+    },
+    {
+      "english": "door",
+      "ipa": "/dɔr/",
+      "spanish": "puerta",
+      "audioUrl": null
+    },
+    {
+      "english": "ear",
+      "ipa": "/ɪr/",
+      "spanish": "oreja",
+      "audioUrl": null
+    },
+    {
+      "english": "earth",
+      "ipa": "/ɜrθ/",
+      "spanish": "tierra",
+      "audioUrl": null
+    },
+    {
+      "english": "egg",
+      "ipa": "/ɛɡ/",
+      "spanish": "huevo",
+      "audioUrl": null
+    },
+    {
+      "english": "energy",
+      "ipa": "/ˈɛnərdʒi/",
+      "spanish": "energía",
+      "audioUrl": null
+    },
+    {
+      "english": "example",
+      "ipa": "/ɪɡˈzæmpəl/",
+      "spanish": "ejemplo",
+      "audioUrl": null
+    },
+    {
+      "english": "experience",
+      "ipa": "/ɪkˈspɪriəns/",
+      "spanish": "experiencia",
+      "audioUrl": null
+    },
+    {
+      "english": "eye",
+      "ipa": "/aɪ/",
+      "spanish": "ojo",
+      "audioUrl": null
+    },
+    {
+      "english": "game",
+      "ipa": "/ɡeɪm/",
+      "spanish": "juego, partido",
+      "audioUrl": null
+    },
+    {
+      "english": "garden",
+      "ipa": "/ˈɡɑrdən/",
+      "spanish": "jardín",
+      "audioUrl": null
+    },
+    {
+      "english": "gas",
+      "ipa": "/ɡæs/",
+      "spanish": "carburante",
+      "audioUrl": null
+    },
+    {
+      "english": "girl",
+      "ipa": "/ɡɜrl/",
+      "spanish": "chica, niña",
+      "audioUrl": null
+    },
+    {
+      "english": "glass",
+      "ipa": "/ɡlæs/",
+      "spanish": "vidrio, vaso",
+      "audioUrl": null
+    },
+    {
+      "english": "gold",
+      "ipa": "/ɡoʊld/",
+      "spanish": "oro",
+      "audioUrl": null
+    },
+    {
+      "english": "government",
+      "ipa": "/ˈɡʌvərnmənt/",
+      "spanish": "gobierno",
+      "audioUrl": null
+    },
+    {
+      "english": "grass",
+      "ipa": "/ɡræs/",
+      "spanish": "hierba, césped",
+      "audioUrl": null
+    },
+    {
+      "english": "group",
+      "ipa": "/ɡrup/",
+      "spanish": "grupo",
+      "audioUrl": null
+    },
+    {
+      "english": "hair",
+      "ipa": "/hɛr/",
+      "spanish": "pelo",
+      "audioUrl": null
+    },
+    {
+      "english": "hat",
+      "ipa": "/hæt/",
+      "spanish": "sombrero",
+      "audioUrl": null
+    },
+    {
+      "english": "head",
+      "ipa": "/hɛd/",
+      "spanish": "cabeza",
+      "audioUrl": null
+    },
+    {
+      "english": "heart",
+      "ipa": "/hɑrt/",
+      "spanish": "corazón",
+      "audioUrl": null
+    },
+    {
+      "english": "heat",
+      "ipa": "/hit/",
+      "spanish": "calor, calefacción",
+      "audioUrl": null
+    },
+    {
+      "english": "history",
+      "ipa": "/ˈhɪstəri/",
+      "spanish": "historia",
+      "audioUrl": null
+    },
+    {
+      "english": "hole",
+      "ipa": "/hoʊl/",
+      "spanish": "agujero, hueco",
+      "audioUrl": null
+    },
+    {
+      "english": "home",
+      "ipa": "/hoʊm/",
+      "spanish": "casa, hogar",
+      "audioUrl": null
+    },
+    {
+      "english": "horse",
+      "ipa": "/hɔrs/",
+      "spanish": "caballo",
+      "audioUrl": null
+    },
+    {
+      "english": "hour",
+      "ipa": "/aʊr/",
+      "spanish": "hora",
+      "audioUrl": null
+    },
+    {
+      "english": "house",
+      "ipa": "/haʊs/",
+      "spanish": "casa",
+      "audioUrl": null
+    },
+    {
+      "english": "ice",
+      "ipa": "/aɪs/",
+      "spanish": "hielo",
+      "audioUrl": null
+    },
+    {
+      "english": "idea",
+      "ipa": "/aɪˈdiə/",
+      "spanish": "idea",
+      "audioUrl": null
+    },
+    {
+      "english": "inch",
+      "ipa": "/ɪntʃ/",
+      "spanish": "pulgada",
+      "audioUrl": null
+    },
+    {
+      "english": "industry",
+      "ipa": "/ˈɪndəstri/",
+      "spanish": "industria",
+      "audioUrl": null
+    },
+    {
+      "english": "information",
+      "ipa": "/ˌɪnfərˈmeɪʃən/",
+      "spanish": "información",
+      "audioUrl": null
+    },
+    {
+      "english": "insect",
+      "ipa": "/ˈɪnsɛkt/",
+      "spanish": "insecto",
+      "audioUrl": null
+    },
+    {
+      "english": "interest",
+      "ipa": "/ˈɪntərəst/",
+      "spanish": "interés",
+      "audioUrl": null
+    },
+    {
+      "english": "iron",
+      "ipa": "/ˈaɪərn/",
+      "spanish": "hierro, plancha",
+      "audioUrl": null
+    },
+    {
+      "english": "island",
+      "ipa": "/ˈaɪlənd/",
+      "spanish": "isla",
+      "audioUrl": null
+    },
+    {
+      "english": "job",
+      "ipa": "/dʒɑb/",
+      "spanish": "puesto de trabajo",
+      "audioUrl": null
+    },
+    {
+      "english": "key",
+      "ipa": "/ki/",
+      "spanish": "llave",
+      "audioUrl": null
+    },
+    {
+      "english": "lake",
+      "ipa": "/leɪk/",
+      "spanish": "lago",
+      "audioUrl": null
+    },
+    {
+      "english": "land",
+      "ipa": "/lænd/",
+      "spanish": "tierra",
+      "audioUrl": null
+    },
+    {
+      "english": "language",
+      "ipa": "/ˈlæŋɡwɪdʒ/",
+      "spanish": "idioma",
+      "audioUrl": null
+    },
+    {
+      "english": "law",
+      "ipa": "/lɔ/",
+      "spanish": "ley",
+      "audioUrl": null
+    },
+    {
+      "english": "ring",
+      "ipa": "/rɪŋ/",
+      "spanish": "anillo",
+      "audioUrl": null
+    },
+    {
+      "english": "river",
+      "ipa": "/ˈrɪvər/",
+      "spanish": "río",
+      "audioUrl": null
+    },
+    {
+      "english": "row",
+      "ipa": "/roʊ/",
+      "spanish": "fila",
+      "audioUrl": null
+    },
+    {
+      "english": "rule",
+      "ipa": "/rul/",
+      "spanish": "regla",
+      "audioUrl": null
+    },
+    {
+      "english": "sand",
+      "ipa": "/sænd/",
+      "spanish": "arena",
+      "audioUrl": null
+    },
+    {
+      "english": "sea",
+      "ipa": "/si/",
+      "spanish": "mar",
+      "audioUrl": null
+    },
+    {
+      "english": "sentence",
+      "ipa": "/ˈsentəns/",
+      "spanish": "oración",
+      "audioUrl": null
+    },
+    {
+      "english": "soldier",
+      "ipa": "/ˈsoʊldʒər/",
+      "spanish": "soldado",
+      "audioUrl": null
+    },
+    {
+      "english": "village",
+      "ipa": "/ˈvɪlɪdʒ/",
+      "spanish": "pueblo",
+      "audioUrl": null
+    },
+    {
+      "english": "weather",
+      "ipa": "/ˈwɛðər/",
+      "spanish": "clima",
+      "audioUrl": null
+    },
+    {
+      "english": "weight",
+      "ipa": "/weɪt/",
+      "spanish": "peso",
+      "audioUrl": null
+    }
+  ]
+}

@@ -8,6 +8,7 @@ import SessionInfo from './components/SessionInfo';
 import StreakCalendar from './components/StreakCalendar';
 import ConnectionStatus from './components/ConnectionStatus';
 import StaleDataIndicator from './components/StaleDataIndicator';
+import { AcademicCapIcon } from '@heroicons/react/24/outline';
 import lessonsData from '@/data/lessons/index.json';
 import { useState, useEffect } from 'react';
 import { createClient } from '@/lib/supabase/client';
@@ -325,6 +326,18 @@ export default function Dashboard() {
       {/* Journey Map */}
       <div className="mt-12">
         <LessonJourneyMap lessons={lessons} />
+      </div>
+
+      {/* Botón de Palabras Frecuentes */}
+      <div className="mt-8 text-center">
+        <button
+          onClick={() => router.push('/dashboard/palabras-frecuentes')}
+          className="inline-flex items-center gap-3 px-6 py-3 bg-gradient-to-r from-green-500 to-emerald-600 text-white rounded-xl font-medium hover:from-green-600 hover:to-emerald-700 transition-all duration-200 shadow-lg hover:shadow-xl transform hover:scale-105"
+        >
+          <AcademicCapIcon className="w-6 h-6" />
+          <span>Las 300 Palabras Más Usadas</span>
+        </button>
+        <p className="text-sm text-gray-500 mt-2">Practica vocabulario esencial con flashcards</p>
       </div>
 
       {/* Enhanced Motivational Footer */}
