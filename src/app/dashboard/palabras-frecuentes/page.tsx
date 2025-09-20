@@ -37,14 +37,14 @@ function Flashcard({ word, isFlipped, onFlip, onPlayAudio }: FlashcardProps) {
           >
             <SpeakerWaveIcon className="w-4 h-4 sm:w-6 sm:h-6" />
           </button>
-          <p className="text-xs sm:text-sm mt-2 sm:mt-3 text-blue-100 opacity-75 text-center">Toca para ver la traducción</p>
+          <p className="text-xs sm:text-sm mt-2 sm:mt-3 text-blue-100 opacity-75 text-center">Toca aquí</p>
         </div>
         
         {/* Cara trasera */}
         <div className="absolute inset-0 w-full h-full backface-hidden rotate-y-180 bg-gradient-to-br from-emerald-500 to-teal-600 rounded-xl shadow-lg flex flex-col items-center justify-center text-white p-3 sm:p-6">
           <h3 className="text-lg sm:text-2xl font-bold mb-2 sm:mb-4">{word.english}</h3>
           <p className="text-base sm:text-xl text-center font-medium px-2">{word.spanish}</p>
-          <p className="text-xs sm:text-sm mt-2 sm:mt-4 text-emerald-100 opacity-75 text-center">Toca para volver</p>
+          <p className="text-xs sm:text-sm mt-2 sm:mt-4 text-emerald-100 opacity-75 text-center">Toca aquí</p>
         </div>
       </div>
     </motion.div>

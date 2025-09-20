@@ -30,6 +30,156 @@ body {
 @tailwind components;
 @tailwind utilities;
 
+/* Blog-specific styles */
+@layer components {
+  /* Line clamp utilities for text truncation */
+  .line-clamp-2 {
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+  
+  .line-clamp-3 {
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+
+  /* Syntax highlighting for code blocks */
+  .hljs {
+    @apply rounded-lg p-4 overflow-x-auto text-sm;
+  }
+  
+  /* Anchor links in headings */
+  .anchor {
+    @apply text-blue-600 hover:text-blue-800 no-underline;
+  }
+  
+  /* Prose improvements for blog content */
+  .prose {
+    @apply max-w-none;
+  }
+  
+  .prose h2 {
+    @apply scroll-mt-20;
+  }
+  
+  .prose h3 {
+    @apply scroll-mt-20;
+  }
+  
+  .prose h4 {
+    @apply scroll-mt-20;
+  }
+  
+  /* Blog card hover effects */
+  .blog-card {
+    @apply transition-all duration-300 hover:shadow-lg hover:-translate-y-1;
+  }
+  
+  /* Smooth animations */
+  .animate-fade-in {
+    animation: fadeIn 0.5s ease-in-out;
+  }
+  
+  @keyframes fadeIn {
+    from {
+      opacity: 0;
+      transform: translateY(20px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+  
+  /* Focus states for accessibility */
+  .focus-ring {
+    @apply focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2;
+  }
+}
+
+/* Highlight.js theme overrides for dark code blocks */
+@layer base {
+  .hljs-comment,
+  .hljs-quote {
+    @apply text-gray-400 italic;
+  }
+  
+  .hljs-keyword,
+  .hljs-selector-tag,
+  .hljs-subst {
+    @apply text-purple-400;
+  }
+  
+  .hljs-number,
+  .hljs-literal,
+  .hljs-variable,
+  .hljs-template-variable,
+  .hljs-tag .hljs-attr {
+    @apply text-blue-400;
+  }
+  
+  .hljs-string,
+  .hljs-doctag {
+    @apply text-green-400;
+  }
+  
+  .hljs-title,
+  .hljs-section,
+  .hljs-selector-id {
+    @apply text-yellow-400;
+  }
+  
+  .hljs-type,
+  .hljs-class .hljs-title {
+    @apply text-yellow-300;
+  }
+  
+  .hljs-tag,
+  .hljs-name,
+  .hljs-attribute {
+    @apply text-orange-400;
+  }
+  
+  .hljs-regexp,
+  .hljs-link {
+    @apply text-cyan-400;
+  }
+  
+  .hljs-symbol,
+  .hljs-bullet {
+    @apply text-purple-300;
+  }
+  
+  .hljs-built_in,
+  .hljs-builtin-name {
+    @apply text-indigo-400;
+  }
+  
+  .hljs-meta {
+    @apply text-gray-500;
+  }
+  
+  .hljs-deletion {
+    @apply bg-red-900;
+  }
+  
+  .hljs-addition {
+    @apply bg-green-900;
+  }
+  
+  .hljs-emphasis {
+    @apply italic;
+  }
+  
+  .hljs-strong {
+    @apply font-bold;
+  }
+}
+
 @layer base {
   html {
     scroll-behavior: smooth;

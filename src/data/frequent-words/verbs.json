@@ -116,6 +116,126 @@
       "ipa": "/ʃoʊ/",
       "spanish": "mostrar",
       "audioUrl": null
+    },
+    {
+      "english": "make",
+      "ipa": "/meɪk/",
+      "spanish": "hacer",
+      "audioUrl": null
+    },
+    {
+      "english": "get",
+      "ipa": "/ɡet/",
+      "spanish": "obtener, conseguir",
+      "audioUrl": null
+    },
+    {
+      "english": "go",
+      "ipa": "/ɡoʊ/",
+      "spanish": "ir",
+      "audioUrl": null
+    },
+    {
+      "english": "see",
+      "ipa": "/siː/",
+      "spanish": "ver",
+      "audioUrl": null
+    },
+    {
+      "english": "want",
+      "ipa": "/wɑːnt/",
+      "spanish": "querer",
+      "audioUrl": null
+    },
+    {
+      "english": "look",
+      "ipa": "/lʊk/",
+      "spanish": "mirar",
+      "audioUrl": null
+    },
+    {
+      "english": "take",
+      "ipa": "/teɪk/",
+      "spanish": "tomar",
+      "audioUrl": null
+    },
+    {
+      "english": "work",
+      "ipa": "/wɜːrk/",
+      "spanish": "trabajar",
+      "audioUrl": null
+    },
+    {
+      "english": "call",
+      "ipa": "/kɔːl/",
+      "spanish": "llamar",
+      "audioUrl": null
+    },
+    {
+      "english": "help",
+      "ipa": "/help/",
+      "spanish": "ayudar",
+      "audioUrl": null
+    },
+    {
+      "english": "feel",
+      "ipa": "/fiːl/",
+      "spanish": "sentir",
+      "audioUrl": null
+    },
+    {
+      "english": "put",
+      "ipa": "/pʊt/",
+      "spanish": "poner",
+      "audioUrl": null
+    },
+    {
+      "english": "turn",
+      "ipa": "/tɜːrn/",
+      "spanish": "girar, voltear",
+      "audioUrl": null
+    },
+    {
+      "english": "move",
+      "ipa": "/muːv/",
+      "spanish": "mover",
+      "audioUrl": null
+    },
+    {
+      "english": "live",
+      "ipa": "/lɪv/",
+      "spanish": "vivir",
+      "audioUrl": null
+    },
+    {
+      "english": "play",
+      "ipa": "/pleɪ/",
+      "spanish": "jugar",
+      "audioUrl": null
+    },
+    {
+      "english": "run",
+      "ipa": "/rʌn/",
+      "spanish": "correr",
+      "audioUrl": null
+    },
+    {
+      "english": "open",
+      "ipa": "/ˈoʊpən/",
+      "spanish": "abrir",
+      "audioUrl": null
+    },
+    {
+      "english": "close",
+      "ipa": "/kloʊz/",
+      "spanish": "cerrar",
+      "audioUrl": null
+    },
+    {
+      "english": "read",
+      "ipa": "/riːd/",
+      "spanish": "leer",
+      "audioUrl": null
     }
   ]
 }
