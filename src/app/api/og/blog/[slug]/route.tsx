@@ -1,6 +1,6 @@
 import { ImageResponse } from 'next/og';
 import { NextRequest } from 'next/server';
-import { getPostBySlug } from '@/lib/blog/utils';
+import { getStaticPostData } from '@/lib/blog/utils-edge';
 
 export const runtime = 'edge';
 
@@ -9,7 +9,7 @@ export async function GET(
   { params }: { params: { slug: string } }
 ) {
   try {
-    const post = await getPostBySlug(params.slug);
+    const post = getStaticPostData(params.slug);
     
     if (!post) {
       return new Response('Post not found', { status: 404 });
