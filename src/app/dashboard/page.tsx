@@ -352,6 +352,18 @@ export default function Dashboard() {
         <p className="text-sm text-gray-500 mt-2">Domina frases útiles para la conversación diaria</p>
       </div>
 
+      {/* Botón de Juego de Parejas */}
+      <div className="mt-6 text-center">
+        <button
+          onClick={() => router.push('/dashboard/juego-parejas')}
+          className="inline-flex items-center gap-3 px-6 py-3 bg-gradient-to-r from-orange-500 to-red-600 text-white rounded-xl font-medium hover:from-orange-600 hover:to-red-700 transition-all duration-200 shadow-lg hover:shadow-xl transform hover:scale-105"
+        >
+          <AcademicCapIcon className="w-6 h-6" />
+          <span>Selecciona las Parejas</span>
+        </button>
+        <p className="text-sm text-gray-500 mt-2">Juego interactivo para practicar vocabulario</p>
+      </div>
+
       {/* Enhanced Motivational Footer */}
       <div className="mt-16">
         <div className="bg-gradient-to-br from-blue-50 via-white to-purple-50 rounded-2xl p-6 sm:p-8 shadow-sm border border-gray-100 relative overflow-hidden">
