@@ -16,8 +16,9 @@ export async function middleware(req: NextRequest) {
     return res;
   }
 
-  // Permitir rutas públicas
-  if (pathname === '/' || pathname.startsWith('/api/') || pathname.startsWith('/_next/')) {
+  // Permitir rutas públicas y dashboard (dashboard tiene su propia verificación)
+  if (pathname === '/' || pathname.startsWith('/api/') || pathname.startsWith('/_next/') || pathname.startsWith('/dashboard')) {
+    console.log('🔒 MIDDLEWARE: Allowing access to:', pathname);
     return res;
   }
 
@@ -43,16 +44,12 @@ export async function middleware(req: NextRequest) {
     // Obtener sesión actual
     const { data: { session } } = await supabase.auth.getSession();
     
-    // Proteger dashboard - requiere autenticación
-    if (pathname.startsWith('/dashboard')) {
-      if (!session) {
-        return NextResponse.redirect(new URL('/auth/login', req.url));
-      }
-    }
+    // Dashboard protection is now handled by the dashboard component itself
+    // No middleware protection needed for /dashboard routes
 
     return res;
   } catch (error) {
-    console.error('Middleware error:', error);
+    console.error('🔒 MIDDLEWARE: ❌ Error:', error);
     // En caso de error, permitir continuar
     return res;
   }

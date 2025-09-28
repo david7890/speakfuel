@@ -19,6 +19,44 @@ export const dynamic = 'force-dynamic';
 export default function Dashboard() {
   const router = useRouter();
   const { user, profile, lessonProgress, isLoading, error, isStale, clearError, forceRefresh } = useAuth();
+  const [sessionValid, setSessionValid] = useState<boolean | null>(null);
+  const supabase = createClient();
+
+  // Verificar sesión DIRECTAMENTE con Supabase (una sola vez)
+  useEffect(() => {
+    const checkSession = async () => {
+      console.log('🏠 DASHBOARD: Starting session check...');
+      console.log('🏠 DASHBOARD: Current URL:', window.location.href);
+      
+      try {
+        const { data: { session } } = await supabase.auth.getSession();
+        console.log('🏠 DASHBOARD: Direct session check result:', session ? 'EXISTS' : 'NULL');
+        
+        if (session) {
+          console.log('🏠 DASHBOARD: Session details:', {
+            userId: session.user.id,
+            email: session.user.email,
+            expiresAt: new Date(session.expires_at! * 1000)
+          });
+        }
+        
+        setSessionValid(!!session);
+        
+        if (!session) {
+          console.log('🏠 DASHBOARD: ❌ No valid session found, redirecting to login');
+          router.push('/auth/login');
+        } else {
+          console.log('🏠 DASHBOARD: ✅ Valid session found, allowing dashboard access');
+        }
+      } catch (error) {
+        console.error('🏠 DASHBOARD: ❌ Error checking session:', error);
+        setSessionValid(false);
+        router.push('/auth/login');
+      }
+    };
+    
+    checkSession();
+  }, [router, supabase]);
   
   // Mapear difficulty del JSON a los valores esperados por el componente
   const mapDifficulty = (difficulty: string) => {
@@ -256,7 +294,37 @@ export default function Dashboard() {
 
   // Remover pantalla de error - la app debe funcionar incluso sin datos completos
 
-  if (isLoading) {
+  // Debug: Log current state
+  console.log('🏠 DASHBOARD: Render state:', {
+    sessionValid,
+    isLoading,
+    hasUser: !!user,
+    hasProfile: !!profile,
+    url: typeof window !== 'undefined' ? window.location.href : 'SSR'
+  });
+
+  // Mientras verificamos la sesión con Supabase
+  if (sessionValid === null) {
+    console.log('🏠 DASHBOARD: Showing session verification screen');
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-blue-50 to-purple-100 flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
+          <p className="text-gray-600">Verificando acceso...</p>
+        </div>
+      </div>
+    );
+  }
+
+  // Si no hay sesión válida, ya redirigimos en el useEffect arriba
+  if (!sessionValid) {
+    console.log('🏠 DASHBOARD: No valid session, returning null');
+    return null;
+  }
+
+  // Mostrar loading mientras el hook carga los datos del usuario
+  if (isLoading || !user || !profile) {
+    console.log('🏠 DASHBOARD: Showing loading screen for user data');
     return (
       <div className="min-h-screen bg-gradient-to-br from-blue-50 to-purple-100 flex items-center justify-center">
         <div className="text-center">
@@ -267,17 +335,7 @@ export default function Dashboard() {
     );
   }
 
-  // Solo redirigir si NO está cargando Y no hay usuario autenticado
-  if (!isLoading && !user) {
-    console.log('🚫 No authenticated user found, redirecting to login');
-    router.push('/auth/login');
-    return null;
-  }
-
-  // TypeScript safety checks
-  if (!profile) {
-    return null;
-  }
+  console.log('🏠 DASHBOARD: ✅ All checks passed, rendering full dashboard');
   
   const userStats = getUserStats();
   
